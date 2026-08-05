@@ -5,7 +5,8 @@
 <div
 	{{ $attributes->merge([
 		'class' => implode(' ', [
-			'rounded-2xl border border-slate-200 bg-white shadow-sm',
+			'rounded-sm border border-stone-200 bg-white',
+			'dark:border-stone-800 dark:bg-stone-900',
 			$padding ? 'p-6' : '',
 		]),
 	]) }}

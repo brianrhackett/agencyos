@@ -7,7 +7,7 @@
 		id="{{ $id }}"
 	@endif
 	{{ $attributes->merge([
-		'class' => 'mt-2 text-sm text-slate-500',
+		'class' => 'mt-2 text-sm text-stone-500 dark:text-stone-400',
 	]) }}
 >
 	{{ $slot }}

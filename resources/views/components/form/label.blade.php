@@ -6,7 +6,7 @@
 <label
 	for="{{ $for }}"
 	{{ $attributes->merge([
-		'class' => 'mb-2 block text-sm font-semibold text-slate-700',
+		'class' => 'mb-2 block text-sm font-semibold text-stone-700 dark:text-stone-200',
 	]) }}
 >
 	{{ $slot }}

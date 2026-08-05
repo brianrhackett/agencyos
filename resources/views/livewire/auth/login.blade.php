@@ -73,111 +73,142 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div>
-	<div class="mb-8">
-		<p class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">
+	<div>
+		<p class="text-sm font-bold uppercase tracking-[0.18em] text-indigo-600">
 			Welcome back
 		</p>
 
-		<h1 class="text-3xl font-extrabold tracking-tight text-slate-950">
-			Sign in to AgencyOS
+		<h1 class="mt-3 text-3xl font-extrabold tracking-tight text-stone-950">
+			Sign in to your account
 		</h1>
 
-		<p class="mt-3 text-sm leading-6 text-slate-500">
-			Enter your account details to continue managing your agency.
+		<p class="mt-3 text-sm leading-6 text-stone-500">
+			Enter your account details to continue to AgencyOS.
 		</p>
 	</div>
 
 	<x-auth-session-status
-		class="mb-6 rounded-lg bg-indigo-50 px-4 py-3 text-sm text-indigo-700"
+		class="mt-6 rounded-sm border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-700"
 		:status="session('status')"
 	/>
 
 	<form
 		wire:submit="login"
-		class="space-y-6"
+		class="mt-8 space-y-6"
 	>
-		<flux:input
-			wire:model="email"
-			:label="__('Email address')"
+		<x-input
+			label="Email address"
+			name="email"
 			type="email"
-			required
-			autofocus
-			autocomplete="email"
 			placeholder="you@example.com"
+			wire:model="email"
+			autocomplete="email"
+			autofocus
+			required
 		/>
 
-		<div class="relative">
-			<flux:input
-				wire:model="password"
-				:label="__('Password')"
-				type="password"
-				required
-				autocomplete="current-password"
-				placeholder="Enter your password"
-				viewable
-			/>
-
-			@if (Route::has('password.request'))
-				<flux:link
-					:href="route('password.request')"
-					class="absolute end-0 top-0 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
-					wire:navigate
+		<div>
+			<div class="mb-2 flex items-center justify-between">
+				<label
+					for="password"
+					class="text-sm font-semibold text-stone-700"
 				>
-					{{ __('Forgot password?') }}
-				</flux:link>
-			@endif
+					Password
+				</label>
+
+				@if (Route::has('password.request'))
+					<a
+						href="{{ route('password.request') }}"
+						class="text-sm font-semibold text-indigo-600 transition hover:text-indigo-700"
+						wire:navigate
+					>
+						Forgot password?
+					</a>
+				@endif
+			</div>
+
+			<input
+				id="password"
+				name="password"
+				type="password"
+				wire:model="password"
+				autocomplete="current-password"
+				required
+				class="block w-full rounded-sm border border-stone-300 bg-white px-4 py-3 text-stone-900 shadow-sm outline-none transition placeholder:text-stone-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+			>
+
+			<x-form.error name="password" />
 		</div>
 
-		<flux:checkbox
-			wire:model="remember"
-			:label="__('Remember me')"
-		/>
+		<label class="flex cursor-pointer items-center gap-3">
+			<input
+				type="checkbox"
+				wire:model="remember"
+				class="h-4 w-4 rounded border-stone-300 text-indigo-600 focus:ring-indigo-500"
+			>
 
-		<flux:button
-			variant="primary"
-			type="submit"
-			class="w-full bg-indigo-600 hover:bg-indigo-700"
-			data-test="login-button"
-		>
-			<span class="flex items-center justify-center gap-2">
-				{{ __('Sign in') }}
-
-				<x-heroicon-o-arrow-right class="h-4 w-4" />
+			<span class="text-sm text-stone-600">
+				Remember me
 			</span>
-		</flux:button>
+		</label>
+
+		<x-button
+			type="submit"
+			class="w-full"
+			wire:loading.attr="disabled"
+			wire:target="login"
+		>
+			<span wire:loading.remove wire:target="login">
+				Sign in
+			</span>
+
+			<span wire:loading wire:target="login">
+				Signing in...
+			</span>
+
+			<x-heroicon-o-arrow-right
+				class="h-4 w-4"
+				wire:loading.remove
+				wire:target="login"
+			/>
+		</x-button>
 	</form>
 
 	@if (Route::has('register'))
-		<p class="mt-8 text-center text-sm text-slate-500">
-			Need an account?
+		<p class="mt-8 text-center text-sm text-stone-500">
+			Don’t have an account?
 
-			<flux:link
-				:href="route('register')"
-				class="font-semibold text-indigo-600 hover:text-indigo-700"
+			<a
+				href="{{ route('register') }}"
+				class="font-semibold text-indigo-600 transition hover:text-indigo-700"
 				wire:navigate
 			>
-				Create one
-			</flux:link>
+				Create an account
+			</a>
 		</p>
 	@endif
 
-	<div class="mt-8 rounded-xl border border-slate-200 bg-slate-100/70 p-4">
-		<div class="flex items-center justify-between gap-4">
-			<div>
-				<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">
-					Demo account
-				</p>
+	<div class="mt-8 border-t border-stone-200 pt-6">
+		<div class="rounded-sm bg-stone-50 px-4 py-4">
+			<div class="flex items-start gap-3">
+				<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-indigo-100">
+					<x-heroicon-o-user class="h-5 w-5 text-indigo-600" />
+				</div>
 
-				<p class="mt-2 text-sm font-semibold text-slate-700">
-					brian@agencyos.test
-				</p>
+				<div>
+					<p class="text-xs font-bold uppercase tracking-wide text-stone-500">
+						Demo account
+					</p>
 
-				<p class="mt-1 text-sm text-slate-500">
-					Password: password
-				</p>
+					<p class="mt-2 text-sm font-semibold text-stone-800">
+						brian@agencyos.test
+					</p>
+
+					<p class="mt-1 text-sm text-stone-500">
+						Password: password
+					</p>
+				</div>
 			</div>
-
-			<x-heroicon-o-user-circle class="h-9 w-9 shrink-0 text-indigo-500" />
 		</div>
 	</div>
 </div>

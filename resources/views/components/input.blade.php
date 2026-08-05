@@ -3,6 +3,7 @@
 	'name',
 	'type' => 'text',
 	'placeholder' => null,
+    'help' => null,
 ])
 
 <div>
@@ -21,9 +22,15 @@
 		type="{{ $type }}"
 		placeholder="{{ $placeholder }}"
 		{{ $attributes->merge([
-			'class' => 'block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:bg-slate-100 disabled:text-slate-400',
+			class="block w-full rounded-sm border border-stone-300 bg-white px-4 py-3 text-stone-900 placeholder:text-stone-400 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:bg-stone-100 disabled:text-stone-400 dark:border-stone-700 dark:bg-stone-900 dark:text-white dark:placeholder:text-stone-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20 dark:disabled:bg-stone-800"
 		]) }}
 	>
+
+    @if ($help)
+        <x-form.help-text>
+            {{ $help }}
+        </x-form.help-text>
+    @endif
 
 	<x-form.error :name="$name" />
 </div>
