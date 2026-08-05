@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable // implements MustVerifyEmail
 {
@@ -56,5 +57,26 @@ class User extends Authenticatable // implements MustVerifyEmail
             ->explode(' ')
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    public function clients(): BelongsToMany
+    {
+        return $this->belongsToMany(Client::class)
+            ->withPivot([
+                'role',
+                'job_title',
+                'is_primary_contact',
+            ])
+            ->withTimestamps();
+    }
+
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class)
+            ->withPivot([
+                'role',
+                'can_view_financials',
+            ])
+            ->withTimestamps();
     }
 }
