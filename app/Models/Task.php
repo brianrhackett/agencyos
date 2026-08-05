@@ -66,4 +66,15 @@ class Task extends Model
 	{
 		return $this->hasMany(Comment::class);
 	}
+
+	public function isCompleted(): bool
+	{
+		return $this->status === TaskStatus::Completed;
+	}
+
+	public function isOverdue(): bool
+	{
+		return return $this->due_date?->isPast()
+			&& $this->status !== TaskStatus::Completed;
+	}
 }

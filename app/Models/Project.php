@@ -72,4 +72,30 @@ class Project extends Model
 	{
 		return $this->hasMany(Task::class);
 	}
+
+	public function activeMilestones()
+	{
+		return $this->Milestones()
+			->whereNot('status', MilestoneStatus::Completed);
+	}
+
+	public function activeTasks()
+	{
+		return $this->tasks()
+			->whereNot('status', TaskStatus::Completed);
+	}
+
+	public function isOverdue(): bool
+	{
+		return $this->due_date?->isPast()
+			&& $this->status !== ProjectStatus::Completed;
+	}
+
+	public function progressPct(): float
+	{
+		$active_tasks = $this->activeTasks();
+		$total_tasks = count($this->tasks());
+
+		return round(100 * $active_tasks / $total_tasks, 2);
+	}
 }

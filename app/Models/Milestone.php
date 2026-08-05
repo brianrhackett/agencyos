@@ -31,4 +31,24 @@ class Milestone extends Model
 	{
 		return $this->hasMany(Task::class);
 	}
+
+    public function activeTasks()
+	{
+		return $this->tasks()
+			->whereNot('status', TaskStatus::Completed);
+	}
+
+	public function isOverdue(): bool
+	{
+		return $this->due_date?->isPast()
+			&& $this->status !== MilestoneStatus::Completed;
+	}
+
+    public function progressPct(): float
+	{
+		$active_tasks = $this->activeTasks();
+		$total_tasks = count($this->tasks());
+
+		return round(100 * $active_tasks / $total_tasks, 2);
+	}
 }
