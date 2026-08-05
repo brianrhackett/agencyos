@@ -72,45 +72,112 @@ new #[Layout('components.layouts.auth')] class extends Component {
     }
 }; ?>
 
-<div class="flex flex-col gap-6">
-    <x-auth-header title="Log in to your account" description="Enter your email and password below to log in" />
+<div>
+	<div class="mb-8">
+		<p class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">
+			Welcome back
+		</p>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="text-center" :status="session('status')" />
+		<h1 class="text-3xl font-extrabold tracking-tight text-slate-950">
+			Sign in to AgencyOS
+		</h1>
 
-    <form wire:submit="login" class="flex flex-col gap-6">
-        <!-- Email Address -->
-        <flux:input wire:model="email" label="{{ __('Email address') }}" type="email" name="email" required autofocus autocomplete="email" placeholder="email@example.com" />
+		<p class="mt-3 text-sm leading-6 text-slate-500">
+			Enter your account details to continue managing your agency.
+		</p>
+	</div>
 
-        <!-- Password -->
-        <div class="relative">
-            <flux:input
-                wire:model="password"
-                label="{{ __('Password') }}"
-                type="password"
-                name="password"
-                required
-                autocomplete="current-password"
-                placeholder="Password"
-            />
+	<x-auth-session-status
+		class="mb-6 rounded-lg bg-indigo-50 px-4 py-3 text-sm text-indigo-700"
+		:status="session('status')"
+	/>
 
-            @if (Route::has('password.request'))
-                <x-text-link class="absolute right-0 top-0" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </x-text-link>
-            @endif
-        </div>
+	<form
+		wire:submit="login"
+		class="space-y-6"
+	>
+		<flux:input
+			wire:model="email"
+			:label="__('Email address')"
+			type="email"
+			required
+			autofocus
+			autocomplete="email"
+			placeholder="you@example.com"
+		/>
 
-        <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" label="{{ __('Remember me') }}" />
+		<div class="relative">
+			<flux:input
+				wire:model="password"
+				:label="__('Password')"
+				type="password"
+				required
+				autocomplete="current-password"
+				placeholder="Enter your password"
+				viewable
+			/>
 
-        <div class="flex items-center justify-end">
-            <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
-        </div>
-    </form>
+			@if (Route::has('password.request'))
+				<flux:link
+					:href="route('password.request')"
+					class="absolute end-0 top-0 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+					wire:navigate
+				>
+					{{ __('Forgot password?') }}
+				</flux:link>
+			@endif
+		</div>
 
-    <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
-        Don't have an account?
-        <x-text-link href="{{ route('register') }}">Sign up</x-text-link>
-    </div>
+		<flux:checkbox
+			wire:model="remember"
+			:label="__('Remember me')"
+		/>
+
+		<flux:button
+			variant="primary"
+			type="submit"
+			class="w-full bg-indigo-600 hover:bg-indigo-700"
+			data-test="login-button"
+		>
+			<span class="flex items-center justify-center gap-2">
+				{{ __('Sign in') }}
+
+				<x-heroicon-o-arrow-right class="h-4 w-4" />
+			</span>
+		</flux:button>
+	</form>
+
+	@if (Route::has('register'))
+		<p class="mt-8 text-center text-sm text-slate-500">
+			Need an account?
+
+			<flux:link
+				:href="route('register')"
+				class="font-semibold text-indigo-600 hover:text-indigo-700"
+				wire:navigate
+			>
+				Create one
+			</flux:link>
+		</p>
+	@endif
+
+	<div class="mt-8 rounded-xl border border-slate-200 bg-slate-100/70 p-4">
+		<div class="flex items-center justify-between gap-4">
+			<div>
+				<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+					Demo account
+				</p>
+
+				<p class="mt-2 text-sm font-semibold text-slate-700">
+					brian@agencyos.test
+				</p>
+
+				<p class="mt-1 text-sm text-slate-500">
+					Password: password
+				</p>
+			</div>
+
+			<x-heroicon-o-user-circle class="h-9 w-9 shrink-0 text-indigo-500" />
+		</div>
+	</div>
 </div>
