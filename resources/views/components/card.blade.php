@@ -1,15 +1,23 @@
 @props([
 	'padding' => true,
+	'title' => ''
 ])
 
 <div
 	{{ $attributes->merge([
 		'class' => implode(' ', [
 			'rounded-sm border border-stone-200 bg-white',
-			'dark:border-stone-800 dark:bg-stone-900',
+			'dark:border-stone-800 dark:bg-stone-950',
 			$padding ? 'p-6' : '',
 		]),
 	]) }}
 >
+
+	@if ($title)
+		<h3 class="text-lg font-semibold text-stone-500 dark:text-stone-400">
+			{{ $title }}
+		</h3>
+	@endif
+
 	{{ $slot }}
 </div>
