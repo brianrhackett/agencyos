@@ -80,3 +80,37 @@ select:-webkit-autofill:focus {
 	caret-color: #0f172a;
 	transition: background-color 9999s ease-out 0s;
 }
+
+.agency-nav-item{
+    height: auto!important;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: .6em;
+    margin-bottom: .6em;
+    border-width: 0 0 0 0px!important;
+}
+
+.agency-nav-item:hover,
+.dark .agency-nav-item:hover {
+    border-width: 0 0 0 0px!important;
+    color: var(--color-indigo-600) !important;
+    background-color: transparent !important;
+}
+
+.dark .agency-nav-item:hover {
+    color: var(--color-indigo-300) !important;
+}
+.dark .agency-nav-item[data-current]:hover,
+.agency-nav-item[data-current]:hover,
+.agency-nav-item[data-current] {
+    border-width: 0 0 0 3px!important;
+    border-left-color: var(--color-indigo-600) !important;
+	background-color: transparent !important;
+	color: var(--color-indigo-600) !important;
+}
+
+.dark .agency-nav-item[data-current] {
+	border-left-color: var(--color-indigo-400) !important;
+	color: var(--color-indigo-300) !important;
+}
+

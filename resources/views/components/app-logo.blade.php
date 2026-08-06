@@ -1,6 +1,21 @@
-<div class="flex aspect-square size-8 items-center justify-center rounded-md bg-accent-content text-accent-foreground">
-    <x-app-logo-icon class="size-5 fill-current text-white dark:text-black" />
-</div>
-<div class="ml-1 grid flex-1 text-left text-sm">
-    <span class="mb-0.5 truncate leading-none font-semibold">Laravel Starter Kit</span>
-</div>
+@props([
+	'height' => 'h-20',
+])
+
+<a
+	href="{{ route('dashboard') }}"
+	class="inline-flex items-center"
+	wire:navigate
+>
+	<img
+		src="{{ asset('images/logo/agencyos-logo.svg') }}"
+		alt="AgencyOS"
+		class="block {{ $height }} w-auto dark:hidden"
+	>
+
+	<img
+		src="{{ asset('images/logo/agencyos-logo-white.svg') }}"
+		alt="AgencyOS"
+		class="hidden {{ $height }} w-auto dark:block"
+	>
+</a>
