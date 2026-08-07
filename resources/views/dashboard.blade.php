@@ -1,16 +1,12 @@
 <x-layouts.app>
-	<x-layouts.app.content>
-
-		<x-slot:title>
-			Dashboard
-		</x-slot>
-
-		<x-slot:description>
-			Manage your agency at a glance.
-		</x-slot>
+	<x-layouts.app.content
+        title="Dashboard"
+        description="Manage your agency at a glance."
+    >
 
 		<x-slot:actions>
 			<x-button>
+				<x-heroicon-o-plus class="h-4 w-4" />
 				New Project
 			</x-button>
 		</x-slot>
@@ -19,6 +15,10 @@
 			<h2 class="text-xl">Here&rsquo;s what needs your attention today.</h2>
 			@php
 				$stats = [
+					[
+						'label' => 'Total Clients',
+						'value' => 24,
+					],
 					[
 						'label' => 'Active Projects',
 						'value' => 12,

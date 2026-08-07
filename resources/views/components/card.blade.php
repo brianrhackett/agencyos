@@ -8,6 +8,7 @@
 		'class' => implode(' ', [
 			'rounded-sm border border-stone-200 bg-white',
 			'dark:border-stone-800 dark:bg-stone-950',
+			'min-w-0 flex-1',
 			$padding ? 'p-6' : '',
 		]),
 	]) }}

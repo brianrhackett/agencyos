@@ -30,7 +30,7 @@
                     <div class="flex flex-1 flex-col px-3 py-6">
                         <flux:navlist variant="outline">
                             <div class="mb-3 px-3 text-xs font-semibold uppercase tracking-widest text-stone-400">
-	                            Main
+	                            Workspace
                             </div>
                             <flux:navlist.group
                                 heading=""
@@ -58,7 +58,7 @@
 
                                 <flux:navlist.item
                                     icon="building-office-2"
-                                    :href="route('dashboard')"
+                                    :href="route('clients.index')"
                                     :current="request()->routeIs('clients.*')"
                                     wire:navigate
                                     class="
@@ -77,7 +77,7 @@
 
                                 <flux:navlist.item
                                     icon="folder"
-                                    :href="route('dashboard')"
+                                    :href="route('projects.index')"
                                     :current="request()->routeIs('projects.*')"
                                     wire:navigate
                                     class="
@@ -96,7 +96,7 @@
 
                                 <flux:navlist.item
                                     icon="check-circle"
-                                    :href="route('dashboard')"
+                                    :href="route('tasks.index')"
                                     :current="request()->routeIs('tasks.*')"
                                     wire:navigate
                                     class="
@@ -115,7 +115,7 @@
 
                                 <flux:navlist.item
                                     icon="calendar-days"
-                                    :href="route('dashboard')"
+                                    :href="route('calendar.index')"
                                     :current="request()->routeIs('calendar.*')"
                                     wire:navigate
                                     class="
@@ -133,7 +133,7 @@
                                 </flux:navlist.item>
                             </flux:navlist.group>
                             <div class="mt-8 mb-3 px-3 text-xs font-semibold uppercase tracking-widest text-stone-400">
-                                Management
+                                Resources
                             </div>
                             <flux:navlist.group
                                 heading=""
@@ -141,7 +141,7 @@
                             >
                                 <flux:navlist.item
                                     icon="users"
-                                    :href="route('dashboard')"
+                                    :href="route('team.index')"
                                     :current="request()->routeIs('team.*')"
                                     wire:navigate
                                     class="
@@ -160,7 +160,7 @@
 
                                 <flux:navlist.item
                                     icon="paper-clip"
-                                    :href="route('dashboard')"
+                                    :href="route('files.index')"
                                     :current="request()->routeIs('files.*')"
                                     wire:navigate
                                     class="

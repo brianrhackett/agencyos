@@ -1,0 +1,302 @@
+<x-layouts.app>
+    @php
+        $teamMembers = [
+            [
+                'name' => 'Brian Hackett',
+                'email' => 'brian@agencyos.test',
+                'initials' => 'BH',
+                'role' => 'Administrator',
+                'position' => 'Lead Developer',
+                'projects' => 5,
+                'open_tasks' => 12,
+                'due_today' => 3,
+                'status' => 'Active',
+                'status_variant' => 'success',
+            ],
+            [
+                'name' => 'Maya Rodriguez',
+                'email' => 'maya@agencyos.test',
+                'initials' => 'MR',
+                'role' => 'Project Manager',
+                'position' => 'Senior Project Manager',
+                'projects' => 7,
+                'open_tasks' => 9,
+                'due_today' => 2,
+                'status' => 'Active',
+                'status_variant' => 'success',
+            ],
+            [
+                'name' => 'Ethan Brooks',
+                'email' => 'ethan@agencyos.test',
+                'initials' => 'EB',
+                'role' => 'Team Member',
+                'position' => 'UI Designer',
+                'projects' => 4,
+                'open_tasks' => 8,
+                'due_today' => 1,
+                'status' => 'Active',
+                'status_variant' => 'success',
+            ],
+            [
+                'name' => 'Nina Patel',
+                'email' => 'nina@agencyos.test',
+                'initials' => 'NP',
+                'role' => 'Team Member',
+                'position' => 'Content Strategist',
+                'projects' => 3,
+                'open_tasks' => 6,
+                'due_today' => 0,
+                'status' => 'Active',
+                'status_variant' => 'success',
+            ],
+            [
+                'name' => 'Marcus Lee',
+                'email' => 'marcus@agencyos.test',
+                'initials' => 'ML',
+                'role' => 'Team Member',
+                'position' => 'SEO Specialist',
+                'projects' => 2,
+                'open_tasks' => 5,
+                'due_today' => 1,
+                'status' => 'Invited',
+                'status_variant' => 'warning',
+            ],
+        ];
+    @endphp
+
+    <x-layouts.app.content
+        title="Team"
+        description="Manage agency members, roles, assignments, and workload."
+    >
+        <x-slot:actions>
+            <x-button>
+                <x-heroicon-o-user-plus class="h-4 w-4" />
+
+                Invite Member
+            </x-button>
+        </x-slot:actions>
+
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <x-card>
+                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
+                    Team Members
+                </p>
+
+                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
+                    12
+                </p>
+            </x-card>
+
+            <x-card>
+                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
+                    Active Members
+                </p>
+
+                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
+                    10
+                </p>
+            </x-card>
+
+            <x-card>
+                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
+                    Assigned Projects
+                </p>
+
+                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
+                    18
+                </p>
+            </x-card>
+
+            <x-card>
+                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
+                    Tasks Due Today
+                </p>
+
+                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
+                    7
+                </p>
+            </x-card>
+        </div>
+
+        <x-card
+            :padding="false"
+            class="mt-6"
+        >
+            <div class="flex flex-col gap-4 border-b border-stone-200 px-6 py-5 lg:flex-row lg:items-center lg:justify-between dark:border-stone-800">
+                <div>
+                    <h2 class="text-lg font-bold text-stone-900 dark:text-stone-100">
+                        Team Directory
+                    </h2>
+
+                    <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                        12 agency members
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-3 sm:flex-row">
+                    <div class="relative">
+                        <x-heroicon-o-magnifying-glass
+                            class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
+                        />
+
+                        <input
+                            type="search"
+                            placeholder="Search team members..."
+                            class="w-full rounded-sm border border-stone-300 bg-white py-2 pl-9 pr-3 text-sm text-stone-900 outline-none transition-colors placeholder:text-stone-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 sm:w-64 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                        >
+                    </div>
+
+                    <select
+                        class="rounded-sm border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                    >
+                        <option>All roles</option>
+                        <option>Administrator</option>
+                        <option>Project Manager</option>
+                        <option>Team Member</option>
+                    </select>
+
+                    <select
+                        class="rounded-sm border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                    >
+                        <option>All statuses</option>
+                        <option>Active</option>
+                        <option>Invited</option>
+                        <option>Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <ul class="divide-y divide-stone-200 dark:divide-stone-800">
+                @foreach ($teamMembers as $member)
+                    <li class="px-6 py-5 transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
+                        <div class="flex flex-col gap-5 xl:flex-row xl:items-center">
+                            <div class="flex min-w-0 flex-1 items-center gap-4">
+                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-indigo-100 text-sm font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                                    {{ $member['initials'] }}
+                                </div>
+
+                                <div class="min-w-0">
+                                    <a
+                                        href="#"
+                                        class="truncate font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
+                                    >
+                                        {{ $member['name'] }}
+                                    </a>
+
+                                    <p class="mt-1 truncate text-sm text-stone-500 dark:text-stone-400">
+                                        {{ $member['email'] }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="grid flex-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+                                        Position
+                                    </p>
+
+                                    <p class="mt-1 text-sm font-medium text-stone-700 dark:text-stone-300">
+                                        {{ $member['position'] }}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+                                        Role
+                                    </p>
+
+                                    <p class="mt-1 text-sm font-medium text-stone-700 dark:text-stone-300">
+                                        {{ $member['role'] }}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+                                        Workload
+                                    </p>
+
+                                    <p class="mt-1 text-sm font-medium text-stone-700 dark:text-stone-300">
+                                        {{ $member['projects'] }} projects · {{ $member['open_tasks'] }} tasks
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+                                        Due Today
+                                    </p>
+
+                                    <p
+                                        @class([
+                                            'mt-1 text-sm font-medium',
+                                            'text-stone-700 dark:text-stone-300' => $member['due_today'] === 0,
+                                            'text-amber-600 dark:text-amber-400' => $member['due_today'] > 0,
+                                        ])
+                                    >
+                                        {{ $member['due_today'] }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex shrink-0 items-center justify-between gap-4 xl:justify-end">
+                                <x-badge :variant="$member['status_variant']">
+                                    {{ $member['status'] }}
+                                </x-badge>
+
+                                <button
+                                    type="button"
+                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+                                    aria-label="Team member actions"
+                                >
+                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+
+            <div class="flex flex-col gap-4 border-t border-stone-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-stone-800">
+                <p class="text-sm text-stone-500 dark:text-stone-400">
+                    Showing
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">1</span>
+                    to
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">5</span>
+                    of
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">12</span>
+                    members
+                </p>
+
+                <div class="flex items-center gap-1">
+                    <button
+                        type="button"
+                        disabled
+                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-400 disabled:cursor-not-allowed disabled:opacity-50 dark:border-stone-700"
+                    >
+                        Previous
+                    </button>
+
+                    <button
+                        type="button"
+                        class="rounded-sm border border-indigo-600 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white"
+                    >
+                        1
+                    </button>
+
+                    <button
+                        type="button"
+                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
+                    >
+                        2
+                    </button>
+
+                    <button
+                        type="button"
+                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
+        </x-card>
+    </x-layouts.app.content>
+</x-layouts.app>
