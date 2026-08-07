@@ -13,31 +13,11 @@
 
 		<div class="">
 			<h2 class="text-xl">Here&rsquo;s what needs your attention today.</h2>
-			@php
-				$stats = [
-					[
-						'label' => 'Total Clients',
-						'value' => 24,
-					],
-					[
-						'label' => 'Active Projects',
-						'value' => 12,
-					],
-					[
-						'label' => 'Tasks Due Today',
-						'value' => 7,
-					],
-					[
-						'label' => 'Awaiting Approval',
-						'value' => 4,
-					],
-				];
-			@endphp
 			<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
-				@foreach ($stats as $stat)
-					<x-card title="{{ $stat['label'] }}">
+				@foreach ($summaryCards as $card)
+					<x-card title="{{ $card['title'] }}">
 						<p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-							{{ $stat['value'] }}
+							{{ $card['value'] }}
 						</p>
 					</x-card>
 				@endforeach

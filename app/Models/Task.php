@@ -74,7 +74,7 @@ class Task extends Model
 
 	public function isOverdue(): bool
 	{
-		return return $this->due_date?->isPast()
+		return $this->due_date?->isPast()
 			&& $this->status !== TaskStatus::Completed;
 	}
 }
