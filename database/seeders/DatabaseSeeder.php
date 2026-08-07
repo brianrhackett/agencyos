@@ -16,5 +16,9 @@ class DatabaseSeeder extends Seeder
 		$this->call([
 			AgencyOsSeeder::class,
 		]);
+
+		$this->call([
+			ActivitySeeder::class,
+		]);
 	}
 }

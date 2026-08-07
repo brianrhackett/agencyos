@@ -26,71 +26,29 @@
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 my-8">
 				<x-card title="Projects Needing Attention">
 					<ul class="divide-y divide-stone-200 dark:divide-stone-800 mt-4">
-						<li class="flex items-start justify-between py-4 first:pt-0">
-							<div>
-								<h3 class="font-semibold text-stone-900 dark:text-stone-100">
-									Agency Website Redesign
-								</h3>
+						@foreach ($projectsNeedingAttention as $project)
+							<li class="flex items-start justify-between py-4 first:pt-0">
+								<div>
+									<h3 class="font-semibold text-stone-900 dark:text-stone-100">
+										{{ $project['project_name'] }}
+									</h3>
 
-								<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-									Acme Corporation
-								</p>
-							</div>
+									<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+										{{ $project['client_name'] }}
+									</p>
+								</div>
 
-							<div class="text-right">
-								<p class="text-sm font-medium text-red-600">
-									2 overdue tasks
-								</p>
+								<div class="text-right">
+									<p class="text-sm font-medium {{ $project['text_class'] }}">
+										{{ $project['attention_text'] }}
+									</p>
 
-								<p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-									Due 3 days ago
-								</p>
-							</div>
-						</li>
-
-						<li class="flex items-start justify-between py-4">
-							<div>
-								<h3 class="font-semibold text-stone-900 dark:text-stone-100">
-									Marketing Site Refresh
-								</h3>
-
-								<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-									GreenLeaf Co.
-								</p>
-							</div>
-
-							<div class="text-right">
-								<p class="text-sm font-medium text-amber-600">
-									Client approval needed
-								</p>
-
-								<p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-									Waiting 4 days
-								</p>
-							</div>
-						</li>
-
-						<li class="flex items-start justify-between py-4 last:pb-0">
-							<div>
-								<h3 class="font-semibold text-stone-900 dark:text-stone-100">
-									Mobile App Launch
-								</h3>
-
-								<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-									Wave Industries
-								</p>
-							</div>
-
-							<div class="text-right">
-								<p class="text-sm font-medium text-indigo-600">
-									Milestone tomorrow
-								</p>
-
-								<p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-									Needs review
-								</p>
-							</div>
-						</li>
+									<p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
+										{{ $project['sub_text'] }}
+									</p>
+								</div>
+							</li>
+						@endforeach
 					</ul>
 					<div class="mt-6 border-t border-stone-200 pt-4 dark:border-stone-800">
 						<a
@@ -105,109 +63,39 @@
 				</x-card>
 				<x-card title="Upcoming Milestones">
 					<ul class="divide-y divide-stone-200 dark:divide-stone-800 mt-4">
-						<li class="flex items-center gap-4 py-4 first:pt-0">
-							<div class="w-14 shrink-0 rounded-sm border border-stone-200 bg-stone-50 py-2 text-center dark:border-stone-700 dark:bg-stone-900">
-								<p class="text-[10px] font-semibold uppercase tracking-wider text-stone-500">
-									Aug
-								</p>
+						@foreach ($upcomingMilestones as $milestone)
+							<li class="flex items-center gap-4 py-4 first:pt-0">
+								<div class="w-14 shrink-0 rounded-sm border border-stone-200 bg-stone-50 py-2 text-center dark:border-stone-700 dark:bg-stone-900">
+									<p class="text-[10px] font-semibold uppercase tracking-wider text-stone-500">
+										{{ $milestone->due_date->format('M') }}
+									</p>
 
-								<p class="text-xl font-bold text-stone-900 dark:text-stone-100">
-									12
-								</p>
-							</div>
+									<p class="text-xl font-bold text-stone-900 dark:text-stone-100">
+										{{ $milestone->due_date->format('j') }}
+									</p>
+								</div>
 
-							<div class="min-w-0 flex-1">
-								<h3 class="truncate font-semibold text-stone-900 dark:text-stone-100">
-									Homepage Approved
-								</h3>
+								<div class="min-w-0 flex-1">
+									<h3 class="truncate font-semibold text-stone-900 dark:text-stone-100">
+										{{ $milestone->name }}
+									</h3>
 
-								<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-									Acme Corporation
-								</p>
-							</div>
+									<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+										{{ $milestone->project->client->name }}
+									</p>
+								</div>
 
-							<p class="text-sm font-medium text-red-600">
-								Today
-							</p>
-						</li>
-
-						<li class="flex items-center gap-4 py-4">
-							<div class="w-14 shrink-0 rounded-sm border border-stone-200 bg-stone-50 py-2 text-center dark:border-stone-700 dark:bg-stone-900">
-								<p class="text-[10px] font-semibold uppercase tracking-wider text-stone-500">
-									Aug
-								</p>
-
-								<p class="text-xl font-bold text-stone-900 dark:text-stone-100">
-									14
-								</p>
-							</div>
-
-							<div class="min-w-0 flex-1">
-								<h3 class="truncate font-semibold text-stone-900 dark:text-stone-100">
-									Content Delivery
-								</h3>
-
-								<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-									GreenLeaf Co.
-								</p>
-							</div>
-
-							<p class="text-sm text-stone-500">
-								2 days
-							</p>
-						</li>
-
-						<li class="flex items-center gap-4 py-4">
-							<div class="w-14 shrink-0 rounded-sm border border-stone-200 bg-stone-50 py-2 text-center dark:border-stone-700 dark:bg-stone-900">
-								<p class="text-[10px] font-semibold uppercase tracking-wider text-stone-500">
-									Aug
-								</p>
-
-								<p class="text-xl font-bold text-stone-900 dark:text-stone-100">
-									18
-								</p>
-							</div>
-
-							<div class="min-w-0 flex-1">
-								<h3 class="truncate font-semibold text-stone-900 dark:text-stone-100">
-									Website Launch
-								</h3>
-
-								<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-									Wave Industries
-								</p>
-							</div>
-
-							<p class="text-sm text-stone-500">
-								6 days
-							</p>
-						</li>
-
-						<li class="flex items-center gap-4 py-4 last:pb-0">
-							<div class="w-14 shrink-0 rounded-sm border border-stone-200 bg-stone-50 py-2 text-center dark:border-stone-700 dark:bg-stone-900">
-								<p class="text-[10px] font-semibold uppercase tracking-wider text-stone-500">
-									Aug
-								</p>
-
-								<p class="text-xl font-bold text-stone-900 dark:text-stone-100">
-									23
-								</p>
-							</div>
-
-							<div class="min-w-0 flex-1">
-								<h3 class="truncate font-semibold text-stone-900 dark:text-stone-100">
-									Final QA Review
-								</h3>
-
-								<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-									Northwind Studio
-								</p>
-							</div>
-
-							<p class="text-sm text-stone-500">
-								11 days
-							</p>
-						</li>
+								@if($milestone->due_date->isToday())
+									<p class="text-sm font-medium text-red-600">
+										Today
+									</p>
+								@else
+									<p class="text-sm font-medium">
+										{{ ceil(now()->diffInDays($milestone->due_date)) }} day(s)
+									</p>
+								@endif
+							</li>
+						@endforeach
 					</ul>
 
 					<div class="mt-6 border-t border-stone-200 pt-4 dark:border-stone-800">
@@ -224,101 +112,48 @@
 
 				<x-card title="Recent Activity" class="col-span-2">
 					<ul class="divide-y divide-stone-200 dark:divide-stone-800 mt-4">
-						<li class="flex items-start gap-4 py-4 first:pt-0">
-							<div class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-								<x-heroicon-o-check-circle class="h-4 w-4" />
-							</div>
+						@foreach ($recentActivity as $activity)
+							<li class="flex items-start gap-4 py-4 first:pt-0">
+								<div class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+									@switch($activity['type'])
+										@case('task_completed')
+											<x-heroicon-o-check-circle class="h-4 w-4" />
+											@break
 
-							<div class="min-w-0 flex-1">
-								<p class="text-sm text-stone-900 dark:text-stone-100">
-									<span class="font-semibold">Sarah Johnson</span>
-									completed the task
-									<span class="font-semibold">Homepage Design</span>
-									for
-									<span class="font-semibold">Acme Corporation</span>.
-								</p>
+										@case('files_uploaded')
+											<x-heroicon-o-arrow-up-tray class="h-4 w-4" />
+											@break
 
-								<p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-									12 minutes ago
-								</p>
-							</div>
-						</li>
+										@case('comment_added')
+											<x-heroicon-o-chat-bubble-left-ellipsis class="h-4 w-4" />
+											@break
 
-						<li class="flex items-start gap-4 py-4">
-							<div class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-								<x-heroicon-o-arrow-up-tray class="h-4 w-4" />
-							</div>
+										@case('milestone_completed')
+											<x-heroicon-o-flag class="h-4 w-4" />
+											@break
+										@case('client_user_added')
+											<x-heroicon-o-user-plus class="h-4 w-4" />
+											@break
+									@endswitch
+								</div>
 
-							<div class="min-w-0 flex-1">
-								<p class="text-sm text-stone-900 dark:text-stone-100">
-									<span class="font-semibold">Mike Davis</span>
-									uploaded
-									<span class="font-semibold">3 files</span>
-									to
-									<span class="font-semibold">Marketing Site Refresh</span>.
-								</p>
+								<div class="min-w-0 flex-1">
+									<p class="text-sm text-stone-900 dark:text-stone-100">
+										@foreach ($activity['content'] as $part)
+											@if ($part['bold'])
+												<span class="font-semibold">{{ $part['text'] }}</span>
+											@else
+												{{ $part['text'] }}
+											@endif
+										@endforeach
+									</p>
 
-								<p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-									43 minutes ago
-								</p>
-							</div>
-						</li>
-
-						<li class="flex items-start gap-4 py-4">
-							<div class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-								<x-heroicon-o-chat-bubble-left-right class="h-4 w-4" />
-							</div>
-
-							<div class="min-w-0 flex-1">
-								<p class="text-sm text-stone-900 dark:text-stone-100">
-									<span class="font-semibold">Emily Carter</span>
-									left a comment on
-									<span class="font-semibold">Website Launch</span>.
-								</p>
-
-								<p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-									2 hours ago
-								</p>
-							</div>
-						</li>
-
-						<li class="flex items-start gap-4 py-4">
-							<div class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-								<x-heroicon-o-flag class="h-4 w-4" />
-							</div>
-
-							<div class="min-w-0 flex-1">
-								<p class="text-sm text-stone-900 dark:text-stone-100">
-									The milestone
-									<span class="font-semibold">Content Delivery</span>
-									was marked complete.
-								</p>
-
-								<p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-									Yesterday
-								</p>
-							</div>
-						</li>
-
-						<li class="flex items-start gap-4 py-4 last:pb-0">
-							<div class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-								<x-heroicon-o-user-plus class="h-4 w-4" />
-							</div>
-
-							<div class="min-w-0 flex-1">
-								<p class="text-sm text-stone-900 dark:text-stone-100">
-									<span class="font-semibold">Brian Hackett</span>
-									added
-									<span class="font-semibold">Olivia Wilson</span>
-									to
-									<span class="font-semibold">Wave Industries</span>.
-								</p>
-
-								<p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-									Yesterday
-								</p>
-							</div>
-						</li>
+									<p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
+										{{ $activity['time'] }}
+									</p>
+								</div>
+							</li>
+						@endforeach
 					</ul>
 
 					<div class="mt-6 border-t border-stone-200 pt-4 dark:border-stone-800">

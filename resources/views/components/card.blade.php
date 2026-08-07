@@ -15,7 +15,7 @@
 >
 
 	@if ($title)
-		<h3 class="text-lg font-semibold text-stone-500 dark:text-stone-400">
+		<h3 class="text-sm font-medium text-stone-500 dark:text-stone-400">
 			{{ $title }}
 		</h3>
 	@endif

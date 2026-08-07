@@ -22,6 +22,15 @@ class Milestone extends Model
         'completed_at'
     ];
 
+	protected function casts(): array
+	{
+		return [
+			'start_date' => 'date',
+			'due_date' => 'date',
+			'completed_at' => 'datetime',
+		];
+	}
+
     public function project(): BelongsTo
 	{
 		return $this->belongsTo(Project::class);
