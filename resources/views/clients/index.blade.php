@@ -12,51 +12,13 @@
         </x-slot:actions>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Total Clients
-                </p>
-
-                <div class="mt-3 flex items-end justify-between gap-4">
-                    <p class="text-3xl font-bold text-stone-900 dark:text-stone-100">
-                        24
+            @foreach ($summaryCards as $card)
+                <x-card title="{{ $card['title'] }}">
+                    <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
+                        {{ $card['value'] }}
                     </p>
-
-                    <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                        +3 this quarter
-                    </p>
-                </div>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Active Clients
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    18
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Active Projects
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    31
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Awaiting Response
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    4
-                </p>
-            </x-card>
+                </x-card>
+            @endforeach
         </div>
 
         <x-card
@@ -131,13 +93,6 @@
 
                             <th
                                 scope="col"
-                                class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400"
-                            >
-                                Last Activity
-                            </th>
-
-                            <th
-                                scope="col"
                                 class="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400"
                             >
                                 <span class="sr-only">Actions</span>
@@ -146,290 +101,61 @@
                     </thead>
 
                     <tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
-                        <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-indigo-100 text-sm font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                                        AO
-                                    </div>
-
-                                    <div>
+                        @foreach ($clients as $client)
+                            <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <div class="flex items-center gap-3">
                                         <a
                                             href="#"
                                             class="font-semibold text-stone-900 hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
                                         >
-                                            Acme Outdoor Supply
+                                            {{ $client->name }}
                                         </a>
-
-                                        <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                            Retail
+                                    </div>
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    @php
+                                        $primaryContact = $client->primaryContact->first();
+                                    @endphp
+                                    @if ($primaryContact)
+                                        <p class="font-medium">
+                                            {{ $primaryContact->name }}
                                         </p>
-                                    </div>
-                                </div>
-                            </td>
 
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <p class="text-sm font-medium text-stone-800 dark:text-stone-200">
-                                    Sarah Mitchell
-                                </p>
-
-                                <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                    Marketing Director
-                                </p>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-600 dark:text-stone-300">
-                                3 active
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <x-badge variant="success">
-                                    Active
-                                </x-badge>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-500 dark:text-stone-400">
-                                12 minutes ago
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-right">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Client actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-stone-200 text-sm font-bold text-stone-700 dark:bg-stone-800 dark:text-stone-200">
-                                        NF
-                                    </div>
-
-                                    <div>
-                                        <a
-                                            href="#"
-                                            class="font-semibold text-stone-900 hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
-                                        >
-                                            Northstar Financial Group
-                                        </a>
-
-                                        <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                            Financial Services
+                                        <p class="text-sm text-gray-500">
+                                            {{ $primaryContact->pivot->job_title }}
                                         </p>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <p class="text-sm font-medium text-stone-800 dark:text-stone-200">
-                                    Olivia Bennett
-                                </p>
-
-                                <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                    Communications Manager
-                                </p>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-600 dark:text-stone-300">
-                                2 active
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <x-badge variant="success">
-                                    Active
-                                </x-badge>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-500 dark:text-stone-400">
-                                Yesterday
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-right">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Client actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-amber-100 text-sm font-bold text-amber-700 dark:bg-amber-950 dark:text-amber-300">
-                                        GL
-                                    </div>
-
-                                    <div>
-                                        <a
-                                            href="#"
-                                            class="font-semibold text-stone-900 hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
-                                        >
-                                            GreenLeaf Co.
-                                        </a>
-
-                                        <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                            Sustainability
+                                    @else
+                                        <p class="font-medium">
+                                            No Primary Contact.
                                         </p>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <p class="text-sm font-medium text-stone-800 dark:text-stone-200">
-                                    Marcus Reed
-                                </p>
-
-                                <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                    Founder
-                                </p>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-600 dark:text-stone-300">
-                                1 active
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <x-badge variant="warning">
-                                    Awaiting response
-                                </x-badge>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-500 dark:text-stone-400">
-                                4 days ago
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-right">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Client actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-stone-200 text-sm font-bold text-stone-700 dark:bg-stone-800 dark:text-stone-200">
-                                        WI
-                                    </div>
-
-                                    <div>
-                                        <a
-                                            href="#"
-                                            class="font-semibold text-stone-900 hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
-                                        >
-                                            Wave Industries
-                                        </a>
-
-                                        <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                            Technology
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <p class="text-sm font-medium text-stone-800 dark:text-stone-200">
-                                    Emily Carter
-                                </p>
-
-                                <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                    Product Director
-                                </p>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-600 dark:text-stone-300">
-                                4 active
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <x-badge variant="success">
-                                    Active
-                                </x-badge>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-500 dark:text-stone-400">
-                                6 days ago
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-right">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Client actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-stone-200 text-sm font-bold text-stone-700 dark:bg-stone-800 dark:text-stone-200">
-                                        NS
-                                    </div>
-
-                                    <div>
-                                        <a
-                                            href="#"
-                                            class="font-semibold text-stone-900 hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
-                                        >
-                                            Northwind Studio
-                                        </a>
-
-                                        <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                            Architecture
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <p class="text-sm font-medium text-stone-800 dark:text-stone-200">
-                                    Daniel Foster
-                                </p>
-
-                                <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                    Managing Partner
-                                </p>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-600 dark:text-stone-300">
-                                No active projects
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <x-badge variant="neutral">
-                                    Inactive
-                                </x-badge>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-500 dark:text-stone-400">
-                                3 weeks ago
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-right">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Client actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
-                            </td>
-                        </tr>
+                                    @endif
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-600 dark:text-stone-300">
+                                    {{ $client->active_projects_count }} active
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    @if ($client->is_active)
+                                        <x-badge variant="success">
+                                            Active
+                                        </x-badge>
+                                    @else
+                                        <x-badge variant="neutral">
+                                            Inactive
+                                        </x-badge>
+                                    @endif
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4 text-right">
+                                    <button
+                                        type="button"
+                                        class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+                                        aria-label="Client actions"
+                                    >
+                                        <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -437,50 +163,16 @@
             <div class="flex flex-col gap-4 border-t border-stone-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-stone-800">
                 <p class="text-sm text-stone-500 dark:text-stone-400">
                     Showing
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">1</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $clients->firstItem() }}</span>
                     to
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">5</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $clients->lastItem() }}</span>
                     of
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">24</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $clients->total() }}</span>
                     clients
                 </p>
 
                 <div class="flex items-center gap-1">
-                    <button
-                        type="button"
-                        disabled
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-400 disabled:cursor-not-allowed disabled:opacity-50 dark:border-stone-700"
-                    >
-                        Previous
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-indigo-600 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white"
-                    >
-                        1
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        2
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        3
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        Next
-                    </button>
+                    {{ $clients->links() }}
                 </div>
             </div>
         </x-card>

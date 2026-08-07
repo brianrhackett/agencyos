@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ClientsController;
 
 Route::view('/', 'landing');
 
@@ -10,7 +11,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::view('/clients', 'clients.index')
+Route::get('/clients', [ClientsController::class, 'index'])
 	->middleware(['auth'])
 	->name('clients.index');
 

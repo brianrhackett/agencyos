@@ -44,6 +44,16 @@ class Client extends Model
 			->withTimestamps();
 	}
 
+	public function primaryContact()
+	{
+		return $this->belongsToMany(User::class)
+			->withPivot([
+				'is_primary_contact',
+				'job_title'
+			])
+			->wherePivot('is_primary_contact', true);
+	}
+
 	public function projects(): HasMany
 	{
 		return $this->hasMany(Project::class);

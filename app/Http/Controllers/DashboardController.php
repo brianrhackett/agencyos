@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\StatsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -13,9 +14,9 @@ use App\Models\Activity;
 
 class DashboardController extends Controller
 {
-	public function index()
+	public function index(StatsService $stats)
 	{
-        $summaryCards = $this->_getSummaryCards();
+        $summaryCards = $this->_getSummaryCards($stats);
         $projectsNeedingAttention = $this->_getProjectsNeedingAttention();
         $upcomingMilestones = $this->_getUpcomingMilestones();
         $recentActivity = $this->_getRecentActivity();
@@ -28,26 +29,24 @@ class DashboardController extends Controller
 		]);
 	}
 
-    private function _getSummaryCards()
+    private function _getSummaryCards(StatsService $stats)
     {
         return [
             [
                 'title' => 'Total Clients',
-                'value' => Client::count(),
+                'value' => $stats->totalClients(),
             ],
             [
                 'title' => 'Active Projects',
-                'value' => Project::where('status', 'active')->count(),
+                'value' => $stats->activeProjects(),
             ],
             [
                 'title' => 'Tasks Due Today',
-                'value' => Task::whereDate('due_date', today())
-                    ->where('status', '!=', 'completed')
-                    ->count(),
+                'value' => $stats->tasksDueToday(),
             ],
             [
                 'title' => 'Awaiting Approval',
-                'value' => Task::where('status', 'in_review')->count(),
+                'value' => $stats->tasksInReview(),
             ],
         ];
     }
