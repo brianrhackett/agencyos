@@ -48,7 +48,7 @@ class CalendarController extends Controller
             ->filter(fn ($event) => $event['date'] >= today()->toDateString())
             ->sortBy('date')
             ->take(4);
-        //die('<pre>'.print_r($upcomingEvents,1));
+
         return view('calendar.index', [
             'events' => $events,
             'upcomingEvents' => $upcomingEvents,

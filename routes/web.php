@@ -7,6 +7,7 @@ use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\TasksController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\TeamController;
 
 Route::view('/', 'landing');
 
@@ -30,7 +31,7 @@ Route::get('/calendar', [CalendarController::class, 'index'])
 	->middleware(['auth'])
 	->name('calendar.index');
 
-Route::view('/team', 'team.index')
+Route::get('/team', [TeamController::class, 'index'])
 	->middleware(['auth'])
 	->name('team.index');
 

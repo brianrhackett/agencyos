@@ -1,6 +1,6 @@
 <x-layouts.app>
     @php
-        $teamMembers = [
+        $teamMembers2 = [
             [
                 'name' => 'Brian Hackett',
                 'email' => 'brian@agencyos.test',
@@ -77,45 +77,13 @@
         </x-slot:actions>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Team Members
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    12
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Active Members
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    10
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Assigned Projects
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    18
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Tasks Due Today
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    7
-                </p>
-            </x-card>
+            @foreach ($summaryCards as $card)
+                <x-card title="{{ $card['title'] }}">
+                    <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
+                        {{ $card['value'] }}
+                    </p>
+                </x-card>
+            @endforeach
         </div>
 
         <x-card
@@ -129,7 +97,7 @@
                     </h2>
 
                     <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                        12 agency members
+                        {{ $teamMembersCount }} agency members
                     </p>
                 </div>
 
@@ -171,9 +139,6 @@
                     <li class="px-6 py-5 transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
                         <div class="flex flex-col gap-5 xl:flex-row xl:items-center">
                             <div class="flex min-w-0 flex-1 items-center gap-4">
-                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-indigo-100 text-sm font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                                    {{ $member['initials'] }}
-                                </div>
 
                                 <div class="min-w-0">
                                     <a
@@ -216,7 +181,7 @@
                                     </p>
 
                                     <p class="mt-1 text-sm font-medium text-stone-700 dark:text-stone-300">
-                                        {{ $member['projects'] }} projects · {{ $member['open_tasks'] }} tasks
+                                        {{ $member['projects'] }} projects &sdot; {{ $member['open_tasks'] }} tasks
                                     </p>
                                 </div>
 
@@ -238,10 +203,6 @@
                             </div>
 
                             <div class="flex shrink-0 items-center justify-between gap-4 xl:justify-end">
-                                <x-badge :variant="$member['status_variant']">
-                                    {{ $member['status'] }}
-                                </x-badge>
-
                                 <button
                                     type="button"
                                     class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
@@ -258,43 +219,16 @@
             <div class="flex flex-col gap-4 border-t border-stone-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-stone-800">
                 <p class="text-sm text-stone-500 dark:text-stone-400">
                     Showing
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">1</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $teamMembers->firstItem() }}</span>
                     to
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">5</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $teamMembers->lastItem() }}</span>
                     of
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">12</span>
-                    members
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $teamMembers->total() }}</span>
+                    tasks
                 </p>
 
                 <div class="flex items-center gap-1">
-                    <button
-                        type="button"
-                        disabled
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-400 disabled:cursor-not-allowed disabled:opacity-50 dark:border-stone-700"
-                    >
-                        Previous
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-indigo-600 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white"
-                    >
-                        1
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        2
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        Next
-                    </button>
+                    {{ $teamMembers->links() }}
                 </div>
             </div>
         </x-card>
