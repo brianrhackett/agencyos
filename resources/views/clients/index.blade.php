@@ -32,7 +32,7 @@
                     </h2>
 
                     <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                        24 client organizations
+                        {{ $totalClientsCount }} client organizations
                     </p>
                 </div>
 

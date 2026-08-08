@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClientsController;
+use App\Http\Controllers\ProjectsController;
 
 Route::view('/', 'landing');
 
@@ -15,7 +16,7 @@ Route::get('/clients', [ClientsController::class, 'index'])
 	->middleware(['auth'])
 	->name('clients.index');
 
-Route::view('/projects', 'projects.index')
+Route::get('/projects', [ProjectsController::class, 'index'])
 	->middleware(['auth'])
 	->name('projects.index');
 

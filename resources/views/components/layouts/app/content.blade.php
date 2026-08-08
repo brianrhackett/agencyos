@@ -3,9 +3,9 @@
 	'description' => null,
 ])
 
-<div class="min-h-screen">
+<div class="">
 	<header class="bg-transparent sm:px-8 ">
-		<div class="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between border-b border-stone-200 pb-8">
+		<div class="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between border-b border-stone-200 pb-8 dark:border-stone-800"">
 			<div>
 				<h1 class="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
 					{{ $title }}

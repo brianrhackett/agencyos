@@ -6,17 +6,14 @@ use Illuminate\Http\Request;
 
 use App\Services\StatsService;
 use App\Models\Client;
-use App\Models\Project;
-use App\Models\Task;
-use App\Models\Milestone;
-use App\Models\Activity;
+
 
 class ClientsController extends Controller
 {
 	public function index(StatsService $stats)
 	{
         $summaryCards = [
-            [
+            'totalClients' => [
                 'title' => 'Total Clients',
                 'value' => $stats->totalClients(),
             ],
@@ -38,7 +35,8 @@ class ClientsController extends Controller
 
         return view('clients.index', [
 			'summaryCards' => $summaryCards,
-            'clients' => $clients
+            'clients' => $clients,
+            'totalClientsCount' => $summaryCards['totalClients']['value']
         ]);
     }
 

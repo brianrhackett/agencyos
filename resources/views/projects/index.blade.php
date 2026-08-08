@@ -12,51 +12,13 @@
         </x-slot:actions>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Active Projects
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    12
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Due This Month
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    5
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Needs Attention
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    3
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Completed This Quarter
-                </p>
-
-                <div class="mt-3 flex items-end justify-between gap-4">
-                    <p class="text-3xl font-bold text-stone-900 dark:text-stone-100">
-                        8
+            @foreach ($summaryCards as $card)
+                <x-card title="{{ $card['title'] }}">
+                    <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
+                        {{ $card['value'] }}
                     </p>
-
-                    <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                        +2 from last quarter
-                    </p>
-                </div>
-            </x-card>
+                </x-card>
+            @endforeach
         </div>
 
         <x-card
@@ -70,7 +32,7 @@
                     </h2>
 
                     <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                        18 projects across 11 clients
+                        {{ $activeProjectCount }} projects across {{ $clientsWithActiveProjects }} clients
                     </p>
                 </div>
 
@@ -165,360 +127,88 @@
                     </thead>
 
                     <tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
-                        <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                            <td class="px-6 py-4">
-                                <div>
-                                    <a
-                                        href="#"
-                                        class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
-                                    >
-                                        E-commerce Website Redesign
-                                    </a>
+                        @foreach ($projects as $project)
+                            <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <a
+                                            href="#"
+                                            class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
+                                        >
+                                            {{ $project->name }}
+                                        </a>
+
+                                        <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                                            {{ $project->milestones_count }} milestones &sdot; {{ $project->open_tasks_count }} open tasks
+                                        </p>
+                                    </div>
+                                </td>
+
+                                <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-700 dark:text-stone-300">
+                                    {{ $project->client->name }}
+                                </td>
+
+                                @php
+                                    $progress = $project->tasks_count > 0
+                                        ? round(($project->completed_tasks_count / $project->tasks_count) * 100)
+                                        : 0;
+                                @endphp
+
+                                <td class="min-w-44 px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-1.5 flex-1 overflow-hidden rounded-sm bg-stone-200 dark:bg-stone-800">
+                                            <div 
+                                                class="h-full bg-indigo-600"
+                                                style="width:{{ $progress }}%;">
+                                            </div>
+                                        </div>
+
+                                        <span class="w-10 text-right text-xs font-semibold text-stone-600 dark:text-stone-300">
+                                            {{ $progress }}%
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <x-badge :variant="$project->status->badgeVariant()">
+                                        {{ $project->status->label() }}
+                                    </x-badge>
+                                </td>
+
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <p class="text-sm text-stone-700 dark:text-stone-300">
+                                        {{ $project->due_date->format('M j, Y') }}
+                                    </p>
 
                                     <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                        3 milestones · 14 open tasks
+                                        @if ($project->status === 'completed')
+                                            Completed
+                                        @elseif ($project->due_date->isPast())
+                                            <span class="text-red-600">{{ $project->due_date->diffForHumans() }}</span>
+                                        @else
+                                            {{ $project->due_date->diffForHumans() }}
+                                        @endif
                                     </p>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-700 dark:text-stone-300">
-                                Acme Outdoor Supply
-                            </td>
-
-                            <td class="min-w-44 px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-1.5 flex-1 overflow-hidden rounded-sm bg-stone-200 dark:bg-stone-800">
-                                        <div class="h-full w-[68%] bg-indigo-600"></div>
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-sm text-stone-700 dark:text-stone-300">
+                                            {{ $project->projectManager?->name }}
+                                        </span>
                                     </div>
+                                </td>
 
-                                    <span class="w-10 text-right text-xs font-semibold text-stone-600 dark:text-stone-300">
-                                        68%
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <x-badge variant="success">
-                                    Active
-                                </x-badge>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <p class="text-sm text-stone-700 dark:text-stone-300">
-                                    Dec 12, 2026
-                                </p>
-
-                                <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                    128 days remaining
-                                </p>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-8 w-8 items-center justify-center rounded-sm bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                                        MR
-                                    </div>
-
-                                    <span class="text-sm text-stone-700 dark:text-stone-300">
-                                        Maya Rodriguez
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-right">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Project actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                            <td class="px-6 py-4">
-                                <div>
-                                    <a
-                                        href="#"
-                                        class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
+                                <td class="whitespace-nowrap px-6 py-4 text-right">
+                                    <button
+                                        type="button"
+                                        class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+                                        aria-label="Project actions"
                                     >
-                                        Digital Brand Refresh
-                                    </a>
-
-                                    <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                        2 milestones · 8 open tasks
-                                    </p>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-700 dark:text-stone-300">
-                                Northstar Financial Group
-                            </td>
-
-                            <td class="min-w-44 px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-1.5 flex-1 overflow-hidden rounded-sm bg-stone-200 dark:bg-stone-800">
-                                        <div class="h-full w-[24%] bg-indigo-600"></div>
-                                    </div>
-
-                                    <span class="w-10 text-right text-xs font-semibold text-stone-600 dark:text-stone-300">
-                                        24%
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <x-badge variant="neutral">
-                                    Planning
-                                </x-badge>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <p class="text-sm text-stone-700 dark:text-stone-300">
-                                    Nov 8, 2026
-                                </p>
-
-                                <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                    94 days remaining
-                                </p>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-8 w-8 items-center justify-center rounded-sm bg-stone-200 text-xs font-bold text-stone-700 dark:bg-stone-800 dark:text-stone-200">
-                                        BH
-                                    </div>
-
-                                    <span class="text-sm text-stone-700 dark:text-stone-300">
-                                        Brian Hackett
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-right">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Project actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                            <td class="px-6 py-4">
-                                <div>
-                                    <a
-                                        href="#"
-                                        class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
-                                    >
-                                        Marketing Site Refresh
-                                    </a>
-
-                                    <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                        4 milestones · 6 open tasks
-                                    </p>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-700 dark:text-stone-300">
-                                GreenLeaf Co.
-                            </td>
-
-                            <td class="min-w-44 px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-1.5 flex-1 overflow-hidden rounded-sm bg-stone-200 dark:bg-stone-800">
-                                        <div class="h-full w-[52%] bg-amber-500"></div>
-                                    </div>
-
-                                    <span class="w-10 text-right text-xs font-semibold text-stone-600 dark:text-stone-300">
-                                        52%
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <x-badge variant="warning">
-                                    On hold
-                                </x-badge>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <p class="text-sm font-medium text-red-600 dark:text-red-400">
-                                    Aug 3, 2026
-                                </p>
-
-                                <p class="mt-1 text-xs text-red-600 dark:text-red-400">
-                                    3 days overdue
-                                </p>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-8 w-8 items-center justify-center rounded-sm bg-stone-200 text-xs font-bold text-stone-700 dark:bg-stone-800 dark:text-stone-200">
-                                        MR
-                                    </div>
-
-                                    <span class="text-sm text-stone-700 dark:text-stone-300">
-                                        Maya Rodriguez
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-right">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Project actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                            <td class="px-6 py-4">
-                                <div>
-                                    <a
-                                        href="#"
-                                        class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
-                                    >
-                                        Customer Portal Build
-                                    </a>
-
-                                    <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                        5 milestones · 21 open tasks
-                                    </p>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-700 dark:text-stone-300">
-                                Wave Industries
-                            </td>
-
-                            <td class="min-w-44 px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-1.5 flex-1 overflow-hidden rounded-sm bg-stone-200 dark:bg-stone-800">
-                                        <div class="h-full w-[81%] bg-indigo-600"></div>
-                                    </div>
-
-                                    <span class="w-10 text-right text-xs font-semibold text-stone-600 dark:text-stone-300">
-                                        81%
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <x-badge variant="success">
-                                    Active
-                                </x-badge>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <p class="text-sm text-stone-700 dark:text-stone-300">
-                                    Sep 22, 2026
-                                </p>
-
-                                <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                    47 days remaining
-                                </p>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-8 w-8 items-center justify-center rounded-sm bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                                        BH
-                                    </div>
-
-                                    <span class="text-sm text-stone-700 dark:text-stone-300">
-                                        Brian Hackett
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-right">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Project actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                            <td class="px-6 py-4">
-                                <div>
-                                    <a
-                                        href="#"
-                                        class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
-                                    >
-                                        SEO Audit and Content Strategy
-                                    </a>
-
-                                    <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                        3 milestones · 0 open tasks
-                                    </p>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-700 dark:text-stone-300">
-                                Northwind Studio
-                            </td>
-
-                            <td class="min-w-44 px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-1.5 flex-1 overflow-hidden rounded-sm bg-stone-200 dark:bg-stone-800">
-                                        <div class="h-full w-full bg-emerald-600"></div>
-                                    </div>
-
-                                    <span class="w-10 text-right text-xs font-semibold text-stone-600 dark:text-stone-300">
-                                        100%
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <x-badge variant="primary">
-                                    Completed
-                                </x-badge>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <p class="text-sm text-stone-700 dark:text-stone-300">
-                                    Jul 28, 2026
-                                </p>
-
-                                <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                    Completed
-                                </p>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-8 w-8 items-center justify-center rounded-sm bg-stone-200 text-xs font-bold text-stone-700 dark:bg-stone-800 dark:text-stone-200">
-                                        EB
-                                    </div>
-
-                                    <span class="text-sm text-stone-700 dark:text-stone-300">
-                                        Ethan Brooks
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="whitespace-nowrap px-6 py-4 text-right">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Project actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
-                            </td>
-                        </tr>
+                                        <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -526,50 +216,16 @@
             <div class="flex flex-col gap-4 border-t border-stone-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-stone-800">
                 <p class="text-sm text-stone-500 dark:text-stone-400">
                     Showing
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">1</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $projects->firstItem() }}</span>
                     to
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">5</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $projects->lastItem() }}</span>
                     of
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">18</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $projects->total() }}</span>
                     projects
                 </p>
 
                 <div class="flex items-center gap-1">
-                    <button
-                        type="button"
-                        disabled
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-400 disabled:cursor-not-allowed disabled:opacity-50 dark:border-stone-700"
-                    >
-                        Previous
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-indigo-600 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white"
-                    >
-                        1
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        2
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        3
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        Next
-                    </button>
+                    {{ $projects->links() }}
                 </div>
             </div>
         </x-card>

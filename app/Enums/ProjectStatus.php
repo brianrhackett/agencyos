@@ -20,4 +20,15 @@ enum ProjectStatus: string
             self::Cancelled => 'Cancelled',
         };
     }
+
+    public function badgeVariant(): string
+    {
+        return match ($this) {
+            self::Planning => 'info',
+            self::Active => 'primary',
+            self::OnHold => 'warning',
+            self::Completed => 'success',
+            self::Cancelled => 'neutral',
+        };
+    }
 }
