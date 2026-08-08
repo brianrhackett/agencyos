@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\TasksController;
+use App\Http\Controllers\CalendarController;
 
 Route::view('/', 'landing');
 
@@ -25,7 +26,7 @@ Route::get('/tasks', [TasksController::class, 'index'])
 	->middleware(['auth'])
 	->name('tasks.index');
 
-Route::view('/calendar', 'calendar.index')
+Route::get('/calendar', [CalendarController::class, 'index'])
 	->middleware(['auth'])
 	->name('calendar.index');
 
