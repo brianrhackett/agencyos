@@ -13,11 +13,22 @@ enum TaskStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::NotStarted => 'To Do',
+            self::ToDo => 'To Do',
             self::InProgress => 'In Progress',
             self::InReview => 'In Review',
             self::Blocked => 'Blocked',
             self::Completed => 'Completed',
+        };
+    }
+
+    public function badgeVariant(): string
+    {
+        return match ($this) {
+            self::ToDo => 'neutral',
+            self::InProgress => 'primary',
+            self::InReview => 'warning',
+            self::Blocked => 'danger',
+            self::Completed => 'success',
         };
     }
 }

@@ -5,6 +5,7 @@ use Livewire\Volt\Volt;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\TasksController;
 
 Route::view('/', 'landing');
 
@@ -20,7 +21,7 @@ Route::get('/projects', [ProjectsController::class, 'index'])
 	->middleware(['auth'])
 	->name('projects.index');
 
-Route::view('/tasks', 'tasks.index')
+Route::get('/tasks', [TasksController::class, 'index'])
 	->middleware(['auth'])
 	->name('tasks.index');
 

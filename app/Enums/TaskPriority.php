@@ -25,4 +25,13 @@ enum TaskPriority: string
 			self::High => 'red',
 		};
 	}
+
+    public function badgeVariant(): string
+    {
+        return match($this) {
+			self::Low => 'neutral',
+			self::Normal => 'neutral',
+			self::High => 'danger',
+		};
+    }
 }

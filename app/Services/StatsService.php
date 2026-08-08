@@ -19,6 +19,24 @@ class StatsService
 		return Project::where('status', 'active')->count();
 	}
 
+    public function totalTasks(): int
+    {
+        return Task::count();
+    }
+
+    public function openTasks(): int
+    {
+        return Task::where('status', '!=', 'completed')
+			->count();
+    }
+
+    public function overdueTasks(): int
+    {
+        return Task::whereDate('due_date', '<', today())
+            ->where('status', '!=', 'completed')
+			->count();
+    }
+
 	public function tasksDueToday(): int
 	{
 		return Task::whereDate('due_date', today())
@@ -36,10 +54,25 @@ class StatsService
             ->count();
 	}
 
+    public function tasksCompletedTthisWeek(): int
+	{
+		return Task::whereBetween('completed_at', [
+                now()->startOfWeek(),
+                now()->endOfWeek()
+            ])
+            ->where('status', 'completed')
+            ->count();
+	}
+
 	public function tasksInReview(): int
 	{
 		return Task::where('status', 'in_review')->count();
 	}
+
+    public function totalProjectWithTasks(): int
+    {
+        return Project::whereHas('tasks')->count();
+    }
 
     public function activeClients(): int
     {

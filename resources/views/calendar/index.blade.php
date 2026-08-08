@@ -362,7 +362,7 @@
                             <span class="h-3 w-3 rounded-sm bg-amber-500"></span>
 
                             <span class="text-sm text-stone-600 dark:text-stone-300">
-                                Meeting
+                                Project
                             </span>
                         </div>
 

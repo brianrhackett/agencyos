@@ -1,79 +1,4 @@
 <x-layouts.app>
-    @php
-        $tasks = [
-            [
-                'title' => 'Finalize homepage wireframes',
-                'project' => 'E-commerce Website Redesign',
-                'client' => 'Acme Outdoor Supply',
-                'assignee' => 'Ethan Brooks',
-                'initials' => 'EB',
-                'status' => 'In review',
-                'status_variant' => 'primary',
-                'priority' => 'High',
-                'priority_variant' => 'danger',
-                'due' => 'Today',
-                'due_detail' => 'Aug 6, 2026',
-                'overdue' => false,
-            ],
-            [
-                'title' => 'Collect product photography',
-                'project' => 'E-commerce Website Redesign',
-                'client' => 'Acme Outdoor Supply',
-                'assignee' => 'Maya Rodriguez',
-                'initials' => 'MR',
-                'status' => 'Blocked',
-                'status_variant' => 'warning',
-                'priority' => 'Normal',
-                'priority_variant' => 'neutral',
-                'due' => '2 days overdue',
-                'due_detail' => 'Aug 4, 2026',
-                'overdue' => true,
-            ],
-            [
-                'title' => 'Build authenticated dashboard shell',
-                'project' => 'Customer Portal Build',
-                'client' => 'Wave Industries',
-                'assignee' => 'Brian Hackett',
-                'initials' => 'BH',
-                'status' => 'In progress',
-                'status_variant' => 'success',
-                'priority' => 'High',
-                'priority_variant' => 'danger',
-                'due' => 'Tomorrow',
-                'due_detail' => 'Aug 7, 2026',
-                'overdue' => false,
-            ],
-            [
-                'title' => 'Review updated brand guidelines',
-                'project' => 'Digital Brand Refresh',
-                'client' => 'Northstar Financial Group',
-                'assignee' => 'Maya Rodriguez',
-                'initials' => 'MR',
-                'status' => 'To do',
-                'status_variant' => 'neutral',
-                'priority' => 'Normal',
-                'priority_variant' => 'neutral',
-                'due' => 'In 3 days',
-                'due_detail' => 'Aug 9, 2026',
-                'overdue' => false,
-            ],
-            [
-                'title' => 'Configure staging environment',
-                'project' => 'Marketing Site Refresh',
-                'client' => 'GreenLeaf Co.',
-                'assignee' => 'Brian Hackett',
-                'initials' => 'BH',
-                'status' => 'Completed',
-                'status_variant' => 'primary',
-                'priority' => 'Low',
-                'priority_variant' => 'neutral',
-                'due' => 'Completed',
-                'due_detail' => 'Aug 2, 2026',
-                'overdue' => false,
-            ],
-        ];
-    @endphp
-
     <x-layouts.app.content
         title="Tasks"
         description="Organize assignments, monitor deadlines, and keep project work moving."
@@ -87,51 +12,13 @@
         </x-slot:actions>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Open Tasks
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    47
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Due Today
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    7
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Overdue
-                </p>
-
-                <p class="mt-3 text-3xl font-bold text-red-600 dark:text-red-400">
-                    4
-                </p>
-            </x-card>
-
-            <x-card>
-                <p class="text-sm font-medium text-stone-500 dark:text-stone-400">
-                    Completed This Week
-                </p>
-
-                <div class="mt-3 flex items-end justify-between gap-4">
-                    <p class="text-3xl font-bold text-stone-900 dark:text-stone-100">
-                        19
+            @foreach ($summaryCards as $card)
+                <x-card title="{{ $card['title'] }}">
+                    <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
+                        {{ $card['value'] }}
                     </p>
-
-                    <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                        +6 from last week
-                    </p>
-                </div>
-            </x-card>
+                </x-card>
+            @endforeach
         </div>
 
         <x-card
@@ -146,7 +33,7 @@
                         </h2>
 
                         <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                            62 tasks across 18 projects
+                            {{ $totalTaskCount }} tasks across {{ $totalProjectWithTasksCount }} projects
                         </p>
                     </div>
 
@@ -232,41 +119,39 @@
                                         href="#"
                                         class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
                                     >
-                                        {{ $task['title'] }}
+                                        {{ $task->title }}
                                     </a>
                                 </td>
 
                                 <td class="px-6 py-4">
                                     <p class="text-sm font-medium text-stone-700 dark:text-stone-300">
-                                        {{ $task['project'] }}
+                                        {{ $task->project->name }}
                                     </p>
 
                                     <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                                        {{ $task['client'] }}
+                                        {{ $task->project->client->name }}
                                     </p>
                                 </td>
 
                                 <td class="whitespace-nowrap px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="flex h-8 w-8 items-center justify-center rounded-sm bg-stone-200 text-xs font-bold text-stone-700 dark:bg-stone-800 dark:text-stone-200">
-                                            {{ $task['initials'] }}
-                                        </div>
+                                       
 
                                         <span class="text-sm text-stone-700 dark:text-stone-300">
-                                            {{ $task['assignee'] }}
+                                            {{ $task->assignedTo->name }}
                                         </span>
                                     </div>
                                 </td>
 
                                 <td class="whitespace-nowrap px-6 py-4">
-                                    <x-badge :variant="$task['status_variant']">
-                                        {{ $task['status'] }}
+                                    <x-badge :variant="$task->status->badgeVariant()">
+                                        {{ $task->status->label() }}
                                     </x-badge>
                                 </td>
 
                                 <td class="whitespace-nowrap px-6 py-4">
-                                    <x-badge :variant="$task['priority_variant']">
-                                        {{ $task['priority'] }}
+                                    <x-badge :variant="$task->priority->badgeVariant()">
+                                        {{ $task->priority->label() }}
                                     </x-badge>
                                 </td>
 
@@ -278,17 +163,15 @@
                                             'text-stone-700 dark:text-stone-300' => ! $task['overdue'],
                                         ])
                                     >
-                                        {{ $task['due'] }}
+                                        {{ $task->due_date->diffForHumans() }}
                                     </p>
 
                                     <p
                                         @class([
-                                            'mt-1 text-xs',
-                                            'text-red-600 dark:text-red-400' => $task['overdue'],
-                                            'text-stone-500 dark:text-stone-400' => ! $task['overdue'],
+                                            'mt-1 text-xs text-stone-500 dark:text-stone-400',
                                         ])
                                     >
-                                        {{ $task['due_detail'] }}
+                                        {{ $task->due_date->format('M j, Y') }}
                                     </p>
                                 </td>
 
@@ -310,50 +193,16 @@
             <div class="flex flex-col gap-4 border-t border-stone-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-stone-800">
                 <p class="text-sm text-stone-500 dark:text-stone-400">
                     Showing
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">1</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $tasks->firstItem() }}</span>
                     to
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">5</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $tasks->lastItem() }}</span>
                     of
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">62</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $tasks->total() }}</span>
                     tasks
                 </p>
 
                 <div class="flex items-center gap-1">
-                    <button
-                        type="button"
-                        disabled
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-400 disabled:cursor-not-allowed disabled:opacity-50 dark:border-stone-700"
-                    >
-                        Previous
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-indigo-600 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white"
-                    >
-                        1
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        2
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        3
-                    </button>
-
-                    <button
-                        type="button"
-                        class="rounded-sm border border-stone-300 px-3 py-2 text-sm text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900"
-                    >
-                        Next
-                    </button>
+                    {{ $tasks->links() }}
                 </div>
             </div>
         </x-card>
