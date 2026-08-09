@@ -193,9 +193,9 @@
             <div class="flex flex-col gap-4 border-t border-stone-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-stone-800">
                 <p class="text-sm text-stone-500 dark:text-stone-400">
                     Showing
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $tasks->firstItem() }}</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $tasks->firstItem() ?? 0 }}</span>
                     to
-                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $tasks->lastItem() }}</span>
+                    <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $tasks->lastItem() ?? 0 }}</span>
                     of
                     <span class="font-semibold text-stone-700 dark:text-stone-200">{{ $tasks->total() }}</span>
                     tasks

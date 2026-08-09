@@ -8,6 +8,7 @@ use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\TasksController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\FilesController;
 
 Route::view('/', 'landing');
 
@@ -36,7 +37,7 @@ Route::get('/team', [TeamController::class, 'index'])
 	->name('team.index');
 
     
-Route::view('/files', 'files.index')
+Route::get('/files', [FilesController::class, 'index'])
 	->middleware(['auth'])
 	->name('files.index');
 

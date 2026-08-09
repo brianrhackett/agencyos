@@ -67,6 +67,11 @@ class Task extends Model
 		return $this->hasMany(Comment::class);
 	}
 
+	public function files(): HasMany
+	{
+		return $this->hasMany(File::class);
+	}
+
 	public function isCompleted(): bool
 	{
 		return $this->status === TaskStatus::Completed;

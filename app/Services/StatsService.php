@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Milestone;
+use App\Models\File;
 
 class StatsService
 {
@@ -159,5 +160,32 @@ class StatsService
 	    })
 	    ->filter()
 	    ->count();
+    }
+
+    public function totalFiles()
+    {
+        return File::count();
+    }
+
+    public function storageUsed()
+    {
+        return File::sum('size');
+    }
+
+    public function uploadedThisWeek()
+    {
+        return File::where('created_at', '>=', now()->startOfWeek())
+	            ->count();
+    }
+
+    public function sharedWithClients()
+    {
+        return File::where('is_client_visible', true)
+	            ->count();
+    }
+
+    public function clientsWithFiles()
+    {
+        return Client::whereHas('projects.tasks.files')->count();
     }
 }

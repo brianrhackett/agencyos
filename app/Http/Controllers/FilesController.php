@@ -1,0 +1,222 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Services\StatsService;
+use App\Models\File;
+use App\Models\Client;
+
+class FilesController extends Controller
+{
+    public function index(StatsService $stats)
+	{
+        $storageUsed = $stats->storageUsed();
+        
+        $summaryCards = [
+            'totalFiles' => [
+                'title' => 'Total Files',
+                'value' => $stats->totalFiles()
+            ],
+            'storageUsed' => [
+                'title' => 'Storage Used',
+                'value' => self::formatBytes($storageUsed)
+            ],
+            [
+                'title' => 'Uploaded This Week',
+                'value' => $stats->uploadedThisWeek()
+            ],
+            [
+                'title' => 'Shared With Clients',
+                'value' => $stats->sharedWithClients()
+            ]
+        ];
+
+        $files = $this->_getFilesData();
+        
+
+        $storageByType = collect($this->_getStorageByType())
+                            ->map(fn ($bytes) => self::formatBytes($bytes));
+
+        $clientFolders = $this->_getClientFolders();
+
+        $fileTypeCounts = $this->_getFileTypeCounts();
+
+
+
+        $totalStorageAvailable = 21474836480;
+        $totalStoragePctUsed = round(100 * $storageUsed / $totalStorageAvailable, 0);
+        return view('files.index', [
+			'summaryCards' => $summaryCards,
+            'files' => $files,
+            'totalFiles' => $summaryCards['totalFiles']['value'],
+            'clientsWithFiles' => $stats->clientsWithFiles(),
+            'storageUsed' => $summaryCards['storageUsed']['value'],
+            'totalStorageAvailable' => self::formatBytes($totalStorageAvailable),
+            'totalStoragePctUsed' => $totalStoragePctUsed,
+            'storageByType' => $storageByType,
+            'clientFolders' => $clientFolders,
+            'fileTypeCounts' => $fileTypeCounts
+        ]);
+    }
+
+    private function _getFilesData()
+    {
+        return File::with([
+            'task.project.client',
+            'uploader',
+        ])
+            ->latest()
+            ->paginate(6)
+            ->withQueryString();
+    }
+
+    private function _getStorageByType()
+    {
+        $files = File::select('mime_type', 'size')->get();
+
+        $storage = [
+            'documents' => 0,
+            'images' => 0,
+            'archives' => 0,
+            'spreadsheets' => 0
+        ];
+
+        foreach ($files as $file) {
+            if (str_starts_with($file->mime_type, 'image/')) {
+                $storage['images'] += $file->size;
+                continue;
+            }
+
+            if (in_array($file->mime_type, [
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'text/csv',
+            ])) {
+                $storage['spreadsheets'] += $file->size;
+                continue;
+            }
+
+            if (in_array($file->mime_type, [
+                'application/zip',
+                'application/x-rar-compressed',
+                'application/x-7z-compressed',
+                'application/gzip',
+            ])) {
+                $storage['archives'] += $file->size;
+                continue;
+            }
+
+            $storage['documents'] += $file->size;
+        }
+
+        return $storage;
+    }
+
+    public static function formatBytes(int $bytes): string
+    {
+        if ($bytes >= 1073741824) {
+            return round($bytes / 1073741824, 1) . ' GB';
+        }
+
+        if ($bytes >= 1048576) {
+            return round($bytes / 1048576, 1) . ' MB';
+        }
+
+        if ($bytes >= 1024) {
+            return round($bytes / 1024, 1) . ' KB';
+        }
+
+        return $bytes . ' B';
+    }
+
+    private function _getClientFolders()
+    {
+        return Client::whereHas('projects.tasks.files')
+            ->withCount([
+                'projects as projects_with_files_count' => function ($query) {
+                    $query->whereHas('tasks.files');
+                },
+            ])
+            ->get()
+            ->map(function ($client) {
+                $fileCount = File::whereHas('task.project', function ($query) use ($client) {
+                    $query->where('client_id', $client->id);
+                })->count();
+
+                return [
+                    'name' => $client->name,
+                    'file_count' => $fileCount,
+                    'project_count' => $client->projects_with_files_count,
+                ];
+            })
+            ->sortByDesc('file_count')
+            ->take(3);
+    }
+
+    private function _getFileTypeCounts()
+    {
+        $files = File::select('mime_type')->get();
+
+        $counts = [
+            'pdf' => 0,
+            'images' => 0,
+            'spreadsheets' => 0,
+            'archives' => 0,
+        ];
+
+        foreach ($files as $file) {
+            if ($file->mime_type === 'application/pdf') {
+                $counts['pdf']++;
+                continue;
+            }
+
+            if (str_starts_with($file->mime_type, 'image/')) {
+                $counts['images']++;
+                continue;
+            }
+
+            if (in_array($file->mime_type, [
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'text/csv',
+            ])) {
+                $counts['spreadsheets']++;
+                continue;
+            }
+
+            if (in_array($file->mime_type, [
+                'application/zip',
+                'application/x-rar-compressed',
+                'application/x-7z-compressed',
+                'application/gzip',
+            ])) {
+                $counts['archives']++;
+            }
+        }
+
+        return [
+            [
+                'label' => 'PDF',
+                'count' => $counts['pdf'],
+                'colorClass' => 'bg-red-500'
+            ],
+            [
+                'label' => 'Images',
+                'count' => $counts['images'],
+                'colorClass' => 'bg-indigo-500'
+            ],
+            [
+                'label' => 'Spreadsheets',
+                'count' => $counts['spreadsheets'],
+                'colorClass' => 'bg-emerald-500'
+            ],
+            [
+                'label' => 'Archives',
+                'count' => $counts['archives'],
+                'colorClass' => 'bg-amber-500'
+            ],
+        ];
+    }
+}
