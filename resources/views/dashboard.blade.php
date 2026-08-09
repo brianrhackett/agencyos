@@ -52,7 +52,7 @@
 					</ul>
 					<div class="mt-6 border-t border-stone-200 pt-4 dark:border-stone-800">
 						<a
-							href="{{ route('dashboard') }}"
+							href="{{ route('projects.index') }}"
 							class="text-sm font-medium 
 									text-indigo-600 transition hover:text-indigo-700
 									dark:text-indigo-300 hover:dark:text-indigo-200"
@@ -100,7 +100,7 @@
 
 					<div class="mt-6 border-t border-stone-200 pt-4 dark:border-stone-800">
 						<a
-							href="{{ route('dashboard') }}"
+							href="{{ route('calendar.index') }}"
 							class="text-sm font-medium 
 									text-indigo-600 transition hover:text-indigo-700
 									dark:text-indigo-300 hover:dark:text-indigo-200"
