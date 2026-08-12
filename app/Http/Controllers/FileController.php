@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Storage;
 use App\Services\StatsService;
 use App\Models\File;
 use App\Models\Client;
+use App\Models\Task;
 
-class FilesController extends Controller
+class FileController extends Controller
 {
     public function index(StatsService $stats)
 	{
@@ -59,6 +60,60 @@ class FilesController extends Controller
             'clientFolders' => $clientFolders,
             'fileTypeCounts' => $fileTypeCounts
         ]);
+    }
+
+    public function store(Request $request, Task $task)
+    {
+		$validated = $request->validate([
+			'file' => [
+				'required',
+				'file',
+				'max:10240',
+			],
+		]);
+
+		$uploadedFile = $validated['file'];
+
+		$path = $uploadedFile->store(
+			'tasks/' . $task->id,
+			'public'
+		);
+
+		$task->files()->create([
+			'uploaded_by' => auth()->id(),
+			'name' => basename($path),
+			'original_name' => $uploadedFile->getClientOriginalName(),
+			'path' => $path,
+			'mime_type' => $uploadedFile->getMimeType(),
+			'size' => $uploadedFile->getSize(),
+		]);
+
+		return redirect()
+			->route('tasks.show', $task)
+			->with('success', 'File uploaded.');        
+    }
+
+    public function download(File $file)
+    {
+        if (!Storage::disk('public')->exists($file->path)) {
+            abort(404);
+        }
+
+        return Storage::disk('public')->download(
+            $file->path,
+            $file->name
+        );
+    }
+
+    public function destroy(File $file)
+    {
+        if (Storage::disk('public')->exists($file->path)) {
+            Storage::disk('public')->delete($file->path);
+        }
+
+        $file->delete();
+
+        return back()->with('success', 'File deleted.');
     }
 
     private function _getFilesData()

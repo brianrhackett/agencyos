@@ -4,7 +4,9 @@
         description="Manage client organizations, contacts, and active projects."
     >
         <x-slot:actions>
-            <x-button>
+            <x-button
+                href="{{ route('clients.create') }}"
+            >
                 <x-heroicon-o-plus class="h-4 w-4" />
 
                 New Client
@@ -106,7 +108,7 @@
                                 <td class="whitespace-nowrap px-6 py-4">
                                     <div class="flex items-center gap-3">
                                         <a
-                                            href="#"
+                                            href="{{ route('clients.show', $client) }}"
                                             class="font-semibold text-stone-900 hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
                                         >
                                             {{ $client->name }}
@@ -146,13 +148,12 @@
                                     @endif
                                 </td>
                                 <td class="whitespace-nowrap px-6 py-4 text-right">
-                                    <button
-                                        type="button"
-                                        class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                        aria-label="Client actions"
-                                    >
-                                        <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                    </button>
+                                    <x-row-actions
+                                        :viewRoute="route('clients.show', $client)"
+                                        :editRoute="route('clients.edit', $client)"
+                                        :deleteRoute="route('clients.destroy', $client)"
+                                        :name="$client->name"
+                                    />
                                 </td>
                             </tr>
                         @endforeach

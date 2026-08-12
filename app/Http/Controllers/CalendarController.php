@@ -71,6 +71,7 @@ class CalendarController extends Controller
                     'client' => $task->project->client->name,
                     'overdue' => $task->status !== TaskStatus::Completed
                         && $task->due_date->isPast(),
+                    'url' => route('tasks.show', $task),
                 ];
             });
     }
@@ -89,6 +90,7 @@ class CalendarController extends Controller
                     'client' => $milestone->project->client->name,
                     'overdue' => !$milestone->completed_at
                         && $milestone->due_date->isPast(),
+                    'url' => route('milestones.show', $milestone),
                 ];
             });
     }
@@ -107,6 +109,7 @@ class CalendarController extends Controller
                     'date' => $project->due_date->toDateString(),
                     'client' => $project->client->name,
                     'overdue' => $project->due_date->isPast(),
+                    'url' => route('projects.show', $project),
                 ];
             });        
     }

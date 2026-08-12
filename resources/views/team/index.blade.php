@@ -1,75 +1,12 @@
 <x-layouts.app>
-    @php
-        $teamMembers2 = [
-            [
-                'name' => 'Brian Hackett',
-                'email' => 'brian@agencyos.test',
-                'initials' => 'BH',
-                'role' => 'Administrator',
-                'position' => 'Lead Developer',
-                'projects' => 5,
-                'open_tasks' => 12,
-                'due_today' => 3,
-                'status' => 'Active',
-                'status_variant' => 'success',
-            ],
-            [
-                'name' => 'Maya Rodriguez',
-                'email' => 'maya@agencyos.test',
-                'initials' => 'MR',
-                'role' => 'Project Manager',
-                'position' => 'Senior Project Manager',
-                'projects' => 7,
-                'open_tasks' => 9,
-                'due_today' => 2,
-                'status' => 'Active',
-                'status_variant' => 'success',
-            ],
-            [
-                'name' => 'Ethan Brooks',
-                'email' => 'ethan@agencyos.test',
-                'initials' => 'EB',
-                'role' => 'Team Member',
-                'position' => 'UI Designer',
-                'projects' => 4,
-                'open_tasks' => 8,
-                'due_today' => 1,
-                'status' => 'Active',
-                'status_variant' => 'success',
-            ],
-            [
-                'name' => 'Nina Patel',
-                'email' => 'nina@agencyos.test',
-                'initials' => 'NP',
-                'role' => 'Team Member',
-                'position' => 'Content Strategist',
-                'projects' => 3,
-                'open_tasks' => 6,
-                'due_today' => 0,
-                'status' => 'Active',
-                'status_variant' => 'success',
-            ],
-            [
-                'name' => 'Marcus Lee',
-                'email' => 'marcus@agencyos.test',
-                'initials' => 'ML',
-                'role' => 'Team Member',
-                'position' => 'SEO Specialist',
-                'projects' => 2,
-                'open_tasks' => 5,
-                'due_today' => 1,
-                'status' => 'Invited',
-                'status_variant' => 'warning',
-            ],
-        ];
-    @endphp
-
     <x-layouts.app.content
         title="Team"
         description="Manage agency members, roles, assignments, and workload."
     >
         <x-slot:actions>
-            <x-button>
+            <x-button
+                href="{{ route('team.create') }}"
+            >
                 <x-heroicon-o-user-plus class="h-4 w-4" />
 
                 Invite Member
@@ -142,7 +79,7 @@
 
                                 <div class="min-w-0">
                                     <a
-                                        href="#"
+                                        href="{{ route('team.show', $member['user']) }}"
                                         class="truncate font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
                                     >
                                         {{ $member['name'] }}
@@ -203,13 +140,14 @@
                             </div>
 
                             <div class="flex shrink-0 items-center justify-between gap-4 xl:justify-end">
-                                <button
-                                    type="button"
-                                    class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                    aria-label="Team member actions"
-                                >
-                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                </button>
+                                <div>
+                                    <x-row-actions
+                                        :viewRoute="route('team.show', $member['user'])"
+                                        :editRoute="route('team.edit', $member['user'])"
+                                        :deleteRoute="route('team.destroy', $member['user'])"
+                                        :name="$member['name']"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </li>

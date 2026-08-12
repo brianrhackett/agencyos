@@ -4,11 +4,7 @@
         description="Browse, organize, and share files across clients and projects."
     >
         <x-slot:actions>
-            <x-button>
-                <x-heroicon-o-arrow-up-tray class="h-4 w-4" />
-
-                Upload Files
-            </x-button>
+            
         </x-slot:actions>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -165,7 +161,7 @@
                                     </td>
 
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-600 dark:text-stone-300">
-                                        {{ \App\Http\Controllers\FilesController::formatBytes($file['size']) }}
+                                        {{ \App\Http\Controllers\FileController::formatBytes($file['size']) }}
                                     </td>
 
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-stone-500 dark:text-stone-400">
@@ -173,13 +169,59 @@
                                     </td>
 
                                     <td class="whitespace-nowrap px-6 py-4 text-right">
-                                        <button
-                                            type="button"
-                                            class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                            aria-label="File actions"
-                                        >
-                                            <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                        </button>
+                                        <div x-data="{ modalOpen: false }">
+                                            <x-dropdown-menu>
+                                                <x-dropdown-menu.item href="{{ route('files.download', $file) }}">
+                                                    Download
+                                                </x-dropdown-menu.item>
+
+                                                <x-dropdown-menu.item
+                                                    danger
+                                                    @click="modalOpen = true"
+                                                >
+                                                    Delete
+                                                </x-dropdown-menu.item>
+                                            </x-dropdown-menu>
+                                            <x-modal show="modalOpen" maxWidth="md">
+                                                <div class="space-y-4">
+                                                    <div class="px-6 py-4">
+                                                        <h2 class="text-lg font-bold text-stone-900 dark:text-stone-100">
+                                                            Delete File
+                                                        </h2>
+
+                                                        <p class="text-sm text-stone-600 dark:text-stone-400">
+                                                            Are you sure you want to delete {{ $file->name }}?
+                                                        </p>
+                                                    </div>
+                                                    <div class="flex justify-end gap-2 border-t border-stone-200 bg-stone-50 px-6 py-4 dark:border-stone-800 dark:bg-stone-900/50">
+                                                        <div class="flex justify-end gap-3">
+                                                            <x-button
+                                                                type="button"
+                                                                variant="secondary"
+                                                                @click="modalOpen = false"
+                                                            >
+                                                                Cancel
+                                                            </x-button>
+
+                                                            <form
+                                                                method="POST"
+                                                                action="{{ route('files.destroy', $file) }}"
+                                                            >
+                                                                @csrf
+                                                                @method('DELETE')
+
+                                                                <x-button
+                                                                    type="submit"
+                                                                    variant="danger"
+                                                                >
+                                                                    Delete File
+                                                                </x-button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </x-modal>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

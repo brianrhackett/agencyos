@@ -1,20 +1,20 @@
 <x-layouts.app>
     <x-layouts.app.content
-        title="Edit {{$client->name}}"
-        description="Update client information."
+        title="Edit {{$project->name}}"
+        description="Update project information."
     >
 
-        <form method="POST" action="{{ route('clients.update', $client) }}">
+        <form method="POST" action="{{ route('projects.update', $project) }}">
             @csrf
             @method('PUT')
             <x-card>
-                @include('clients._form', ['client' => $client])
+                @include('projects._form', ['project' => $project])
                 <div class="mt-6 pt-6 px-6 -mx-6 border-t border-stone-200 dark:border-stone-800 flex gap-6">
                     <x-button type="submit">
                         Save Changes
                     </x-button>
                     <x-button 
-                        href="{{ route('clients.index') }}"
+                        href="{{ route('projects.index') }}"
                         variant="ghost">
                         Cancel
                     </x-button>

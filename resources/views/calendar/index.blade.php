@@ -105,21 +105,23 @@
 
                                 <div class="mt-3 space-y-2">
                                     @foreach ($dayEvents as $event)
-                                        <div
-                                            @class([
-                                                'rounded-sm border px-2 py-1.5 text-xs font-semibold',
-                                                $event["variant"] => !$event['overdue'],
-                                                'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300' => $event['overdue'],
-                                            ])
-                                        >
-                                            <p class="truncate">
-                                                {{ $event['title'] }}
-                                            </p>
+                                        <a href="{{ $event['url'] }}">
+                                            <div
+                                                @class([
+                                                    'rounded-sm border px-2 py-1.5 text-xs font-semibold mb-2',
+                                                    $event["variant"] => !$event['overdue'],
+                                                    'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300' => $event['overdue'],
+                                                ])
+                                            >
+                                                <p class="truncate">
+                                                    {{ $event['title'] }}
+                                                </p>
 
-                                            <p class="mt-1 text-[10px] font-medium opacity-70">
-                                                {{ $event['type'] }}
-                                            </p>
-                                        </div>
+                                                <p class="mt-1 text-[10px] font-medium opacity-70">
+                                                    {{ $event['type'] }}
+                                                </p>
+                                            </div>
+                                        </a>
                                     @endforeach
                                 </div>
                             </div>

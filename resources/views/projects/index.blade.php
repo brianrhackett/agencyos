@@ -4,7 +4,9 @@
         description="Track client work, milestones, deadlines, and project health."
     >
         <x-slot:actions>
-            <x-button>
+            <x-button
+                href="{{ route('projects.create') }}"
+            >
                 <x-heroicon-o-plus class="h-4 w-4" />
 
                 New Project
@@ -132,7 +134,7 @@
                                 <td class="px-6 py-4">
                                     <div>
                                         <a
-                                            href="#"
+                                            href="{{ route('projects.show', $project) }}"
                                             class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
                                         >
                                             {{ $project->name }}
@@ -199,13 +201,12 @@
                                 </td>
 
                                 <td class="whitespace-nowrap px-6 py-4 text-right">
-                                    <button
-                                        type="button"
-                                        class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                        aria-label="Project actions"
-                                    >
-                                        <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                    </button>
+                                    <x-row-actions
+                                        :viewRoute="route('projects.show', $project)"
+                                        :editRoute="route('projects.edit', $project)"
+                                        :deleteRoute="route('projects.destroy', $project)"
+                                        :name="$project->name"
+                                    />
                                 </td>
                             </tr>
                         @endforeach

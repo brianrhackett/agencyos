@@ -3,6 +3,7 @@
 	'name',
 	'rows' => 5,
 	'placeholder' => null,
+	'help' => null,
 ])
 
 <div>
@@ -21,9 +22,9 @@
 		rows="{{ $rows }}"
 		placeholder="{{ $placeholder }}"
 		{{ $attributes->merge([
-			'class' => 'block w-full rounded-sm border border-stone-300 bg-white px-4 py-3 text-stone-900 placeholder:text-stone-400 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:bg-stone-100 disabled:text-stone-400 resize-y dark:border-stone-700 dark:bg-stone-900 dark:text-white dark:placeholder:text-stone-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20 dark:disabled:bg-stone-800',
+			'class' => 'block w-full rounded-sm border border-stone-300 bg-white px-4 py-3 text-stone-900 placeholder:text-stone-400 transition focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:bg-stone-100 disabled:text-stone-400 resize-y dark:border-stone-700 dark:bg-stone-900 dark:text-white dark:placeholder:text-stone-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20 dark:disabled:bg-stone-800',
 		]) }}
-	></textarea>
+	>{{ $slot }}</textarea>
 
     @if ($help)
         <x-form.help-text>

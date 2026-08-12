@@ -31,6 +31,6 @@ class Comment extends Model
 
 	public function user(): BelongsTo
 	{
-		return $this->BelongsTo(Task::class);
+		return $this->BelongsTo(User::class, 'user_id');
 	}
 }

@@ -1,0 +1,234 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Services\StatsService;
+use App\Models\Milestone;
+use App\Models\Project;
+use App\Models\Task;
+use App\Models\User;
+use Illuminate\Http\Request;
+
+use Illuminate\Validation\Rule;
+use App\Enums\TaskPriority;
+use App\Enums\TaskStatus;
+
+class TaskController extends Controller
+{
+    public function index(StatsService $stats)
+	{
+        $summaryCards = [
+            [
+                "title" => 'Open Tasks',
+                "value" => $stats->openTasks()
+            ],
+            [
+                "title" => 'Due Today',
+                "value" => $stats->tasksDueToday()
+            ],
+            [
+                "title" => 'Overdue',
+                "value" => $stats->overdueTasks()
+            ],
+            [
+                "title" => 'Completed This Week',
+                "value" => $stats->tasksCompletedTthisWeek()
+            ]
+        ];
+
+        $tasks = $this->_getTasksData();
+
+        return view('tasks.index', [
+			'summaryCards' => $summaryCards,
+            'tasks' => $tasks,
+            'totalTaskCount' => $stats->totalTasks(),
+            'totalProjectWithTasksCount' => $stats->totalProjectWithTasks(),
+
+        ]);
+    }
+
+    public function createForProject(Project $project)
+	{
+		$assignees = $project->teamMembers()
+            ->orderBy('name')
+            ->get();
+
+		return view('tasks.create', [
+			'project' => $project,
+			'milestone' => null,
+			'assignees' => $assignees,
+		]);
+	}
+
+    public function createForMilestone(Milestone $milestone)
+	{
+		$milestone->load('project');
+
+        $assignees = $milestone->project
+            ->teamMembers()
+            ->orderBy('name')
+            ->get();
+
+		return view('tasks.create', [
+			'project' => $milestone->project,
+			'milestone' => $milestone,
+			'assignees' => $assignees,
+		]);
+	}
+
+    public function storeForProject(Request $request, Project $project)
+    {
+        $validated = $this->_validateTask($request);
+
+        $validated['project_id'] = $project->id;
+        $validated['milestone_id'] = null;
+        $validated['created_by'] = auth()->id();
+
+        if ($validated['status'] === TaskStatus::Completed->value) {
+            $validated['completed_at'] = now();
+        }
+
+        Task::create($validated);
+
+        return redirect()
+            ->route('projects.show', $project)
+            ->with('success', 'Task created successfully.');
+    }
+
+    public function storeForMilestone(Request $request, Milestone $milestone)
+    {
+        $validated = $this->_validateTask($request);
+
+        $validated['project_id'] = $milestone->project_id;
+        $validated['milestone_id'] = $milestone->id;
+        $validated['created_by'] = auth()->id();
+
+        if ($validated['status'] === TaskStatus::Completed->value) {
+            $validated['completed_at'] = now();
+        }
+
+        Task::create($validated);
+
+        return redirect()
+            ->route('milestones.show', $milestone)
+            ->with('success', 'Task created successfully.');
+    }
+
+    public function update(Request $request, Task $task)
+    {
+        $validated = $this->_validateTask($request);
+
+        if (
+            $validated['status'] === TaskStatus::Completed->value
+            && !$task->completed_at
+        ) {
+            $validated['completed_at'] = now();
+        }
+
+        if ($validated['status'] !== TaskStatus::Completed->value) {
+            $validated['completed_at'] = null;
+        }
+
+        $task->update($validated);
+
+        return redirect()
+            ->route('tasks.show', $task)
+            ->with('success', 'Task updated successfully.');
+    }
+
+    public function edit(Task $task)
+    {
+        $task->load('project');
+        
+        $projects = Project::where('completed_at', null)
+            ->orderBy('name')
+            ->get();
+        
+        $assignees = $task->project
+            ->teamMembers()
+            ->orderBy('name')
+            ->get();
+
+        return view('tasks.edit', compact(
+            'task',
+            'assignees',
+            'projects'
+        ));
+    }
+
+    public function show(Task $task)
+    {
+        $task->load([
+            'project.client',
+            'milestone',
+            'assignedTo',
+            'createdBy',
+            'comments.user',
+            'files.uploader',
+        ]);
+
+        return view('tasks.show', compact('task'));
+    }
+
+    public function create()
+    {
+        $projects = Project::with('milestones')
+            ->orderBy('name')
+            ->get();
+
+        return view('tasks.create', [
+            'projects' => $projects,
+            'project' => null,
+            'milestone' => null,
+            'assignees' => collect(),
+        ]);
+    }
+    
+    public function store(Request $request)
+    {
+        $validated = $this->_validateTask($request, true);
+
+        $validated['created_by'] = auth()->id();
+
+        if ($validated['status'] === TaskStatus::Completed->value) {
+            $validated['completed_at'] = now();
+        }
+
+        Task::create($validated);
+
+        return redirect()
+            ->route('tasks.index')
+            ->with('success', 'Task created successfully.');
+    }
+
+    private function _validateTask(Request $request, $includeContext = false): array
+    {
+        $rules = [
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'assigned_to' => ['nullable', 'exists:users,id'],
+            'status' => ['required', Rule::enum(TaskStatus::class)],
+            'priority' => ['required', Rule::enum(TaskPriority::class)],
+            'estimated_hours' => ['nullable', 'numeric', 'min:0'],
+            'actual_hours' => ['nullable', 'numeric', 'min:0'],
+            'start_date' => ['nullable', 'date'],
+            'due_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+        ];
+
+        if ($includeContext) {
+            $rules['project_id'] = ['required', 'exists:projects,id'];
+            $rules['milestone_id'] = ['nullable', 'exists:milestones,id'];
+        }
+
+        return $request->validate($rules);
+    }
+    private function _getTasksData()
+    {
+        return Task::with([
+            'project.client',
+            'assignedTo'
+        ])
+            ->paginate(5)
+            ->withQueryString();
+    }
+}

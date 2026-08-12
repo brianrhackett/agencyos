@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\MilestoneStatus;
 
 class Milestone extends Model
 {
@@ -13,18 +14,19 @@ class Milestone extends Model
 
     protected $fillable = [
         'project_id',
-        'name',
-        'description',
-        'status',
-        'sort_order',
-        'start_date',
-        'due_date',
-        'completed_at'
+		'name',
+		'description',
+		'status',
+		'sort_order',
+		'start_date',
+		'due_date',
+		'completed_at',
     ];
 
 	protected function casts(): array
 	{
 		return [
+			'status' => MilestoneStatus::class,
 			'start_date' => 'date',
 			'due_date' => 'date',
 			'completed_at' => 'datetime',

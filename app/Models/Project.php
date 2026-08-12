@@ -53,7 +53,7 @@ class Project extends Model
 		return $this->belongsTo(User::class, 'project_manager_id');
 	}
 
-	public function users(): BelongsToMany
+	public function teamMembers(): BelongsToMany
 	{
 		return $this->belongsToMany(User::class)
 			->withPivot([
@@ -71,6 +71,12 @@ class Project extends Model
 	public function tasks(): HasMany
 	{
 		return $this->hasMany(Task::class);
+	}
+
+	public function directTasks()
+	{
+		return $this->hasMany(Task::class)
+			->whereNull('milestone_id');
 	}
 
 	public function activeMilestones()

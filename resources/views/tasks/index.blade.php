@@ -4,7 +4,9 @@
         description="Organize assignments, monitor deadlines, and keep project work moving."
     >
         <x-slot:actions>
-            <x-button>
+            <x-button
+                href="{{ route('tasks.create') }}"
+            >
                 <x-heroicon-o-plus class="h-4 w-4" />
 
                 New Task
@@ -116,7 +118,7 @@
                             <tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
                                 <td class="px-6 py-4">
                                     <a
-                                        href="#"
+                                        href="{{ route('tasks.show', $task) }}"
                                         class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
                                     >
                                         {{ $task->title }}
@@ -138,7 +140,7 @@
                                        
 
                                         <span class="text-sm text-stone-700 dark:text-stone-300">
-                                            {{ $task->assignedTo->name }}
+                                            {{ $task->assignedTo?->name }}
                                         </span>
                                     </div>
                                 </td>
@@ -176,13 +178,14 @@
                                 </td>
 
                                 <td class="whitespace-nowrap px-6 py-4 text-right">
-                                    <button
-                                        type="button"
-                                        class="rounded-sm p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                                        aria-label="Task actions"
-                                    >
-                                        <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                                    </button>
+                                    <div>
+										<x-row-actions
+											:viewRoute="route('tasks.show', $task)"
+											:editRoute="route('tasks.edit', $task)"
+											:deleteRoute="route('tasks.destroy', $task)"
+											:name="$task->title"
+										/>
+									</div>
                                 </td>
                             </tr>
                         @endforeach

@@ -1,20 +1,22 @@
 <x-layouts.app>
     <x-layouts.app.content
-        title="Edit {{$client->name}}"
-        description="Update client information."
+        title="Add Project"
+        description="Add a new project to AgencyOS."
     >
 
-        <form method="POST" action="{{ route('clients.update', $client) }}">
+        <form method="POST" action="{{ route('projects.store') }}">
             @csrf
-            @method('PUT')
+
             <x-card>
-                @include('clients._form', ['client' => $client])
+                @include('projects._form')
+
                 <div class="mt-6 pt-6 px-6 -mx-6 border-t border-stone-200 dark:border-stone-800 flex gap-6">
                     <x-button type="submit">
-                        Save Changes
+                        <x-heroicon-o-plus class="h-4 w-4" />
+                        Add Project
                     </x-button>
                     <x-button 
-                        href="{{ route('clients.index') }}"
+                        href="{{ route('projects.index') }}"
                         variant="ghost">
                         Cancel
                     </x-button>
