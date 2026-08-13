@@ -12,10 +12,14 @@ class ActivityLogger
 		Model $subject,
 		array $metadata = []
 	): Activity {
+
+		$tmp = explode('\\', $subject::class);
+		$subject_type = strtolower(end($tmp));
+
 		return Activity::create([
 			'user_id' => auth()->id(),
 			'type' => $type,
-			'subject_type' => strtolower(end(explode('\\', $subject::class))),
+			'subject_type' => $subject_type,
 			'subject_id' => $subject->getKey(),
 			'metadata' => $metadata,
 		]);

@@ -92,4 +92,19 @@ class User extends Authenticatable // implements MustVerifyEmail
     {
         return $query->whereDoesntHave('clients');
     }
+
+    public function isAgencyUser(): bool
+    {
+        return !$this->clients()->exists();
+    }
+
+    public function isClientUser(): bool
+    {
+        return $this->clients()->exists();
+    }
+
+    public function currentClient(): ?Client
+    {
+        return $this->clients()->first();
+    }
 }

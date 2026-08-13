@@ -114,29 +114,8 @@
 					<ul class="divide-y divide-stone-200 dark:divide-stone-800 mt-4">
 						@foreach ($recentActivity as $activity)
 							<li class="flex items-start gap-4 py-4 first:pt-0">
-								<div class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm {{ $activity['iconClasses'] }}">
-									@switch($activity['type'])
-										@case('task.completed')
-										@case('task.created')
-										@case('task.deleted')
-											<x-heroicon-o-check-circle class="h-4 w-4" />
-											@break
-
-										@case('file.uploaded')
-											<x-heroicon-o-arrow-up-tray class="h-4 w-4" />
-											@break
-
-										@case('task.commented')
-											<x-heroicon-o-chat-bubble-left-ellipsis class="h-4 w-4" />
-											@break
-
-										@case('milestone.completed')
-											<x-heroicon-o-flag class="h-4 w-4" />
-											@break
-										@case('client_user.added')
-											<x-heroicon-o-user-plus class="h-4 w-4" />
-											@break
-									@endswitch
+								<div class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm {{ $activity['iconBgClasses'] }}">
+									{!! $activity['icon'] !!}
 								</div>
 
 								<div class="min-w-0 flex-1">

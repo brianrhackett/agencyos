@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\StatsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Blade;
 
 use App\Models\Client;
 use App\Models\Project;
@@ -139,10 +140,25 @@ class DashboardController extends Controller
 
             $typeParts = explode('.', $activity->type);
 
-            $iconClasses = match ($typeParts[1]) {
+            $iconBgClasses = match ($typeParts[1]) {
                 'completed' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
                 'deleted' => 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
                 default => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+            };
+
+            $icon = match ($typeParts[0]) {
+                'task' => Blade::render('<x-heroicon-o-check-circle class="h-4 w-4" />'),
+                'project' => Blade::render('<x-heroicon-o-folder class="h-4 w-4" />'), 
+                'file' => Blade::render('<x-heroicon-o-arrow-up-tray class="h-4 w-4" />'),
+                'milestone' => Blade::render('<x-heroicon-o-flag class="h-4 w-4" />'),
+                'client_user' => Blade::render('<x-heroicon-o-user-plus class="h-4 w-4" />'),
+                'team' => Blade::render('<x-heroicon-o-users class="h-4 w-4" />'),
+                default => Blade::render('<x-heroicon-o-document class="h-4 w-4" />'),
+            };
+
+            $icon = match ($activity->type) {
+                'task.commented' => Blade::render('<x-heroicon-o-chat-bubble-left-ellipsis class="h-4 w-4" />'),
+                default => $icon
             };
 
             $content = match ($typeParts[0]) {
@@ -288,7 +304,8 @@ class DashboardController extends Controller
 
             return [
                 'type' => $activity->type,
-                'iconClasses' => $iconClasses,
+                'iconBgClasses' => $iconBgClasses,
+                'icon' => $icon,
                 'content' => $content,
                 'time' => $activity->created_at->diffForHumans(),
             ];

@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 
 use App\Enums\ProjectStatus;
 use App\Services\StatsService;
+use App\Services\ActivityLogger;
 use App\Models\Project;
 use App\Models\Client;
 use App\Models\User;
@@ -35,6 +36,8 @@ class ProjectController extends Controller
                 'value' => $stats->projectsCompletedThisQuarter()
             ]
         ];
+
+       
 
         $projects = $this->_getProjectsData();
 
@@ -188,10 +191,21 @@ class ProjectController extends Controller
 
     private function _getProjectsData()
     {
-        return Project::with([
+        $user = auth()->user();
+    
+        $query = Project::with([
             'client',
             'projectManager',
-        ])
+        ]);
+
+        if($user->isClientUser()) {
+            $query->whereIn(
+                'client_id',
+                $user->clients()->pluck('clients.id')
+            );
+        }
+
+        $query
             ->withCount([
                 'milestones',
                 'tasks',
@@ -201,9 +215,10 @@ class ProjectController extends Controller
                 'tasks as open_tasks_count' => function ($query) {
                     $query->where('status', '!=', 'completed');
                 },
-            ])
-            ->paginate(5)
-            ->withQueryString();
+            ]);
+            
+
+        return $query->paginate(5)->withQueryString();
     }
 
     private function _getClientsWithActiveProjects()
