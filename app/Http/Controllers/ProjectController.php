@@ -98,6 +98,8 @@ class ProjectController extends Controller
 
 	public function show(Project $project)
 	{
+        $this->authorize('view', $project);
+
         $project->load([
             'client',
             'projectManager',
@@ -113,6 +115,8 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
 	{
+        $this->authorize('edit', $project);
+
 		$clients = Client::orderBy('name')->get();
         $projectManagers = User::agency()
             ->orderBy('name')

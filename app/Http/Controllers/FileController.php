@@ -139,10 +139,20 @@ class FileController extends Controller
 
     private function _getFilesData()
     {
-        return File::with([
-            'task.project.client',
-            'uploader',
-        ])
+        $query = File::with('task.project','uploader',);
+
+        $user = auth()->user();
+        
+        if ($user->isClientUser()) {
+            $clientIds = $user->clients()->pluck('clients.id');
+
+            $query->whereHas('task.project', function ($query) use ($clientIds) {
+                $query->whereIn('client_id', $clientIds);
+            });
+        }
+        
+        
+        return $query
             ->latest()
             ->paginate(6)
             ->withQueryString();

@@ -294,11 +294,23 @@ class TaskController extends Controller
     }
     private function _getTasksData()
     {
-        return Task::with([
-            'project.client',
-            'assignedTo'
-        ])
-            ->paginate(5)
+        $query = Task::with([
+            'project',
+            'milestone',
+            'assignedTo',
+        ]);
+
+        $user = auth()->user();
+
+        if ($user->isClientUser()) {
+            $clientIds = $user->clients()->pluck('clients.id');
+
+            $query->whereHas('project', function ($query) use ($clientIds) {
+                $query->whereIn('client_id', $clientIds);
+            });
+        }
+
+        return $query->paginate(5)
             ->withQueryString();
     }
 }
