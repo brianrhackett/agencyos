@@ -29,7 +29,17 @@ class MilestoneController extends Controller
             $validated['completed_at'] = now();
         }
 
-        $project->milestones()->create($validated);
+        $milestone = $project->milestones()->create($validated);
+
+        ActivityLogger::log(
+            'milestone.created',
+            $milestone,
+            [
+				'milestone_name' => $milestone->name,
+                'project_name' => $project->name,
+                'client_name' => $project->client->name,
+            ]
+        );
 
         return redirect()
             ->route('projects.show', $project)
@@ -64,13 +74,29 @@ class MilestoneController extends Controller
 
         if ($validated['status'] === MilestoneStatus::Completed->value && !$milestone->completed_at) {
             $validated['completed_at'] = now();
+
+			$activityType = 'milestone.completed';
         }
+		else
+		{
+			$activityType = 'milestone.updated';	
+		}
 
         if ($validated['status'] !== MilestoneStatus::Completed->value) {
             $validated['completed_at'] = null;
         }
 
         $milestone->update($validated);
+
+		ActivityLogger::log(
+            $activityType,
+            $milestone,
+            [
+				'milestone_name' => $milestone->name,
+                'project_name' => $milestone->project->name,
+                'client_name' => $milestone->project->client->name,
+            ]
+        );
 
         return redirect()
             ->route('projects.show', $milestone->project)
@@ -80,6 +106,16 @@ class MilestoneController extends Controller
 	public function destroy(Milestone $milestone)
 	{
 		$project = $milestone->project;
+
+		ActivityLogger::log(
+            'milestone.deleted',
+            $milestone,
+            [
+				'milestone_name' => $milestone->name,
+                'project_name' => $project->name,
+                'client_name' => $project->client->name,
+            ]
+        );
 
 		$milestone->delete();
 

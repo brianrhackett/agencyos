@@ -33,7 +33,6 @@ class TeamController extends Controller
             ]
         ];
 
-        //die('<pre>'.print_r($teamMembers,1));
         return view('team.index', [
             'summaryCards' => $summaryCards,
             'teamMembers' => $teamMembers,
@@ -61,6 +60,14 @@ class TeamController extends Controller
             'position' => $validated['position'] ?? null,
             'password' => Hash::make($validated['password']),
         ]);
+
+        ActivityLogger::log(
+            'team.created',
+            $user,
+            [
+                'user_name' => $user->name,
+            ]
+        );
 
         return redirect()
             ->route('team.show', $user)
@@ -98,6 +105,14 @@ class TeamController extends Controller
             ]);
         }
 
+        ActivityLogger::log(
+            'team.updated',
+            $user,
+            [
+                'user_name' => $user->name,
+            ]
+        );
+
         return redirect()
             ->route('team.show', $user)
             ->with('success', 'Team member updated.');
@@ -119,6 +134,14 @@ class TeamController extends Controller
                 ->route('team.index')
                 ->with('error', 'You cannot delete your own account.');
         }
+
+        ActivityLogger::log(
+            'team.deleted',
+            $user,
+            [
+                'user_name' => $user->name,
+            ]
+        );
 
         $user->delete();
 

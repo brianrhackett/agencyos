@@ -131,24 +131,122 @@ class DashboardController extends Controller
     {
         $activities = Activity::with('user')
             ->latest()
-            ->take(5)
+            ->take(10)
             ->get();
 
         return $activities->map(function ($activity) {
             $metadata = $activity->metadata ?? [];
 
-            $content = match ($activity->type) {
-                'task_completed' => [
+            $typeParts = explode('.', $activity->type);
+
+            $iconClasses = match ($typeParts[1]) {
+                'completed' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+                'deleted' => 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
+                default => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+            };
+
+            $content = match ($typeParts[0]) {
+                'task' => [
                     [
                         'text' => $activity->user->name,
                         'bold' => true,
                     ],
                     [
-                        'text' => ' completed the task ',
+                        'text' => $typeParts[1] == 'commented' ? ' commented on the task ' : $typeParts[1] . ' the task ',
                         'bold' => false,
                     ],
                     [
                         'text' => $metadata['task_name'],
+                        'bold' => true,
+                    ],
+                    [
+                        'text' => ' in the project ',
+                        'bold' => false,
+                    ],
+                    [
+                        'text' => $metadata['project_name'],
+                        'bold' => true,
+                    ],
+                    [
+                        'text' => ' for ',
+                        'bold' => false,
+                    ],
+                    [
+                        'text' => $metadata['client_name'] . '.',
+                        'bold' => true,
+                    ],
+                ],
+                'project' => [
+                    [
+                        'text' => $activity->user->name,
+                        'bold' => true,
+                    ],
+                    [
+                        'text' => $typeParts[1] . ' the project ',
+                        'bold' => false,
+                    ],
+                    [
+                        'text' => $metadata['project_name'],
+                        'bold' => true,
+                    ],
+                    [
+                        'text' => ' for ',
+                        'bold' => false,
+                    ],
+                    [
+                        'text' => $metadata['client_name'] . '.',
+                        'bold' => true,
+                    ],
+                ],
+                'file' => [
+                    [
+                        'text' => $activity->user->name,
+                        'bold' => true,
+                    ],
+                    [
+                        'text' => ' uploaded a file to the task ',
+                        'bold' => false,
+                    ],
+                    [
+                        'text' => $metadata['task_name'],
+                        'bold' => true,
+                    ],
+                    [
+                        'text' => ' in the project ',
+                        'bold' => false,
+                    ],
+                    [
+                        'text' => $metadata['project_name'] . '.',
+                        'bold' => true,
+                    ],
+                ],
+
+                'milestone' => [
+                    [
+                        'text' => 'The milestone ',
+                        'bold' => false,
+                    ],
+                    [
+                        'text' => $metadata['milestone_name'],
+                        'bold' => true,
+                    ],
+                    [
+                        'text' => ' has been ' . $typeParts[1] . '.',
+                        'bold' => false,
+                    ],
+                ],
+
+                'client_user' => [
+                    [
+                        'text' => $activity->user->name,
+                        'bold' => true,
+                    ],
+                    [
+                        'text' => ' '. $typeParts[1] . ' ' ,
+                        'bold' => false,
+                    ],
+                    [
+                        'text' => $metadata['user_name'],
                         'bold' => true,
                     ],
                     [
@@ -161,58 +259,13 @@ class DashboardController extends Controller
                     ],
                 ],
 
-                'files_uploaded' => [
+                'team' => [
                     [
                         'text' => $activity->user->name,
                         'bold' => true,
                     ],
                     [
-                        'text' => ' uploaded ' . $metadata['file_count'] . ' files to ',
-                        'bold' => false,
-                    ],
-                    [
-                        'text' => $metadata['project_name'] . '.',
-                        'bold' => true,
-                    ],
-                ],
-
-                'comment_added' => [
-                    [
-                        'text' => $activity->user->name,
-                        'bold' => true,
-                    ],
-                    [
-                        'text' => ' left a comment on ',
-                        'bold' => false,
-                    ],
-                    [
-                        'text' => $metadata['task_name'] . '.',
-                        'bold' => true,
-                    ],
-                ],
-
-                'milestone_completed' => [
-                    [
-                        'text' => 'The milestone ',
-                        'bold' => false,
-                    ],
-                    [
-                        'text' => $metadata['milestone_name'],
-                        'bold' => true,
-                    ],
-                    [
-                        'text' => ' was marked complete.',
-                        'bold' => false,
-                    ],
-                ],
-
-                'client_user_added' => [
-                    [
-                        'text' => $activity->user->name,
-                        'bold' => true,
-                    ],
-                    [
-                        'text' => ' added ',
+                        'text' => ' '. $typeParts[1] . ' ' ,
                         'bold' => false,
                     ],
                     [
@@ -220,13 +273,9 @@ class DashboardController extends Controller
                         'bold' => true,
                     ],
                     [
-                        'text' => ' to ',
+                        'text' => ' as an agency user.',
                         'bold' => false,
-                    ],
-                    [
-                        'text' => $metadata['client_name'] . '.',
-                        'bold' => true,
-                    ],
+                    ]
                 ],
 
                 default => [
@@ -239,6 +288,7 @@ class DashboardController extends Controller
 
             return [
                 'type' => $activity->type,
+                'iconClasses' => $iconClasses,
                 'content' => $content,
                 'time' => $activity->created_at->diffForHumans(),
             ];

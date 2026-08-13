@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Services\StatsService;
+use App\Services\ActivityLogger;
+
 use App\Models\File;
 use App\Models\Client;
 use App\Models\Task;
@@ -88,6 +90,16 @@ class FileController extends Controller
 			'size' => $uploadedFile->getSize(),
 		]);
 
+        ActivityLogger::log(
+            'file.uploaded',
+            $file,
+            [
+                'name' => $file->name,
+                'task_name' => $task->title,
+                'project_name' => $task->project->name
+            ]
+        );
+
 		return redirect()
 			->route('tasks.show', $task)
 			->with('success', 'File uploaded.');        
@@ -110,6 +122,15 @@ class FileController extends Controller
         if (Storage::disk('public')->exists($file->path)) {
             Storage::disk('public')->delete($file->path);
         }
+
+        ActivityLogger::log(
+            'file.deleted',
+            $project,
+            [
+                'file_name' => $file->name,
+                'task_name' => $file->task->title,
+            ]
+        );
 
         $file->delete();
 

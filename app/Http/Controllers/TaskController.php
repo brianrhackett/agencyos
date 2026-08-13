@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\StatsService;
+use App\Services\ActivityLogger;
 use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\Task;
@@ -88,7 +89,17 @@ class TaskController extends Controller
             $validated['completed_at'] = now();
         }
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
+        ActivityLogger::log(
+            'task.created',
+            $task,
+            [
+                'task_name' => $task->title,
+                'project_name' => $project->name,
+                'client_name' => $task->client->name,
+            ]
+        );
 
         return redirect()
             ->route('projects.show', $project)
@@ -107,7 +118,18 @@ class TaskController extends Controller
             $validated['completed_at'] = now();
         }
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
+        ActivityLogger::log(
+            'task.created',
+            $task,
+            [
+                'task_name' => $task->title,
+                'project_name' => $task->project->name,
+                'milestone_name' => $milestone->name,
+                'client_name' => $task->client->name,
+            ]
+        );
 
         return redirect()
             ->route('milestones.show', $milestone)
@@ -123,6 +145,12 @@ class TaskController extends Controller
             && !$task->completed_at
         ) {
             $validated['completed_at'] = now();
+
+            $task_type = "task.completed";
+        }
+        else
+        {
+            $task_type = "task.updated";
         }
 
         if ($validated['status'] !== TaskStatus::Completed->value) {
@@ -130,6 +158,17 @@ class TaskController extends Controller
         }
 
         $task->update($validated);
+
+        ActivityLogger::log(
+            $task_type,
+            $task,
+            [
+                'task_name' => $task->title,
+                'project_name' => $task->project->name,
+                'milestone_name' => $task->milestone?->name,
+                'client_name' => $task->project->client->name,
+            ]
+        );
 
         return redirect()
             ->route('tasks.show', $task)
@@ -194,11 +233,42 @@ class TaskController extends Controller
             $validated['completed_at'] = now();
         }
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
+        ActivityLogger::log(
+            'task.created',
+            $task,
+            [
+                'task_name' => $task->title,
+                'project_name' => $task->project->name,
+                'milestone_name' => $task->milestone?->name,
+                'client_name' => $task->project->client->name,
+            ]
+        );
 
         return redirect()
             ->route('tasks.index')
             ->with('success', 'Task created successfully.');
+    }
+
+    public function destroy(Task $task)
+    {
+        $task->delete();
+
+        ActivityLogger::log(
+            'task.deleted',
+            $task,
+            [
+                'task_name' => $task->title,
+                'project_name' => $task->project->name,
+                'milestone_name' => $task->milestone?->name,
+                'client_name' => $task->project->client->name,
+            ]
+        );
+
+		return redirect()
+			->route('tasks.index')
+			->with('success', 'Task deleted successfully.');
     }
 
     private function _validateTask(Request $request, $includeContext = false): array

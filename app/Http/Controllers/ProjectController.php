@@ -77,7 +77,16 @@ class ProjectController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
 
-        Project::create($validated);
+        $project = Project::create($validated);
+
+        ActivityLogger::log(
+            'project.created',
+            $project,
+            [
+                'project_name' => $project->name,
+                'client_name' => $project->client->name,
+            ]
+        );
 
         return redirect()
             ->route('projects.index')
@@ -127,9 +136,31 @@ class ProjectController extends Controller
             'due_date' => ['nullable', 'date', 'after_or_equal:start_date'],
         ]);
 
+        if (
+            $validated['status'] === ProjectStatus::Completed->value
+            && !$project->completed_at
+        ) {
+            $validated['completed_at'] = now();
+
+            $activityType = "project.completed";
+        }
+        else
+        {
+            $activityType = "project.updated";
+        }
+
         $validated['slug'] = Str::slug($validated['name']);
 
         $project->update($validated);
+
+        ActivityLogger::log(
+            $activityType,
+            $project,
+            [
+                'project_name' => $project->name,
+                'client_name' => $project->client->name,
+            ]
+        );
 
         return redirect()
             ->route('projects.index')
@@ -138,7 +169,17 @@ class ProjectController extends Controller
 
 	public function destroy(Project $project)
 	{
-		$project->delete();
+        ActivityLogger::log(
+            'project.deleted',
+            $project,
+            [
+                'project_name' => $project->name,
+                'client_name' => $project->client->name,
+            ]
+        );
+        
+
+        $project->delete();
 
 		return redirect()
 			->route('projects.index')
