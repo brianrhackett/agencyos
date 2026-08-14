@@ -3,7 +3,7 @@
 ])
 
 <a
-	href="{{ route('dashboard') }}"
+	href="{{ url('/') }}"
 	class="inline-flex items-center"
 	wire:navigate
 >

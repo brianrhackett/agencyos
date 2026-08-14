@@ -132,7 +132,7 @@ class DashboardController extends Controller
     {
         $activities = Activity::with('user')
             ->latest()
-            ->take(10)
+            ->take(5)
             ->get();
 
         return $activities->map(function ($activity) {

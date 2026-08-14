@@ -119,7 +119,7 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
 	{
-        $this->authorize('update', $project);
+        $this->authorize('sd', $project);
 
 		$clients = Client::orderBy('name')->get();
         $projectManagers = User::agency()

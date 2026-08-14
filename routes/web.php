@@ -13,7 +13,15 @@ use App\Http\Controllers\MilestoneController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ClientUserController;
 
-Route::view('/', 'landing');
+Route::get('/', function () {
+	if (!auth()->check()) {
+		return redirect()->route('login');
+	}
+
+	return auth()->user()->isClientUser()
+		? redirect()->route('projects.index')
+		: redirect()->route('dashboard');
+})->name('home');
 
 Route::middleware(['auth', 'agency'])->group(function () {
 	Route::get('/dashboard', [DashboardController::class, 'index'])
