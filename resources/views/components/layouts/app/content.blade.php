@@ -23,12 +23,14 @@
 					<x-heroicon-o-magnifying-glass
 						class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
 					/>
-
-					<input
-						type="search"
-						placeholder="Search AgencyOS..."
-						class="w-full rounded-sm border border-stone-300 bg-white py-2.5 pl-10 pr-4 text-sm text-stone-900 outline-none transition-colors placeholder:text-stone-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
-					>
+					<form method="GET" action="{{ route('search') }}">
+						<input
+							name="search"
+							type="search"
+							placeholder="Search AgencyOS..."
+							class="w-full rounded-sm border border-stone-300 bg-white py-2.5 pl-10 pr-4 text-sm text-stone-900 outline-none transition-colors placeholder:text-stone-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+						>
+					</form>
 				</div>
 
 				@if (isset($actions))

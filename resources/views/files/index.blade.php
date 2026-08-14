@@ -33,39 +33,55 @@
                             </p>
                         @endif
                     </div>
-
-                    <div class="flex flex-col gap-3 sm:flex-row">
-                        <div class="relative">
-                            <x-heroicon-o-magnifying-glass
-                                class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
-                            />
-
-                            <input
-                                type="search"
-                                placeholder="Search files..."
-                                class="w-full rounded-sm border border-stone-300 bg-white py-2 pl-9 pr-3 text-sm text-stone-900 outline-none transition-colors placeholder:text-stone-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 sm:w-64 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                    
+                    <form method="GET" action="{{ route('files.index') }}">
+                        <div class="flex flex-col gap-3 sm:flex-row items-baseline">
+                            <div class="relative">
+                                <x-input
+                                    name="search"
+                                    type="search"
+                                    placeholder="Search files..."
+                                    icon="magnifying-glass"
+                                    textSize="text-sm"
+                                    value="{{ request('search') }}"
+                                />
+                            </div>
+                            <x-select 
+                                name="file_type" 
+                                textSize="text-sm"
+                                onchange="this.form.submit()"
                             >
+                                <option value="">All file types</option>
+                                <option value="documents" @selected(request('file_type') == 'documents')>Documents</option>
+                                <option value="images" @selected(request('file_type') == 'images')>Images</option>
+                                <option value="spreadsheets" @selected(request('file_type') == 'spreadsheets')>Spreadsheets</option>
+                                <option value="archives" @selected(request('file_type') == 'archives')>Archives</option>
+                            </x-select>
+                            
+
+                            <x-select 
+                                name="project_id" 
+                                textSize="text-sm" 
+                                onchange="this.form.submit()"
+                            >
+                                <option value="">All Projects</option>
+                                @foreach ($projects as $project)
+                                    <option 
+                                        value="{{ $project->id }}"
+                                        @selected(request('project_id') == $project->id)
+                                    >
+                                        {{ $project->name }}
+                                    </option>
+                                @endforeach
+                            </x-select>
+                            <x-button 
+                                href="{{ route('files.index') }}"
+                                type="button" 
+                                variant="secondary">
+                                Clear
+                            </x-button>
                         </div>
-
-                        <select
-                            class="rounded-sm border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
-                        >
-                            <option>All file types</option>
-                            <option>Documents</option>
-                            <option>Images</option>
-                            <option>Spreadsheets</option>
-                            <option>Archives</option>
-                        </select>
-
-                        <select
-                            class="rounded-sm border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
-                        >
-                            <option>All projects</option>
-                            <option>E-commerce Website Redesign</option>
-                            <option>Digital Brand Refresh</option>
-                            <option>Customer Portal Build</option>
-                        </select>
-                    </div>
+                    </form>
                 </div>
 
                 <div class="w-full min-w-0 overflow-x-auto">
@@ -134,7 +150,7 @@
                                                     href="{{ route('files.download', $file) }}"
                                                     class="block max-w-64 truncate font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
                                                 >
-                                                    {{ $file['name'] }}
+                                                    {{ $file['original_name'] }}
                                                 </a>
 
                                                 <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
@@ -177,7 +193,7 @@
                                                     Download
                                                 </x-dropdown-menu.item>
 
-                                                @can('destroy', $file)
+                                                @can('update', $file->task)
                                                     <x-dropdown-menu.item
                                                         danger
                                                         @click="modalOpen = true"

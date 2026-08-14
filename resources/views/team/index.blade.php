@@ -39,38 +39,26 @@
                         {{ $teamMembersCount }} team members
                     </p>
                 </div>
-
-                <div class="flex flex-col gap-3 sm:flex-row">
-                    <div class="relative">
-                        <x-heroicon-o-magnifying-glass
-                            class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
-                        />
-
-                        <input
-                            type="search"
-                            placeholder="Search team members..."
-                            class="w-full rounded-sm border border-stone-300 bg-white py-2 pl-9 pr-3 text-sm text-stone-900 outline-none transition-colors placeholder:text-stone-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 sm:w-64 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
-                        >
+                <form method="GET" action="{{ route('team.index') }}">
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <div class="relative">
+                            <x-input
+                                name="search"
+                                type="search"
+                                placeholder="Search team members..."
+                                icon="magnifying-glass"
+                                textSize="text-sm"
+                                value="{{ request('search') }}"
+                            />
+                        </div>
+                        <x-button 
+                            href="{{ route('team.index') }}"
+                            type="button" 
+                            variant="secondary">
+                            Clear
+                        </x-button>
                     </div>
-
-                    <select
-                        class="rounded-sm border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
-                    >
-                        <option>All roles</option>
-                        <option>Administrator</option>
-                        <option>Project Manager</option>
-                        <option>Team Member</option>
-                    </select>
-
-                    <select
-                        class="rounded-sm border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
-                    >
-                        <option>All statuses</option>
-                        <option>Active</option>
-                        <option>Invited</option>
-                        <option>Inactive</option>
-                    </select>
-                </div>
+                </form>
             </div>
 
             <ul class="divide-y divide-stone-200 dark:divide-stone-800">

@@ -66,48 +66,49 @@
                             No tasks assigned directly to this project.
                         </p>
                     @else
-                        <div class="divide-y divide-stone-200 dark:divide-stone-800">
-                            @foreach ($project->directTasks as $task)
-                                <div class="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
-                                    <div>
-                                        <p class="font-medium text-stone-900 dark:text-stone-100">
-                                            {{ $task->title }}
-                                        </p>
+                        <table class="min-w-full divide-y divide-stone-200 dark:divide-stone-800">
+							<tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
+								@foreach ($project->directTasks as $task)
+									<tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
+										<td class="px-6 py-4">
+											<p class="font-medium text-stone-900 dark:text-stone-100">
+												{{ $task->title }}
+											</p>
 
-                                        @if ($task->assignedTo)
-                                            <p class="mt-1 text-sm text-stone-500">
-                                                {{ $task->assignedTo->name }}
-                                            </p>
-                                        @endif
-                                    </div>
+											@if ($task->assignedTo)
+												<p class="mt-1 text-sm text-stone-500">
+													{{ $task->assignedTo->name }}
+												</p>
+											@endif
+										</td>
 
-                                    <div class="text-center">
-                                        <x-badge :variant="$task->status->badgeVariant()">
-                                            {{ $task->status->label() }}
-                                        </x-badge>
+										<td class="text-center px-6 py-4">
+											<x-badge :variant="$task->status->badgeVariant()">
+												{{ $task->status->label() }}
+											</x-badge>
 
-                                        @if ($task->due_date)
-                                            <p class="mt-1 text-xs text-stone-500">
-                                                {{ $task->due_date->format('M j, Y') }}
-                                            </p>
-                                        @endif
-                                    </div>
-									<div>
-										<x-row-actions
-											:viewRoute="route('tasks.show', $task)"
-											:editRoute="auth()->user()->can('update', $task)
-															? route('tasks.edit', $task)
-															: null"
-											:deleteRoute="auth()->user()->can('delete', $task)
-															? route('tasks.destroy', $task)
-															: null"
-											:name="$task->title"
-										/>
-									</div>
-
-                                </div>
-                            @endforeach
-                        </div>
+											@if ($task->due_date)
+												<p class="mt-1 text-xs text-stone-500">
+													{{ $task->due_date->format('M j, Y') }}
+												</p>
+											@endif
+										</td>
+										<td class="px-6 py-4 text-right">
+											<x-row-actions
+												:viewRoute="route('tasks.show', $task)"
+												:editRoute="auth()->user()->can('update', $task)
+																? route('tasks.edit', $task)
+																: null"
+												:deleteRoute="auth()->user()->can('delete', $task)
+																? route('tasks.destroy', $task)
+																: null"
+												:name="$task->title"
+											/>
+										</td>
+									</tr>
+								@endforeach
+							</tbody>
+						</table>
                     @endif
                 </x-card>
 				<x-card>
@@ -129,44 +130,45 @@
 							No milestones yet.
 						</p>
 					@else
-						<div class="divide-y divide-stone-200 dark:divide-stone-800">
-							@foreach ($project->milestones as $milestone)
-								<div class="py-4 first:pt-0 last:pb-0">
-									<div class="flex items-start justify-between gap-4">
-										<div>
+						<table class="min-w-full divide-y divide-stone-200 dark:divide-stone-800">
+							<tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
+								@foreach ($project->milestones as $milestone)
+									<tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
+										<td class="px-6 py-4">
 											<a 
-                                                href="{{ route('milestones.show', $milestone) }}"
-                                                class="font-medium text-stone-900 dark:text-stone-100 hover:text-indigo-600"
-                                            >
+												href="{{ route('milestones.show', $milestone) }}"
+												class="font-medium text-stone-900 dark:text-stone-100 hover:text-indigo-600"
+											>
 												{{ $milestone->name }}
-                                            </a>
+											</a>
 
 											@if ($milestone->due_date)
 												<p class="mt-1 text-sm text-stone-500">
 													Due {{ $milestone->due_date->format('M j, Y') }}
 												</p>
 											@endif
-										</div>
+										</td>
 
-										<span class="text-sm text-stone-500">
+										<td class="text-sm text-stone-500 px-6 py-4">
 											{{ $milestone->tasks->count() }} tasks
-										</span>
-                                        <div>
-                                            <x-row-actions
-                                                :viewRoute="route('milestones.show', $milestone)"
-                                                :editRoute="auth()->user()->can('update', $milestone)
+										</td>
+										
+										<td class="px-6 py-4 text-right">
+											<x-row-actions
+												:viewRoute="route('milestones.show', $milestone)"
+												:editRoute="auth()->user()->can('update', $milestone)
 													? route('milestones.edit', $milestone)
 													: null"
-                                                :deleteRoute="auth()->user()->can('delete', $milestone)
+												:deleteRoute="auth()->user()->can('delete', $milestone)
 													? route('milestones.destroy', $milestone)
 													: null"
-                                                :name="$milestone->name"
-                                            />
-                                        </div>
-									</div>
-								</div>
-							@endforeach
-						</div>
+												:name="$milestone->name"
+											/>
+										</td>
+									</tr>
+								@endforeach
+							</tbody>
+						</table>
 					@endif
 				</x-card>
 			</div>

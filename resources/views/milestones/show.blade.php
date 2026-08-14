@@ -76,34 +76,49 @@
 							</p>
 						</div>
 					@else
-						<div class="divide-y divide-stone-200 border-t border-stone-200 dark:divide-stone-800 dark:border-stone-800">
-							@foreach ($milestone->tasks as $task)
-								<div class="flex items-center justify-between gap-6 py-4">
-									<div class="min-w-0">
-										<p class="truncate font-medium text-stone-900 dark:text-stone-100">
-											<a
-												href="{{ route('tasks.show', $task) }}"
-												class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
-											>
+						<table class="min-w-full divide-y divide-stone-200 dark:divide-stone-800">
+							<tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
+								@foreach ($milestone->tasks as $task)
+									<tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
+										<td class="px-6 py-4">
+											<p class="font-medium text-stone-900 dark:text-stone-100">
 												{{ $task->title }}
-											</a>
-										</p>
-
-										<p class="mt-1 text-sm text-stone-500">
-											{{ $task->assignedTo?->name ?? 'Unassigned' }}
-										</p>
-									</div>
-
-									<div class="shrink-0 text-right">
-										@if ($task->due_date)
-											<p class="text-sm text-stone-600 dark:text-stone-400">
-												{{ $task->due_date->format('M j, Y') }}
 											</p>
-										@endif
-									</div>
-								</div>
-							@endforeach
-						</div>
+
+											@if ($task->assignedTo)
+												<p class="mt-1 text-sm text-stone-500">
+													{{ $task->assignedTo->name }}
+												</p>
+											@endif
+										</td>
+
+										<td class="text-center px-6 py-4">
+											<x-badge :variant="$task->status->badgeVariant()">
+												{{ $task->status->label() }}
+											</x-badge>
+
+											@if ($task->due_date)
+												<p class="mt-1 text-xs text-stone-500">
+													{{ $task->due_date->format('M j, Y') }}
+												</p>
+											@endif
+										</td>
+										<td class="px-6 py-4 text-right">
+											<x-row-actions
+												:viewRoute="route('tasks.show', $task)"
+												:editRoute="auth()->user()->can('update', $task)
+																? route('tasks.edit', $task)
+																: null"
+												:deleteRoute="auth()->user()->can('delete', $task)
+																? route('tasks.destroy', $task)
+																: null"
+												:name="$task->title"
+											/>
+										</td>
+									</tr>
+								@endforeach
+							</tbody>
+						</table>
 					@endif
 				</x-card>
 			</div>

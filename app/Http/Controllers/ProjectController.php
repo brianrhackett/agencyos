@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 use App\Enums\ProjectStatus;
+use App\Enums\ProjectPriority;
 use App\Services\StatsService;
 use App\Services\ActivityLogger;
 use App\Models\Project;
@@ -16,7 +17,7 @@ use App\Models\User;
 
 class ProjectController extends Controller
 {
-    public function index(StatsService $stats)
+    public function index(StatsService $stats, Request $request)
 	{
         $summaryCards = [
             'activeProjects' => [
@@ -39,7 +40,7 @@ class ProjectController extends Controller
 
        
 
-        $projects = $this->_getProjectsData();
+        $projects = $this->_getProjectsData($request);
 
         $clientsWithActiveProjects = $this->_getClientsWithActiveProjects();
 
@@ -48,7 +49,9 @@ class ProjectController extends Controller
             'projects' => $projects,
             'activeProjectCount' => $summaryCards['activeProjects']['value'],
             'clientsWithActiveProjects' => $clientsWithActiveProjects,
-            'statuses' => ProjectStatus::cases()
+            'clientsWithActiveProjectsCount' => $clientsWithActiveProjects->count(),
+            'statuses' => ProjectStatus::cases(),
+            'priorities' => ProjectPriority::cases(),
         ]);
     }
 
@@ -57,13 +60,19 @@ class ProjectController extends Controller
         $this->authorize('create', Project::class);
         
 		$clients = Client::orderBy('name')->get();
+        
         $projectManagers = User::agency()
             ->orderBy('name')
             ->get();
+        
+        $teamMembers = User::agency()
+		    ->orderBy('name')
+		    ->get();
 
         return view('projects.create', compact(
             'clients',
-            'projectManagers'
+            'projectManagers',
+            'teamMembers'
         ));
 	}
 
@@ -77,15 +86,23 @@ class ProjectController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'status' => ['required', Rule::enum(ProjectStatus::class)],
-            'priority' => ['required', 'in:low,medium,high'],
+            'priority' => ['required', Rule::enum(ProjectPriority::class)],
             'budget' => ['nullable', 'numeric', 'min:0'],
             'start_date' => ['nullable', 'date'],
             'due_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'team_members' => ['nullable', 'array'],
+            'team_members.*' => ['exists:users,id'],
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
 
+        $teamMembers = $validated['team_members'] ?? [];
+
+        unset($validated['team_members']);
+
         $project = Project::create($validated);
+
+        $project->teamMembers()->sync($teamMembers);
 
         ActivityLogger::log(
             'project.created',
@@ -120,17 +137,23 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
 	{
-        $this->authorize('sd', $project);
+        $this->authorize('update', $project);
 
 		$clients = Client::orderBy('name')->get();
+        
         $projectManagers = User::agency()
             ->orderBy('name')
             ->get();
+        
+        $teamMembers = User::agency()
+		    ->orderBy('name')
+		    ->get();
 
         return view('projects.edit', compact(
             'project',
             'clients',
-            'projectManagers'
+            'projectManagers',
+            'teamMembers'
         ));
 	}
 
@@ -144,11 +167,17 @@ class ProjectController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'status' => ['required', Rule::enum(ProjectStatus::class)],
-            'priority' => ['required', 'in:low,medium,high'],
+            'priority' => ['required', Rule::enum(ProjectPriority::class)],
             'budget' => ['nullable', 'numeric', 'min:0'],
             'start_date' => ['nullable', 'date'],
             'due_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'team_members' => ['nullable', 'array'],
+            'team_members.*' => ['exists:users,id'],
         ]);
+
+        $teamMembers = $validated['team_members'] ?? [];
+
+        unset($validated['team_members']);
 
         if (
             $validated['status'] === ProjectStatus::Completed->value
@@ -166,6 +195,8 @@ class ProjectController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         $project->update($validated);
+
+        $project->teamMembers()->sync($teamMembers);
 
         ActivityLogger::log(
             $activityType,
@@ -202,14 +233,26 @@ class ProjectController extends Controller
 			->with('success', 'Project deleted successfully.');
 	}
 
-    private function _getProjectsData()
+    private function _getProjectsData($request)
     {
         $user = auth()->user();
     
         $query = Project::with([
             'client',
             'projectManager',
-        ]);
+        ])
+            ->when($request->search, function ($query, $search) {
+                $query->where('name', 'ilike', "%{$search}%");
+            })
+            ->when($request->status, function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->when($request->priority, function ($query, $priority) {
+                $query->where('priority', $priority);
+            })
+            ->when($request->client_id, function ($query, $clientId) {
+                $query->where('client_id', $clientId);
+            });
 
         if($user->isClientUser()) {
             $query->whereIn(
@@ -238,7 +281,7 @@ class ProjectController extends Controller
     {
         return Client::whereHas('projects', function ($query) {
                 $query->where('status', 'active');
-            })->count();
+            })->get();
     }
 
 }

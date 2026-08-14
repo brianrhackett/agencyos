@@ -10,7 +10,7 @@ use App\Models\Client;
 
 class ClientController extends Controller
 {
-	public function index(StatsService $stats)
+	public function index(StatsService $stats, Request $request)
 	{
         $summaryCards = [
             'totalClients' => [
@@ -31,7 +31,7 @@ class ClientController extends Controller
             ]
         ];
 
-        $clients = $this->_getClientsData();
+        $clients = $this->_getClientsData($request);
 
         return view('clients.index', [
 			'summaryCards' => $summaryCards,
@@ -116,15 +116,22 @@ class ClientController extends Controller
             ->with('success', 'Client deleted successfully.');
     }
 
-    private function _getClientsData()
+    private function _getClientsData($request)
     {
-        return Client::with('primaryContact')
+        $query = Client::with('primaryContact')
+            ->when($request->search, function ($query, $search) {
+                $query->where('name', 'ilike', "%{$search}%");
+            })
+            ->when($request->filled('is_active'), function ($query) use ($request) {
+                $query->where('is_active', $request->is_active);
+            })
             ->withCount([
                 'projects as active_projects_count' => function ($query) {
                     $query->where('status', 'active');
                 }
-            ])
-            ->paginate(5);
+            ]);
+            
+        return $query->paginate(5)->withQueryString();
     }
 
     

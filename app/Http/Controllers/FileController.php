@@ -10,10 +10,11 @@ use App\Services\ActivityLogger;
 use App\Models\File;
 use App\Models\Client;
 use App\Models\Task;
+use App\Models\Project;
 
 class FileController extends Controller
 {
-    public function index(StatsService $stats)
+    public function index(StatsService $stats, Request $request)
 	{
         $storageUsed = $stats->storageUsed();
         
@@ -38,7 +39,7 @@ class FileController extends Controller
 
         
 
-        $files = $this->_getFilesData();
+        $files = $this->_getFilesData($request);
         
 
         $storageByType = collect($this->_getStorageByType())
@@ -63,7 +64,8 @@ class FileController extends Controller
             'totalStoragePctUsed' => $totalStoragePctUsed,
             'storageByType' => $storageByType,
             'clientFolders' => $clientFolders,
-            'fileTypeCounts' => $fileTypeCounts
+            'fileTypeCounts' => $fileTypeCounts,
+            'projects' => $this->_getProjects(),
         ];
 
         $user = auth()->user();
@@ -107,9 +109,9 @@ class FileController extends Controller
 
         ActivityLogger::log(
             'file.uploaded',
-            $file,
+            $task,
             [
-                'name' => $file->name,
+                'name' => $uploadedFile->getClientOriginalName(),
                 'task_name' => $task->title,
                 'project_name' => $task->project->name
             ]
@@ -157,9 +159,41 @@ class FileController extends Controller
         return back()->with('success', 'File deleted.');
     }
 
-    private function _getFilesData()
+    private function _getFilesData($request)
     {
-        $query = File::with('task.project','uploader',);
+        $query = File::with('task.project','uploader',)
+            ->when($request->search, function ($query, $search) {
+                $query->where('original_name', 'ilike', "%{$search}%");
+            })
+            ->when($request->file_type, function ($query, $fileType) {
+                switch ($fileType)
+                {
+                    case 'documents': 
+                        $query->where('mime_type', 'application/pdf');
+                        break;
+                    case 'images': 
+                        $query->where('mime_type', 'ilike', "image%");
+                        break;
+                    case 'spreadsheets': 
+                        $query->whereIn('mime_type', ['application/vnd.ms-excel', 
+                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'text/csv'
+                        ]);
+                        break;
+                    case 'archives': 
+                        $query->whereIn('mime_type', ['application/zip',
+                            'application/x-rar-compressed',
+                            'application/x-7z-compressed',
+                            'application/gzip'
+                        ]);
+                        break;
+                }
+            })
+            ->when($request->project_id, function ($query, $projectId) {
+                $query->whereHas('task', function ($query) use ($projectId) {
+                    $query->where('project_id', $projectId);
+                });
+            });
 
         $user = auth()->user();
         
@@ -171,7 +205,7 @@ class FileController extends Controller
             });
             $query->where('is_client_visible', true);
         }
-        
+
         
         return $query
             ->latest()
@@ -353,5 +387,24 @@ class FileController extends Controller
                 'colorClass' => 'bg-amber-500'
             ],
         ];
+    }
+
+    private function _getProjects()
+    {
+        $user = auth()->user();
+
+        $query = Project::with([
+            'client',
+            'projectManager',
+        ]);
+
+        if($user->isClientUser()) {
+            $query->whereIn(
+                'client_id',
+                $user->clients()->pluck('clients.id')
+            );
+        }
+
+        return $query->get();
     }
 }

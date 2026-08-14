@@ -44,6 +44,37 @@
 		label="Description"
 	>{{ old('description', $project->description ?? '') }}</x-textarea>
 
+	<div>
+		<label class="block text-sm font-medium">
+			Project Team
+		</label>
+
+		<div class="mt-2 space-y-2">
+			@foreach ($teamMembers as $member)
+				<label class="flex items-center gap-2">
+					<input
+						type="checkbox"
+						name="team_members[]"
+						value="{{ $member->id }}"
+						@checked(
+							in_array(
+								$member->id,
+								old(
+									'team_members',
+									isset($project)
+										? $project->teamMembers->pluck('id')->all()
+										: []
+								)
+							)
+						)
+					>
+
+					<span>{{ $member->name }}</span>
+				</label>
+			@endforeach
+		</div>
+	</div>
+
 	<div class="grid gap-6 md:grid-cols-2">
 		<x-select
 			name="status"
@@ -65,12 +96,12 @@
 			label="Priority"
 			required
 		>
-			@foreach (['low', 'medium', 'high'] as $priority)
+			@foreach (\App\Enums\ProjectPriority::cases() as $priority)
 				<option
-					value="{{ $priority }}"
-					@selected(old('priority', $project->priority ?? 'medium') === $priority)
+					value="{{ $priority->value }}"
+					@selected(old('priority', $project->priority->value ?? 'normal') === $priority->value)
 				>
-					{{ ucfirst($priority) }}
+					{{ $priority->label() }}
 				</option>
 			@endforeach
 		</x-select>

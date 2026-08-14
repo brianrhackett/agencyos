@@ -29,8 +29,8 @@ enum TaskPriority: string
     public function badgeVariant(): string
     {
         return match($this) {
-			self::Low => 'neutral',
-			self::Normal => 'neutral',
+			self::Low => 'info',
+			self::Normal => 'primary',
 			self::High => 'danger',
 		};
     }

@@ -4,11 +4,7 @@
         description="View project deadlines, milestones, meetings, and assigned work."
     >
         <x-slot:actions>
-            <x-button>
-                <x-heroicon-o-plus class="h-4 w-4" />
-
-                New Event
-            </x-button>
+            
         </x-slot:actions>
 
         <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">

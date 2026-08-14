@@ -16,7 +16,7 @@ use App\Enums\TaskStatus;
 
 class TaskController extends Controller
 {
-    public function index(StatsService $stats)
+    public function index(StatsService $stats, Request $request)
 	{
         $summaryCards = [
             [
@@ -37,14 +37,16 @@ class TaskController extends Controller
             ]
         ];
 
-        $tasks = $this->_getTasksData();
+        $tasks = $this->_getTasksData($request);
 
         return view('tasks.index', [
 			'summaryCards' => $summaryCards,
             'tasks' => $tasks,
             'totalTaskCount' => $stats->totalTasks(),
             'totalProjectWithTasksCount' => $stats->totalProjectWithTasks(),
-
+            'statuses' => TaskStatus::cases(),
+            'priorities' => TaskPriority::cases(),
+            'assignees' => $this->_getPossibleAssignees(),
         ]);
     }
 
@@ -313,13 +315,35 @@ class TaskController extends Controller
         return $request->validate($rules);
     }
     
-    private function _getTasksData()
+    private function _getTasksData($request)
     {
         $query = Task::with([
             'project',
             'milestone',
             'assignedTo',
-        ]);
+        ])
+            ->when($request->search, function ($query, $search) {
+                $query->where('title', 'ilike', "%{$search}%")
+                    ->orWhereHas('project', function ($query) use ($search) {
+                        $query->where('name', 'ilike', "%{$search}%");
+                    })
+                    ->orWhereHas('project.client', function ($query) use ($search) {
+                        $query->where('name', 'ilike', "%{$search}%");
+                    })
+                    ->orWhereHas('milestone', function ($query) use ($search) {
+                        $query->where('name', 'ilike', "%{$search}%");
+                    });
+            })
+            ->when($request->status, function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->when($request->priority, function ($query, $priority) {
+                $query->where('priority', $priority);
+            })
+            ->when($request->assignee, function ($query, $assignee) {
+                $query->where('assigned_to', $assignee);
+            });
+
 
         $user = auth()->user();
 
@@ -333,5 +357,27 @@ class TaskController extends Controller
 
         return $query->paginate(5)
             ->withQueryString();
+    }
+
+    private function _getPossibleAssignees()
+    {
+        $user = auth()->user();
+
+        if ($user->clients()->exists()) {
+            $clientIds = $user->clients()->pluck('clients.id');
+
+            $assignees = User::where(function ($query) use ($clientIds) {
+                $query->whereHas('clients', function ($query) use ($clientIds) {
+                    $query->whereIn('clients.id', $clientIds);
+                })
+                ->orWhereDoesntHave('clients');
+            })
+            ->orderBy('name')
+            ->get();
+        } else {
+            $assignees = User::orderBy('name')->get();
+        }
+
+        return $assignees;
     }
 }

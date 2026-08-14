@@ -25,4 +25,13 @@ enum ProjectPriority: string
 			self::High => 'red',
 		};
 	}
+
+    public function badgeVariant(): string
+    {
+        return match ($this) {
+            self::Low => 'info',
+            self::Normal => 'primary',
+            self::High => 'danger',
+        };
+    }
 }

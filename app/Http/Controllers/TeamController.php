@@ -13,9 +13,9 @@ use App\Models\Project;
 
 class TeamController extends Controller
 {
-    public function index()
+    public function index(Request $request)
 	{
-        $teamMembers = $this->_getTeamMembers();
+        $teamMembers = $this->_getTeamMembers($request);
         $teamMemberIds = $teamMembers->pluck('id');
         $teamMembers = $this->_getAdditionalData($teamMembers);
         $summaryCards = [
@@ -150,23 +150,29 @@ class TeamController extends Controller
             ->with('success', 'Team member deleted.');
     }
 
-    private function _getTeamMembers()
+    private function _getTeamMembers($request)
     {
         $user = auth()->user();
 
         $client = $user->clients()->first();
 
         if ($client) {
-            return $client->users()
+            $query = $client->users()
                 ->withPivot([
                     'job_title',
                     'is_primary_contact',
-                ])
-                ->paginate(5);
+                ]);
+        }
+        else
+        {
+            $query = User::whereDoesntHave('clients');
         }
 
-        return User::whereDoesntHave('clients')
-            ->paginate(5);
+        $query->when($request->search, function ($query, $search) {
+                $query->where('name', 'ilike', "%{$search}%");
+            });
+
+        return $query->paginate(5);
     }
 
     private function _getAdditionalData($teamMembers)

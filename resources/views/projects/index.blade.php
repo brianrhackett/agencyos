@@ -36,46 +36,82 @@
                     </h2>
                     @if( auth()->user()->isAgencyUser() )
                         <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                            {{ $activeProjectCount }} projects across {{ $clientsWithActiveProjects }} clients
+                            {{ $activeProjectCount }} projects across {{ $clientsWithActiveProjectsCount }} clients
                         </p>
                     @endif
                 </div>
+                
+                <form method="GET" action="{{ route('projects.index') }}">
+                    <div class="flex flex-col gap-3 sm:flex-row items-baseline">
+                        <div class="relative">
+                            <x-input
+                                name="search"
+                                type="search"
+                                placeholder="Search projects..."
+                                icon="magnifying-glass"
+                                textSize="text-sm"
+                                value="{{ request('search') }}"
+                            />
+                        </div>
 
-                <div class="flex flex-col gap-3 sm:flex-row">
-                    <div class="relative">
-                        <x-input
-                            name="search"
-                            type="search"
-                            placeholder="Search projects..."
-                            icon="magnifying-glass"
+                        <x-select 
+                            name="status" 
                             textSize="text-sm"
-                        />
-                    </div>
-
-                    <x-select name="status" textSize="text-sm">
-                        <option>All statuses</option>
-                        @foreach ($statuses as $status)
-                            <option
-                                value="{{ $status->value }}"
-                                @selected(request('status') === $status->value)
-                            >
-                                {{ $status->label() }}
-                            </option>
-                        @endforeach
-                    </x-select>
-                    
-                    @if( auth()->user()->isAgencyUser() )
-                        <select
-                            class="rounded-sm border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                            onchange="this.form.submit()"
                         >
-                            <option>All clients</option>
-                            <option>Acme Outdoor Supply</option>
-                            <option>Northstar Financial Group</option>
-                            <option>GreenLeaf Co.</option>
-                            <option>Wave Industries</option>
-                        </select>
-                    @endif
-                </div>
+                            <option value="">All statuses</option>
+                            @foreach ($statuses as $status)
+                                <option
+                                    value="{{ $status->value }}"
+                                    @selected(request('status') === $status->value)
+                                >
+                                    {{ $status->label() }}
+                                </option>
+                            @endforeach
+                        </x-select>
+
+                        <x-select 
+                            name="priority" 
+                            textSize="text-sm"
+                            onchange="this.form.submit()"
+                        >
+                            <option value="">All priorities</option>
+                            @foreach ($priorities as $priority)
+                                <option
+                                    value="{{ $priority->value }}"
+                                    @selected(request('priority') === $priority->value)
+                                >
+                                    {{ $priority->label() }}
+                                </option>
+                            @endforeach
+                        </x-select>
+                        
+                        @if( auth()->user()->isAgencyUser() )
+                            <x-select 
+                                name="client_id" 
+                                textSize="text-sm" 
+                                onchange="this.form.submit()"
+                            >
+                                <option value="">All clients</option>
+                                @foreach ($clientsWithActiveProjects as $client)
+                                    <option 
+                                        value="{{ $client->id }}"
+                                        @selected(request('client_id') == $client->id)
+                                    >
+                                        {{ $client->name }}
+                                    </option>
+                                @endforeach
+                            </x-select>
+                        @endif
+
+                        <x-button 
+                            href="{{ route('projects.index') }}"
+                            type="button" 
+                            variant="secondary">
+                            Clear
+                        </x-button>
+                    </div>
+                </form>
             </div>
 
             <div class="overflow-x-auto">
@@ -108,6 +144,13 @@
                                 class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400"
                             >
                                 Status
+                            </th>
+
+                            <th
+                                scope="col"
+                                class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400"
+                            >
+                                Priority
                             </th>
 
                             <th
@@ -183,6 +226,12 @@
                                 </td>
 
                                 <td class="whitespace-nowrap px-6 py-4">
+                                    <x-badge :variant="$project->priority->badgeVariant()">
+                                        {{ $project->priority->label() }}
+                                    </x-badge>
+                                </td>
+
+                                <td class="whitespace-nowrap px-6 py-4">
                                     <p class="text-sm text-stone-700 dark:text-stone-300">
                                         {{ $project->due_date->format('M j, Y') }}
                                     </p>
@@ -235,7 +284,7 @@
                 </p>
 
                 <div class="flex items-center gap-1">
-                    {{ $projects->links() }}
+                    {{ $projects->withQueryString()->links() }}
                 </div>
             </div>
         </x-card>

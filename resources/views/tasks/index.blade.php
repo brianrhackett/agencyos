@@ -43,43 +43,75 @@
                         @endif
                     </div>
 
-                    <div class="flex flex-col gap-3 md:flex-row">
-                        <div class="relative">
-                            <x-heroicon-o-magnifying-glass
-                                class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
-                            />
+                    <form method="GET" action="{{ route('tasks.index') }}">
+                        <div class="flex flex-col gap-3 md:flex-row items-baseline">
+                            <div class="relative">
+                                <x-input
+                                    name="search"
+                                    type="search"
+                                    placeholder="Search tasks..."
+                                    icon="magnifying-glass"
+                                    textSize="text-sm"
+                                    value="{{ request('search') }}"
+                                />
+                            </div>
 
-                            <input
-                                type="search"
-                                placeholder="Search tasks..."
-                                class="w-full rounded-sm border border-stone-300 bg-white py-2 pl-9 pr-3 text-sm text-stone-900 outline-none transition-colors placeholder:text-stone-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 md:w-64 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20"
+                            <x-select 
+                                name="status" 
+                                textSize="text-sm"
+                                onchange="this.form.submit()"
                             >
+                                <option value="">All statuses</option>
+                                @foreach($statuses as $status)
+                                    <option
+                                        value="{{ $status->value }}"
+                                        @selected(request('status') === $status->value)
+                                    >
+                                        {{ $status->label() }}
+                                    </option>
+                                @endforeach
+                            </x-select>
+
+                            <x-select 
+                                name="priority" 
+                                textSize="text-sm"
+                                onchange="this.form.submit()"
+                            >
+                                <option value="">All priorities</option>
+                                @foreach ($priorities as $priority)
+                                    <option
+                                        value="{{ $priority->value }}"
+                                        @selected(request('priority') === $priority->value)
+                                    >
+                                        {{ $priority->label() }}
+                                    </option>
+                                @endforeach
+                            </x-select>
+
+                            <x-select 
+                                name="assignee" 
+                                textSize="text-sm"
+                                onchange="this.form.submit()"
+                            >
+                                <option value="">All assignees</option>
+                                @foreach ($assignees as $assignee)
+                                    <option
+                                        value="{{ $assignee->id }}"
+                                        @selected(request('assignee') == $assignee->id)
+                                    >
+                                        {{ $assignee->name }}
+                                    </option>
+                                @endforeach
+                            </x-select>
+
+                            <x-button 
+                                href="{{ route('tasks.index') }}"
+                                type="button" 
+                                variant="secondary">
+                                Clear
+                            </x-button>
                         </div>
-
-                        <select class="rounded-sm border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
-                            <option>All statuses</option>
-                            <option>To do</option>
-                            <option>In progress</option>
-                            <option>In review</option>
-                            <option>Blocked</option>
-                            <option>Completed</option>
-                        </select>
-
-                        <select class="rounded-sm border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
-                            <option>All priorities</option>
-                            <option>Urgent</option>
-                            <option>High</option>
-                            <option>Normal</option>
-                            <option>Low</option>
-                        </select>
-
-                        <select class="rounded-sm border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
-                            <option>All assignees</option>
-                            <option>Brian Hackett</option>
-                            <option>Maya Rodriguez</option>
-                            <option>Ethan Brooks</option>
-                        </select>
-                    </div>
+                    </form>
                 </div>
             </div>
 
