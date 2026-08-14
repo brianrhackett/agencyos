@@ -28,7 +28,7 @@
 	<div class="flex whitespace-normal text-left min-h-screen items-center justify-center p-6">
 		<div
 			{{ $attributes->merge([
-				'class' => 'relative w-full ' . $widths[$maxWidth] . ' rounded-sm border border-stone-200 bg-white',
+				'class' => 'relative w-full ' . $widths[$maxWidth] . ' rounded-sm border border-stone-200 bg-white dark:bg-stone-950 dark:border-stone-700 dark:text-stone-400',
 			]) }}
 		>
 			{{ $slot }}

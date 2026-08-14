@@ -10,6 +10,8 @@ class CommentController extends Controller
 {
 	public function store(Request $request, Task $task)
 	{
+		$this->authorize('view', $task);
+		
 		$validated = $request->validate([
 			'body' => ['required', 'string', 'max:5000'],
 		]);

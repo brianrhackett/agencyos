@@ -11,11 +11,15 @@ class MilestoneController extends Controller
 {
 	public function create(Project $project)
 	{
+        $this->authorize('update', $project);
+
 		return view('milestones.create', compact('project'));
 	}
 
 	public function store(Request $request, Project $project)
 	{
+        $this->authorize('update', $project);
+        
 		$validated = $request->validate([
 			'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -48,6 +52,8 @@ class MilestoneController extends Controller
 
 	public function show(Milestone $milestone)
 	{
+        $this->authorize('view', $milestone);
+
 		$milestone->load([
 			'project.client',
 			'tasks.assignedTo',
@@ -58,11 +64,15 @@ class MilestoneController extends Controller
 
 	public function edit(Milestone $milestone)
 	{
+        $this->authorize('update', $milestone);
+
 		return view('milestones.edit', compact('milestone'));
 	}
 
 	public function update(Request $request, Milestone $milestone)
 	{
+        $this->authorize('update', $milestone);
+
 		$validated = $request->validate([
 			'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -105,6 +115,8 @@ class MilestoneController extends Controller
 
 	public function destroy(Milestone $milestone)
 	{
+        $this->authorize('delete', $milestone);
+
 		$project = $milestone->project;
 
 		ActivityLogger::log(

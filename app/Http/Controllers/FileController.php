@@ -30,11 +30,13 @@ class FileController extends Controller
                 'title' => 'Uploaded This Week',
                 'value' => $stats->uploadedThisWeek()
             ],
-            [
+            'sharedWithClientsCount' => [
                 'title' => 'Shared With Clients',
                 'value' => $stats->sharedWithClients()
             ]
         ];
+
+        
 
         $files = $this->_getFilesData();
         
@@ -50,8 +52,9 @@ class FileController extends Controller
 
         $totalStorageAvailable = 21474836480;
         $totalStoragePctUsed = round(100 * $storageUsed / $totalStorageAvailable, 0);
-        return view('files.index', [
-			'summaryCards' => $summaryCards,
+
+        $returnData = [
+            'summaryCards' => $summaryCards,
             'files' => $files,
             'totalFiles' => $summaryCards['totalFiles']['value'],
             'clientsWithFiles' => $stats->clientsWithFiles(),
@@ -61,11 +64,23 @@ class FileController extends Controller
             'storageByType' => $storageByType,
             'clientFolders' => $clientFolders,
             'fileTypeCounts' => $fileTypeCounts
-        ]);
+        ];
+
+        $user = auth()->user();
+
+        if( $user->isClientUser() )
+        {
+            unset($returnData['summaryCards']['sharedWithClientsCount']);
+            unset($returnData['clientFolders']);
+        }
+
+        return view('files.index', $returnData);
     }
 
     public function store(Request $request, Task $task)
     {
+        $this->authorize('view', $task);
+
 		$validated = $request->validate([
 			'file' => [
 				'required',
@@ -107,6 +122,8 @@ class FileController extends Controller
 
     public function download(File $file)
     {
+        $this->authorize('view', $file->task);
+
         if (!Storage::disk('public')->exists($file->path)) {
             abort(404);
         }
@@ -119,16 +136,19 @@ class FileController extends Controller
 
     public function destroy(File $file)
     {
+        $this->authorize('view', $file->task);
+        
         if (Storage::disk('public')->exists($file->path)) {
             Storage::disk('public')->delete($file->path);
         }
 
         ActivityLogger::log(
             'file.deleted',
-            $project,
+            $file,
             [
                 'file_name' => $file->name,
                 'task_name' => $file->task->title,
+                'project_name' => $file->task->project->name
             ]
         );
 
@@ -149,6 +169,7 @@ class FileController extends Controller
             $query->whereHas('task.project', function ($query) use ($clientIds) {
                 $query->whereIn('client_id', $clientIds);
             });
+            $query->where('is_client_visible', true);
         }
         
         
@@ -160,7 +181,21 @@ class FileController extends Controller
 
     private function _getStorageByType()
     {
-        $files = File::select('mime_type', 'size')->get();
+        $query = File::select('mime_type', 'size');
+
+        $user = auth()->user();
+        
+        if ($user->isClientUser()) {
+            $clientIds = $user->clients()->pluck('clients.id');
+
+            $query->whereHas('task.project', function ($query) use ($clientIds) {
+                $query->whereIn('client_id', $clientIds);
+            });
+
+            $query->where('is_client_visible', true);
+        }
+         
+        $files = $query->get();
 
         $storage = [
             'documents' => 0,
@@ -243,7 +278,21 @@ class FileController extends Controller
 
     private function _getFileTypeCounts()
     {
-        $files = File::select('mime_type')->get();
+        $query = File::select('mime_type');
+        
+        $user = auth()->user();
+        
+        if ($user->isClientUser()) {
+            $clientIds = $user->clients()->pluck('clients.id');
+
+            $query->whereHas('task.project', function ($query) use ($clientIds) {
+                $query->whereIn('client_id', $clientIds);
+            });
+
+            $query->where('is_client_visible', true);
+        }
+
+        $files = $query->get();
 
         $counts = [
             'pdf' => 0,

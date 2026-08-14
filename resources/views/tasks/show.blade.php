@@ -20,12 +20,14 @@
 				@endif
 			</div>
 
-			<x-button
-				href="{{ route('tasks.edit', $task) }}"
-				variant="secondary"
-			>
-				Edit Task
-			</x-button>
+			@can('update', $task)
+				<x-button
+					href="{{ route('tasks.edit', $task) }}"
+					variant="secondary"
+				>
+					Edit Task
+				</x-button>
+			@endcan
 		</div>
 
 		<div class="grid gap-6 lg:grid-cols-3">

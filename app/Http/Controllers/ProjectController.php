@@ -53,6 +53,8 @@ class ProjectController extends Controller
 
     public function create()
 	{
+        $this->authorize('create', Project::class);
+        
 		$clients = Client::orderBy('name')->get();
         $projectManagers = User::agency()
             ->orderBy('name')
@@ -65,7 +67,9 @@ class ProjectController extends Controller
 	}
 
     public function store(Request $request)
-	{
+	{        
+        $this->authorize('create', Project::class);
+
         $validated = $request->validate([
             'client_id' => ['required', 'exists:clients,id'],
             'project_manager_id' => ['nullable', 'exists:users,id'],
@@ -131,6 +135,8 @@ class ProjectController extends Controller
 
 	public function update(Request $request, Project $project)
 	{
+        $this->authorize('edit', $project);
+
         $validated = $request->validate([
             'client_id' => ['required', 'exists:clients,id'],
             'project_manager_id' => ['nullable', 'exists:users,id'],
@@ -176,6 +182,8 @@ class ProjectController extends Controller
 
 	public function destroy(Project $project)
 	{
+        $this->authorize('delete', $project);
+
         ActivityLogger::log(
             'project.deleted',
             $project,

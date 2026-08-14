@@ -3,15 +3,17 @@
         title="Projects"
         description="Track client work, milestones, deadlines, and project health."
     >
-        <x-slot:actions>
-            <x-button
-                href="{{ route('projects.create') }}"
-            >
-                <x-heroicon-o-plus class="h-4 w-4" />
+        @can('create', App\Models\Project::class)
+            <x-slot:actions>
+                <x-button
+                    href="{{ route('projects.create') }}"
+                >
+                    <x-heroicon-o-plus class="h-4 w-4" />
 
-                New Project
-            </x-button>
-        </x-slot:actions>
+                    New Project
+                </x-button>
+            </x-slot:actions>
+        @endcan
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             @foreach ($summaryCards as $card)
@@ -32,10 +34,11 @@
                     <h2 class="text-lg font-bold text-stone-900 dark:text-stone-100">
                         All Projects
                     </h2>
-
-                    <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                        {{ $activeProjectCount }} projects across {{ $clientsWithActiveProjects }} clients
-                    </p>
+                    @if( auth()->user()->isAgencyUser() )
+                        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                            {{ $activeProjectCount }} projects across {{ $clientsWithActiveProjects }} clients
+                        </p>
+                    @endif
                 </div>
 
                 <div class="flex flex-col gap-3 sm:flex-row">
@@ -203,8 +206,12 @@
                                 <td class="whitespace-nowrap px-6 py-4 text-right">
                                     <x-row-actions
                                         :viewRoute="route('projects.show', $project)"
-                                        :editRoute="route('projects.edit', $project)"
-                                        :deleteRoute="route('projects.destroy', $project)"
+                                        :editRoute="auth()->user()->can('update', $project)
+															? route('projects.edit', $project)
+															: null"
+                                        :deleteRoute="auth()->user()->can('delete', $project)
+															? route('projects.destroy', $project)
+															: null"
                                         :name="$project->name"
                                     />
                                 </td>

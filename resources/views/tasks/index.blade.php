@@ -4,13 +4,15 @@
         description="Organize assignments, monitor deadlines, and keep project work moving."
     >
         <x-slot:actions>
-            <x-button
-                href="{{ route('tasks.create') }}"
-            >
-                <x-heroicon-o-plus class="h-4 w-4" />
+            @can('create', App\Models\Task::class)
+                <x-button
+                    href="{{ route('tasks.create') }}"
+                >
+                    <x-heroicon-o-plus class="h-4 w-4" />
 
-                New Task
-            </x-button>
+                    New Task
+                </x-button>
+            @endcan
         </x-slot:actions>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -34,9 +36,11 @@
                             All Tasks
                         </h2>
 
-                        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                            {{ $totalTaskCount }} tasks across {{ $totalProjectWithTasksCount }} projects
-                        </p>
+                        @if( auth()->user()->isAgencyUser() )
+                            <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                                {{ $totalTaskCount }} tasks across {{ $totalProjectWithTasksCount }} projects
+                            </p>
+                        @endif
                     </div>
 
                     <div class="flex flex-col gap-3 md:flex-row">
@@ -181,8 +185,12 @@
                                     <div>
 										<x-row-actions
 											:viewRoute="route('tasks.show', $task)"
-											:editRoute="route('tasks.edit', $task)"
-											:deleteRoute="route('tasks.destroy', $task)"
+											:editRoute="auth()->user()->can('update', $task)
+															? route('tasks.edit', $task)
+															: null"
+											:deleteRoute="auth()->user()->can('delete', $task)
+															? route('tasks.destroy', $task)
+															: null"
 											:name="$task->title"
 										/>
 									</div>

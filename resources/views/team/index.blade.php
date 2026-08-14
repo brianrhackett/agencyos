@@ -1,16 +1,18 @@
 <x-layouts.app>
     <x-layouts.app.content
         title="Team"
-        description="Manage agency members, roles, assignments, and workload."
+        description="Manage team members, roles, assignments, and workload."
     >
         <x-slot:actions>
-            <x-button
-                href="{{ route('team.create') }}"
-            >
-                <x-heroicon-o-user-plus class="h-4 w-4" />
+            @can('create', App\Models\User::class)
+                <x-button
+                    href="{{ route('team.create') }}"
+                >
+                    <x-heroicon-o-user-plus class="h-4 w-4" />
 
-                Invite Member
-            </x-button>
+                    Invite Member
+                </x-button>
+            @endcan
         </x-slot:actions>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -34,7 +36,7 @@
                     </h2>
 
                     <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                        {{ $teamMembersCount }} agency members
+                        {{ $teamMembersCount }} team members
                     </p>
                 </div>
 
@@ -143,8 +145,12 @@
                                 <div>
                                     <x-row-actions
                                         :viewRoute="route('team.show', $member['user'])"
-                                        :editRoute="route('team.edit', $member['user'])"
-                                        :deleteRoute="route('team.destroy', $member['user'])"
+                                        :editRoute="auth()->user()->can('update', $member['user'])
+															? route('team.edit', $member['user'])
+															: null"
+                                        :deleteRoute="auth()->user()->can('delete', $member['user'])
+															? route('team.destroy', $member['user'])
+															: null"
                                         :name="$member['name']"
                                     />
                                 </div>

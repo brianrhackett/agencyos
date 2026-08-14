@@ -28,7 +28,7 @@ class TeamController extends Controller
                 'value' => $this->_assignedProjects($teamMemberIds),
             ],
             [
-                'title' => 'TaskDueToday',
+                'title' => 'Tasks Due Today',
                 'value' => $this->_tasksDueToday($teamMemberIds),
             ]
         ];

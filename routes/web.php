@@ -11,15 +11,35 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\MilestoneController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ClientUserController;
 
 Route::view('/', 'landing');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::middleware(['auth', 'agency'])->group(function () {
+	Route::get('/dashboard', [DashboardController::class, 'index'])
+		->name('dashboard');
 
-Route::resource('clients', ClientController::class)
-	->middleware('auth');
+	Route::resource('clients', ClientController::class);
+});
+
+Route::prefix('clients/{client}/users')
+	->name('clients.users.')
+	->group(function () {
+		Route::get('/create', [ClientUserController::class, 'create'])
+			->name('create');
+
+		Route::post('/', [ClientUserController::class, 'store'])
+			->name('store');
+
+		Route::get('/{user}/edit', [ClientUserController::class, 'edit'])
+			->name('edit');
+
+		Route::put('/{user}', [ClientUserController::class, 'update'])
+			->name('update');
+
+		Route::delete('/{user}', [ClientUserController::class, 'destroy'])
+			->name('destroy');
+	});
 
 Route::resource('projects', ProjectController::class)
 	->middleware('auth');

@@ -16,12 +16,14 @@
 				@endif
 			</div>
 
-			<x-button
-				href="{{ route('milestones.edit', $milestone) }}"
-				variant="secondary"
-			>
-				Edit Milestone
-			</x-button>
+			@can('update', $milestone)
+				<x-button
+					href="{{ route('milestones.edit', $milestone) }}"
+					variant="secondary"
+				>
+					Edit Milestone
+				</x-button>
+			@endcan
 		</div>
 
 		<div class="grid gap-6 lg:grid-cols-3">
@@ -57,14 +59,14 @@
 								{{ Str::plural('task', $milestone->tasks->count()) }}
 							</p>
 						</div>
-
-						<x-button
-							href="{{ route('milestones.tasks.create', $milestone) }}"
-							size="sm"
-						>
-							Add Task
-						</x-button>
-						
+						@can('create', App\Models\Task::class)
+							<x-button
+								href="{{ route('milestones.tasks.create', $milestone) }}"
+								size="sm"
+							>
+								Add Task
+							</x-button>
+						@endcan
 					</div>
 
 					@if ($milestone->tasks->isEmpty())
@@ -79,7 +81,12 @@
 								<div class="flex items-center justify-between gap-6 py-4">
 									<div class="min-w-0">
 										<p class="truncate font-medium text-stone-900 dark:text-stone-100">
-											{{ $task->name }}
+											<a
+												href="{{ route('tasks.show', $task) }}"
+												class="font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
+											>
+												{{ $task->title }}
+											</a>
 										</p>
 
 										<p class="mt-1 text-sm text-stone-500">

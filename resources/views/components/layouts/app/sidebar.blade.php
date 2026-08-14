@@ -36,45 +36,47 @@
                                 heading=""
                                 class="grid gap-1"
                             >
-                                <flux:navlist.item
-                                    icon="home"
-                                    :href="route('dashboard')"
-                                    :current="request()->routeIs('dashboard')"
-                                    wire:navigate
+                                @if (auth()->user()->isAgencyUser())
+                                    <flux:navlist.item
+                                        icon="home"
+                                        :href="route('dashboard')"
+                                        :current="request()->routeIs('dashboard')"
+                                        wire:navigate
 
-                                    class="
-                                        agency-nav-item
-                                        rounded-none border-transparent
-                                        data-current:!border-indigo-600
-                                        data-current:!bg-transparent
-                                        data-current:!text-indigo-600
-                                        dark:data-current:!border-indigo-400
-                                        dark:data-current:!bg-transparent
-                                        dark:data-current:!text-indigo-300
-                                    "
-                                >
-                                    Dashboard
-                                </flux:navlist.item>
+                                        class="
+                                            agency-nav-item
+                                            rounded-none border-transparent
+                                            data-current:!border-indigo-600
+                                            data-current:!bg-transparent
+                                            data-current:!text-indigo-600
+                                            dark:data-current:!border-indigo-400
+                                            dark:data-current:!bg-transparent
+                                            dark:data-current:!text-indigo-300
+                                        "
+                                    >
+                                        Dashboard
+                                    </flux:navlist.item>
 
-                                <flux:navlist.item
-                                    icon="building-office-2"
-                                    :href="route('clients.index')"
-                                    :current="request()->routeIs('clients.*')"
-                                    wire:navigate
-                                    class="
-                                        agency-nav-item
-                                        rounded-none border-transparent
-                                        data-current:!border-indigo-600
-                                        data-current:!bg-transparent
-                                        data-current:!text-indigo-600
-                                        dark:data-current:!border-indigo-400
-                                        dark:data-current:!bg-transparent
-                                        dark:data-current:!text-indigo-300
-                                    "                                
-                                >
-                                    Clients
-                                </flux:navlist.item>
-
+                                    <flux:navlist.item
+                                        icon="building-office-2"
+                                        :href="route('clients.index')"
+                                        :current="request()->routeIs('clients.*')"
+                                        wire:navigate
+                                        class="
+                                            agency-nav-item
+                                            rounded-none border-transparent
+                                            data-current:!border-indigo-600
+                                            data-current:!bg-transparent
+                                            data-current:!text-indigo-600
+                                            dark:data-current:!border-indigo-400
+                                            dark:data-current:!bg-transparent
+                                            dark:data-current:!text-indigo-300
+                                        "                                
+                                    >
+                                        Clients
+                                    </flux:navlist.item>
+                                @endif
+                                
                                 <flux:navlist.item
                                     icon="folder"
                                     :href="route('projects.index')"

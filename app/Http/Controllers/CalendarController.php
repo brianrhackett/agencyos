@@ -59,9 +59,20 @@ class CalendarController extends Controller
 
     private function _getTaskEventsData($start, $end)
     {
-        return Task::with('project.client')
-            ->whereBetween('due_date', [$start, $end])
-            ->get()
+        $query = Task::with('project.client')
+            ->whereBetween('due_date', [$start, $end]);
+
+        $user = auth()->user();
+
+        if ($user->isClientUser()) {
+            $clientIds = $user->clients()->pluck('clients.id');
+
+            $query->whereHas('project', function ($query) use ($clientIds) {
+                $query->whereIn('client_id', $clientIds);
+            });
+        }
+
+        return $query->get()
             ->map(function ($task) {
                 return [
                     'title' => $task->title,
@@ -78,9 +89,20 @@ class CalendarController extends Controller
 
     private function _getMilestoneEventsData($start, $end)
     {
-        return Milestone::with('project.client')
-            ->whereBetween('due_date', [$start, $end])
-            ->get()
+        $query = Milestone::with('project.client')
+            ->whereBetween('due_date', [$start, $end]);
+
+        $user = auth()->user();
+        
+        if ($user->isClientUser()) {
+            $clientIds = $user->clients()->pluck('clients.id');
+
+            $query->whereHas('project', function ($query) use ($clientIds) {
+                $query->whereIn('client_id', $clientIds);
+            });
+        }
+
+        return $query->get()
             ->map(function ($milestone) {
                 return [
                     'title' => $milestone->name,
@@ -97,10 +119,20 @@ class CalendarController extends Controller
 
     private function _getProjectEventsData($start, $end)
     {
-        return Project::with('client')
+        $query = Project::with('client')
             ->whereBetween('due_date', [$start, $end])
-            ->where('status', '!=', 'completed')
-            ->get()
+            ->where('status', '!=', 'completed');
+
+        $user = auth()->user();
+        
+        if($user->isClientUser()) {
+            $query->whereIn(
+                'client_id',
+                $user->clients()->pluck('clients.id')
+            );
+        }
+
+        return $query->get()
             ->map(function ($project) {
                 return [
                     'title' => $project->name,

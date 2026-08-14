@@ -17,7 +17,11 @@ class StatsService
 
 	public function activeProjects(): int
 	{
-		return Project::where('status', 'active')->count();
+		$query = Project::where('status', 'active');
+        
+        $query = $this->_filterClientsProjectsQuery($query);
+        
+        return $query->count();
 	}
 
     public function totalTasks(): int
@@ -27,42 +31,57 @@ class StatsService
 
     public function openTasks(): int
     {
-        return Task::where('status', '!=', 'completed')
-			->count();
+        $query = Task::where('status', '!=', 'completed');
+
+        $query = $this->_filterClientsTasksQuery($query);
+
+		return $query->count();
     }
 
     public function overdueTasks(): int
     {
-        return Task::whereDate('due_date', '<', today())
-            ->where('status', '!=', 'completed')
-			->count();
+        $query = Task::whereDate('due_date', '<', today())
+            ->where('status', '!=', 'completed');
+
+        $query = $this->_filterClientsTasksQuery($query);
+
+        return $query->count();
     }
 
 	public function tasksDueToday(): int
 	{
-		return Task::whereDate('due_date', today())
-			->where('status', '!=', 'completed')
-			->count();
+		$query = Task::whereDate('due_date', today())
+			->where('status', '!=', 'completed');
+
+        $query = $this->_filterClientsTasksQuery($query);
+        
+		return $query->count();
 	}
 
     public function tasksDueTthisMonth(): int
 	{
-		return Task::whereBetween('due_date', [
+		$query = Task::whereBetween('due_date', [
                 now()->startOfMonth(),
                 now()->endOfMonth()
             ])
-            ->where('status', '!=', 'completed')
-            ->count();
+            ->where('status', '!=', 'completed');
+        
+        $query = $this->_filterClientsTasksQuery($query);
+        
+		return $query->count();
 	}
 
     public function tasksCompletedTthisWeek(): int
 	{
-		return Task::whereBetween('completed_at', [
+		$query = Task::whereBetween('completed_at', [
                 now()->startOfWeek(),
                 now()->endOfWeek()
             ])
-            ->where('status', 'completed')
-            ->count();
+            ->where('status', 'completed');
+
+        $query = $this->_filterClientsTasksQuery($query);
+        
+		return $query->count();
 	}
 
 	public function tasksInReview(): int
@@ -82,29 +101,38 @@ class StatsService
 
     public function projectsDueTthisMonth(): int
     {
-		return Project::whereBetween('due_date', [
+		$query = Project::whereBetween('due_date', [
                 now()->startOfMonth(),
                 now()->endOfMonth()
             ])
-            ->where('status', '!=', 'completed')
-            ->count();
+            ->where('status', '!=', 'completed');
+        
+        $query = $this->_filterClientsProjectsQuery($query);
+        
+        return $query->count();
     }
     
     public function projectsCompletedThisQuarter(): int
     {
-        return Project::where('status', 'completed')
+        $query = Project::where('status', 'completed')
             ->whereBetween('updated_at', [
                 now()->startOfQuarter(),
                 now()->endOfQuarter(),
-            ])
-            ->count();
+            ]);
+
+        $query = $this->_filterClientsProjectsQuery($query);
+            
+        return $query->count();
     }
 
     public function projectsNeedingAttention(): int
     {
-        $projects = Project::with(['client', 'tasks', 'milestones'])
-                        ->where('status', 'active')
-                        ->get();
+        $query = Project::with(['client', 'tasks', 'milestones'])
+                        ->where('status', 'active');
+
+        $query = $this->_filterClientsProjectsQuery($query);
+
+        $projects = $query->get();
 
         return $projects->map(function ($project) 
         {
@@ -164,18 +192,29 @@ class StatsService
 
     public function totalFiles()
     {
-        return File::count();
+        $query = File::where('id','>',0);
+        
+        $query = $this->_filterClientsFilesQuery($query);
+
+        return $query->count();
     }
 
     public function storageUsed()
     {
-        return File::sum('size');
+        $query = File::where('id','>',0);
+        
+        $query = $this->_filterClientsFilesQuery($query);
+
+        return $query->sum('size');
     }
 
     public function uploadedThisWeek()
     {
-        return File::where('created_at', '>=', now()->startOfWeek())
-	            ->count();
+        $query = File::where('created_at', '>=', now()->startOfWeek());
+
+        $query = $this->_filterClientsFilesQuery($query);
+
+        return $query->count();
     }
 
     public function sharedWithClients()
@@ -187,5 +226,51 @@ class StatsService
     public function clientsWithFiles()
     {
         return Client::whereHas('projects.tasks.files')->count();
+    }
+
+    private function _filterClientsProjectsQuery($query)
+    {
+        $user = auth()->user();
+        
+        if($user->isClientUser()) {
+            $query->whereIn(
+                'client_id',
+                $user->clients()->pluck('clients.id')
+            );
+        }
+
+        return $query;
+    }
+
+    private function _filterClientsTasksQuery($query)
+    {
+        $user = auth()->user();
+
+        if ($user->isClientUser()) {
+            $clientIds = $user->clients()->pluck('clients.id');
+
+            $query->whereHas('project', function ($query) use ($clientIds) {
+                $query->whereIn('client_id', $clientIds);
+            });
+        }
+
+        return $query;
+    }
+
+    private function _filterClientsFilesQuery($query)
+    {
+        $user = auth()->user();
+        
+        if ($user->isClientUser()) {
+            $clientIds = $user->clients()->pluck('clients.id');
+
+            $query->whereHas('task.project', function ($query) use ($clientIds) {
+                $query->whereIn('client_id', $clientIds);
+            });
+
+            $query->where('is_client_visible', true);
+        }
+
+        return $query;
     }
 }

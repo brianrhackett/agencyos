@@ -14,12 +14,14 @@
 				</span>
 			</div>
 
-			<x-button
-				href="{{ route('projects.edit', $project) }}"
-				variant="secondary"
-			>
-				Edit Project
-			</x-button>
+			@can('update', $project)
+				<x-button
+					href="{{ route('projects.edit', $project) }}"
+					variant="secondary"
+				>
+					Edit Project
+				</x-button>
+			@endcan
 		</div>
 
 		<div class="grid gap-6 lg:grid-cols-3">
@@ -50,11 +52,13 @@
 								{{ $project->directTasks->count() }} total
 							</span>	
 						</div>
-						<x-button
-							href="{{ route('projects.tasks.create', $project) }}"
-						>
-							Add Task
-						</x-button>
+						@can('create', App\Models\Task::class)
+							<x-button
+								href="{{ route('projects.tasks.create', $project) }}"
+							>
+								Add Task
+							</x-button>
+						@endcan
                     </div>
 
                     @if ($project->directTasks->isEmpty())
@@ -91,8 +95,12 @@
 									<div>
 										<x-row-actions
 											:viewRoute="route('tasks.show', $task)"
-											:editRoute="route('tasks.edit', $task)"
-											:deleteRoute="route('tasks.destroy', $task)"
+											:editRoute="auth()->user()->can('update', $task)
+															? route('tasks.edit', $task)
+															: null"
+											:deleteRoute="auth()->user()->can('delete', $task)
+															? route('tasks.destroy', $task)
+															: null"
 											:name="$task->title"
 										/>
 									</div>
@@ -107,12 +115,13 @@
 						<h2 class="text-lg font-semibold">
 							Milestones
 						</h2>
-
-                        <x-button
-                            href="{{ route('projects.milestones.create', $project) }}"
-                        >
-                            Add Milestone
-                        </x-button>
+						@can('create', App\Models\Milestone::class)
+							<x-button
+								href="{{ route('projects.milestones.create', $project) }}"
+							>
+								Add Milestone
+							</x-button>
+						@endcan
 					</div>
 
 					@if ($project->milestones->isEmpty())
@@ -145,8 +154,12 @@
                                         <div>
                                             <x-row-actions
                                                 :viewRoute="route('milestones.show', $milestone)"
-                                                :editRoute="route('milestones.edit', $milestone)"
-                                                :deleteRoute="route('milestones.destroy', $milestone)"
+                                                :editRoute="auth()->user()->can('update', $milestone)
+													? route('milestones.edit', $milestone)
+													: null"
+                                                :deleteRoute="auth()->user()->can('delete', $milestone)
+													? route('milestones.destroy', $milestone)
+													: null"
                                                 :name="$milestone->name"
                                             />
                                         </div>

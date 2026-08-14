@@ -149,7 +149,7 @@ class DashboardController extends Controller
             $icon = match ($typeParts[0]) {
                 'task' => Blade::render('<x-heroicon-o-check-circle class="h-4 w-4" />'),
                 'project' => Blade::render('<x-heroicon-o-folder class="h-4 w-4" />'), 
-                'file' => Blade::render('<x-heroicon-o-arrow-up-tray class="h-4 w-4" />'),
+                'file' => Blade::render('<x-heroicon-o-document-plus class="h-4 w-4" />'),
                 'milestone' => Blade::render('<x-heroicon-o-flag class="h-4 w-4" />'),
                 'client_user' => Blade::render('<x-heroicon-o-user-plus class="h-4 w-4" />'),
                 'team' => Blade::render('<x-heroicon-o-users class="h-4 w-4" />'),
@@ -158,6 +158,7 @@ class DashboardController extends Controller
 
             $icon = match ($activity->type) {
                 'task.commented' => Blade::render('<x-heroicon-o-chat-bubble-left-ellipsis class="h-4 w-4" />'),
+                'file.deleted' =>  Blade::render('<x-heroicon-o-document-minus class="h-4 w-4" />'),
                 default => $icon
             };
 
@@ -220,7 +221,8 @@ class DashboardController extends Controller
                         'bold' => true,
                     ],
                     [
-                        'text' => ' uploaded a file to the task ',
+                        'text' => $typeParts[1] == "deleted" ? ' deleted a file from the task '
+                                                            : ' uploaded a file to the task ',
                         'bold' => false,
                     ],
                     [

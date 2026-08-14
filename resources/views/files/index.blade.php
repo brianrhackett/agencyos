@@ -27,9 +27,11 @@
                             All Files
                         </h2>
 
-                        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                            {{ $totalFiles }} files across {{ $clientsWithFiles }} clients
-                        </p>
+                        @if( auth()->user()->isAgencyUser() )
+                            <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                                {{ $totalFiles }} files across {{ $clientsWithFiles }} clients
+                            </p>
+                        @endif
                     </div>
 
                     <div class="flex flex-col gap-3 sm:flex-row">
@@ -129,7 +131,7 @@
 
                                             <div class="min-w-0">
                                                 <a
-                                                    href="#"
+                                                    href="{{ route('files.download', $file) }}"
                                                     class="block max-w-64 truncate font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
                                                 >
                                                     {{ $file['name'] }}
@@ -175,12 +177,14 @@
                                                     Download
                                                 </x-dropdown-menu.item>
 
-                                                <x-dropdown-menu.item
-                                                    danger
-                                                    @click="modalOpen = true"
-                                                >
-                                                    Delete
-                                                </x-dropdown-menu.item>
+                                                @can('destroy', $file)
+                                                    <x-dropdown-menu.item
+                                                        danger
+                                                        @click="modalOpen = true"
+                                                    >
+                                                        Delete
+                                                    </x-dropdown-menu.item>
+                                                @endcan
                                             </x-dropdown-menu>
                                             <x-modal show="modalOpen" maxWidth="md">
                                                 <div class="space-y-4">
@@ -285,7 +289,7 @@
                     </div>
                 </x-card>
 
-                @if (count($clientFolders))
+                @if (isset($clientFolders))
                 <x-card title="Client Folders">
                     <ul class="divide-y divide-stone-200 dark:divide-stone-800 mt-4">
                         @foreach ($clientFolders as $client)

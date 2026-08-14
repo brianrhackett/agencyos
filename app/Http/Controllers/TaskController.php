@@ -50,6 +50,8 @@ class TaskController extends Controller
 
     public function createForProject(Project $project)
 	{
+        $this->authorize('create', Task::class);
+        
 		$assignees = $project->teamMembers()
             ->orderBy('name')
             ->get();
@@ -63,6 +65,8 @@ class TaskController extends Controller
 
     public function createForMilestone(Milestone $milestone)
 	{
+        $this->authorize('create', Task::class);
+
 		$milestone->load('project');
 
         $assignees = $milestone->project
@@ -79,6 +83,8 @@ class TaskController extends Controller
 
     public function storeForProject(Request $request, Project $project)
     {
+        $this->authorize('create', Task::class);
+
         $validated = $this->_validateTask($request);
 
         $validated['project_id'] = $project->id;
@@ -108,6 +114,8 @@ class TaskController extends Controller
 
     public function storeForMilestone(Request $request, Milestone $milestone)
     {
+        $this->authorize('create', Task::class);
+
         $validated = $this->_validateTask($request);
 
         $validated['project_id'] = $milestone->project_id;
@@ -138,6 +146,8 @@ class TaskController extends Controller
 
     public function update(Request $request, Task $task)
     {
+        $this->authorize('update', $task);
+
         $validated = $this->_validateTask($request);
 
         if (
@@ -177,6 +187,8 @@ class TaskController extends Controller
 
     public function edit(Task $task)
     {
+        $this->authorize('update', $task);
+
         $task->load('project');
         
         $projects = Project::where('completed_at', null)
@@ -197,6 +209,8 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
+        $this->authorize('view', $task);
+
         $task->load([
             'project.client',
             'milestone',
@@ -211,6 +225,8 @@ class TaskController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Task::class);
+
         $projects = Project::with('milestones')
             ->orderBy('name')
             ->get();
@@ -225,6 +241,8 @@ class TaskController extends Controller
     
     public function store(Request $request)
     {
+        $this->authorize('create', Task::class);
+
         $validated = $this->_validateTask($request, true);
 
         $validated['created_by'] = auth()->id();
@@ -253,6 +271,8 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
+        $this->authorize('delete', $task);
+
         $task->delete();
 
         ActivityLogger::log(
@@ -292,6 +312,7 @@ class TaskController extends Controller
 
         return $request->validate($rules);
     }
+    
     private function _getTasksData()
     {
         $query = Task::with([
