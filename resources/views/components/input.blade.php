@@ -5,7 +5,8 @@
 	'placeholder' => null,
 	'help' => null,
 	'icon' => null,
-	'value' => ''
+	'value' => '',
+	'textSize' => 'text-md',
 ])
 
 <div>
@@ -41,6 +42,7 @@
 				'dark:focus:border-indigo-400 dark:focus:ring-indigo-500/20 dark:disabled:bg-stone-800',
 				'pl-10' => $icon,
 				'pl-3' => !$icon,
+				$textSize
 			]) }}
 		>
 	</div>

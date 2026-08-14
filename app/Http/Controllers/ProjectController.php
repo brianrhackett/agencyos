@@ -47,7 +47,8 @@ class ProjectController extends Controller
 			'summaryCards' => $summaryCards,
             'projects' => $projects,
             'activeProjectCount' => $summaryCards['activeProjects']['value'],
-            'clientsWithActiveProjects' => $clientsWithActiveProjects
+            'clientsWithActiveProjects' => $clientsWithActiveProjects,
+            'statuses' => ProjectStatus::cases()
         ]);
     }
 
