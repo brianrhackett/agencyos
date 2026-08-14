@@ -119,7 +119,7 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
 	{
-        $this->authorize('edit', $project);
+        $this->authorize('update', $project);
 
 		$clients = Client::orderBy('name')->get();
         $projectManagers = User::agency()
@@ -135,7 +135,7 @@ class ProjectController extends Controller
 
 	public function update(Request $request, Project $project)
 	{
-        $this->authorize('edit', $project);
+        $this->authorize('update', $project);
 
         $validated = $request->validate([
             'client_id' => ['required', 'exists:clients,id'],
