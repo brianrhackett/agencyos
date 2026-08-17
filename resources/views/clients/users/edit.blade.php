@@ -3,10 +3,11 @@
         title="Edit Client User"
         description="Update {{ $user->name }}."
     >
+    
         <form
             method="POST"
             action="{{ route('clients.users.update', [$client, $user]) }}"
-            class="max-w-2xl space-y-6"
+            class="w-full space-y-6"
         >
             @csrf
             @method('PUT')
@@ -25,5 +26,23 @@
                 </div>
             </x-card>
         </form>
+
+        <div class="my-6">
+            <x-card
+                title="Does this user need a password reset?"
+            >
+                <form
+                    method="POST"
+                    action="{{ route('team.password-reset', $user) }}"
+                    class="mt-4"
+                >
+                    @csrf
+
+                    <x-button type="submit" variant="primary">
+                        Send Password Reset Link
+                    </x-button>
+                </form>
+            </x-card>
+        </div>
     </x-layouts.app.content>
 </x-layouts.app>

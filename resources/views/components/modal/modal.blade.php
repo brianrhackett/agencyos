@@ -1,5 +1,5 @@
 @props([
-	'modalOpen' => false,
+	'name',
 	'maxWidth' => '2xl',
 ])
 
@@ -16,16 +16,28 @@
 @endphp
 
 <div
+	x-data="{ modalOpen: false }"
 	x-cloak
-	x-show="{{ $modalOpen ? 'true' : 'modalOpen' }}"
+	x-show="modalOpen"
+	x-on:open-modal.window="
+		if ($event.detail === '{{ $name }}') {
+			modalOpen = true
+		}
+	"
+	x-on:close-modal.window="
+		if ($event.detail === '{{ $name }}') {
+			modalOpen = false
+		}
+	"
+	x-on:keydown.escape.window="modalOpen = false"
 	class="fixed inset-0 z-50"
 >
 	<div
 		class="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
-		@click="modalOpen = false"
+		x-on:click="modalOpen = false"
 	></div>
 
-	<div class="flex whitespace-normal text-left min-h-screen items-center justify-center p-6">
+	<div class="flex min-h-screen items-center justify-center p-6 whitespace-normal text-left">
 		<div
 			{{ $attributes->merge([
 				'class' => 'relative w-full ' . $widths[$maxWidth] . ' rounded-sm border border-stone-200 bg-white dark:bg-stone-950 dark:border-stone-700 dark:text-stone-400',

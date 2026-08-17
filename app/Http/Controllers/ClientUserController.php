@@ -2,17 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ClientRole;
 use App\Models\Client;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ClientUserController extends Controller
 {
 	public function create(Client $client)
 	{
-		return view('clients.users.create', compact('client'));
+		return view('clients.users.create', [
+			'client' => $client,
+            'roles' => ClientRole::cases(),
+            'role' => ''
+        ]);
 	}
 
 	public function store(Request $request, Client $client)
@@ -21,16 +28,14 @@ class ClientUserController extends Controller
 			'name' => ['required', 'string', 'max:255'],
 			'email' => ['required', 'email', 'max:255', 'unique:users,email'],
 			'job_title' => ['nullable', 'string', 'max:255'],
-			'role' => ['nullable', 'string', 'max:255'],
+			'role' => ['required'],
 			'is_primary_contact' => ['nullable', 'boolean'],
-			'can_view_financials' => ['nullable', 'boolean'],
-			'password' => ['required', 'string', 'min:8', 'confirmed'],
 		]);
 
 		$user = User::create([
 			'name' => $validated['name'],
 			'email' => $validated['email'],
-			'password' => Hash::make($validated['password']),
+			'password' => Hash::make(Str::random(32)),
 		]);
 
 		if ($validated['is_primary_contact'] ?? false) {
@@ -42,13 +47,20 @@ class ClientUserController extends Controller
 						->pluck('users.id'),
 					['is_primary_contact' => false]
 				);
+			
+			$client->update([
+				'email' => $user->email,
+			]);
 		}
 
 		$client->users()->attach($user->id, [
 			'job_title' => $validated['job_title'] ?? null,
 			'role' => $validated['role'] ?? null,
 			'is_primary_contact' => $validated['is_primary_contact'] ?? false,
-			'can_view_financials' => $validated['can_view_financials'] ?? false,
+		]);
+
+		Password::sendResetLink([
+			'email' => $user->email,
 		]);
 
 		return redirect()
@@ -62,12 +74,17 @@ class ClientUserController extends Controller
             ->whereKey($user->id)
             ->firstOrFail();
 
-        return view('clients.users.edit', compact('client', 'user'));
+		return view('clients.users.edit', [
+			'client' => $client, 
+			'user' => $user,
+			'roles' => ClientRole::cases(),
+            'role' => $user->pivot->role,
+		]);
 	}
 
 	public function update(Request $request, Client $client, User $user)
 	{
-		$this->ensureUserBelongsToClient($client, $user);
+		$this->_ensureUserBelongsToClient($client, $user);
 
 		$validated = $request->validate([
 			'name' => ['required', 'string', 'max:255'],
@@ -80,7 +97,6 @@ class ClientUserController extends Controller
 			'job_title' => ['nullable', 'string', 'max:255'],
 			'role' => ['nullable', 'string', 'max:255'],
 			'is_primary_contact' => ['nullable', 'boolean'],
-			'can_view_financials' => ['nullable', 'boolean'],
 			'password' => ['nullable', 'string', 'min:8', 'confirmed'],
 		]);
 
@@ -99,7 +115,6 @@ class ClientUserController extends Controller
 			'job_title' => $validated['job_title'] ?? null,
 			'role' => $validated['role'] ?? null,
 			'is_primary_contact' => $validated['is_primary_contact'] ?? false,
-			'can_view_financials' => $validated['can_view_financials'] ?? false,
 		]);
 
 		return redirect()
@@ -111,7 +126,7 @@ class ClientUserController extends Controller
 	{
         abort_unless(auth()->user()->isAgencyUser(), 403);
         
-		$this->ensureUserBelongsToClient($client, $user);
+		$this->_ensureUserBelongsToClient($client, $user);
 
 		$client->users()->detach($user->id);
 
@@ -122,7 +137,23 @@ class ClientUserController extends Controller
 			->with('success', 'Client user deleted.');
 	}
 
-	private function ensureUserBelongsToClient(Client $client, User $user): void
+	public function projectOptions(Client $client)
+	{
+		$users = $client->users()
+			->orderBy('name')
+			->get();
+
+		return response()->json(
+			$users->map(fn ($user) => [
+				'id' => $user->id,
+				'name' => $user->name,
+				'email' => $user->email,
+				'is_primary_contact' => $user->pivot->is_primary_contact,
+			])
+		);
+	}
+
+	private function _ensureUserBelongsToClient(Client $client, User $user): void
 	{
 		abort_unless(
 			$client->users()->whereKey($user->id)->exists(),

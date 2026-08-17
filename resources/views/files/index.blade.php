@@ -187,61 +187,32 @@
                                     </td>
 
                                     <td class="whitespace-nowrap px-6 py-4 text-right">
-                                        <div x-data="{ modalOpen: false }">
+                                        @can('view', $file->task)
+                                        <div>
                                             <x-dropdown-menu>
                                                 <x-dropdown-menu.item href="{{ route('files.download', $file) }}">
                                                     Download
                                                 </x-dropdown-menu.item>
-
-                                                @can('update', $file->task)
+                                                @can('delete', $file)
                                                     <x-dropdown-menu.item
                                                         danger
-                                                        @click="modalOpen = true"
+                                                        xdata
+                                                        x-on:click="$dispatch('open-modal', 'file_{{$file->id}}')"
                                                     >
                                                         Delete
                                                     </x-dropdown-menu.item>
                                                 @endcan
                                             </x-dropdown-menu>
-                                            <x-modal show="modalOpen" maxWidth="md">
-                                                <div class="space-y-4">
-                                                    <div class="px-6 py-4">
-                                                        <h2 class="text-lg font-bold text-stone-900 dark:text-stone-100">
-                                                            Delete File
-                                                        </h2>
-
-                                                        <p class="text-sm text-stone-600 dark:text-stone-400">
-                                                            Are you sure you want to delete {{ $file->name }}?
-                                                        </p>
-                                                    </div>
-                                                    <div class="flex justify-end gap-2 border-t border-stone-200 bg-stone-50 px-6 py-4 dark:border-stone-800 dark:bg-stone-900/50">
-                                                        <div class="flex justify-end gap-3">
-                                                            <x-button
-                                                                type="button"
-                                                                variant="secondary"
-                                                                @click="modalOpen = false"
-                                                            >
-                                                                Cancel
-                                                            </x-button>
-
-                                                            <form
-                                                                method="POST"
-                                                                action="{{ route('files.destroy', $file) }}"
-                                                            >
-                                                                @csrf
-                                                                @method('DELETE')
-
-                                                                <x-button
-                                                                    type="submit"
-                                                                    variant="danger"
-                                                                >
-                                                                    Delete File
-                                                                </x-button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </x-modal>
+                                            @can('delete', $file)
+                                                <x-delete-modal
+                                                    type="File"
+                                                    :name="$file->original_name"
+                                                    :action="route('files.destroy', $file)"
+                                                    :modalName="'file_' . $file->id"
+                                                />
+                                            @endcan
                                         </div>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

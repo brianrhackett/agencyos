@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\Permission;
+use Illuminate\Support\Facades\DB;
+
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -9,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable // implements MustVerifyEmail
@@ -52,6 +56,33 @@ class User extends Authenticatable // implements MustVerifyEmail
     }
 
     /**
+     * IMPORTANT FUNCTION
+     * checks if user has permission to perform an action
+     */
+    public function hasPermission(Permission $permission): bool
+    {
+        if ($this->agencyUser) {
+            return DB::table('agency_role_permissions')
+                ->where('role', $this->agencyUser->role->value)
+                ->where('permission', $permission->value)
+                ->where('allowed', true)
+                ->exists();
+        }
+
+        $clientMembership = $this->clients->first()?->pivot;
+
+        if ($clientMembership) {
+            return DB::table('client_role_permissions')
+                ->where('role', $clientMembership->role)
+                ->where('permission', $permission->value)
+                ->where('allowed', true)
+                ->exists();
+        }
+
+        return false;
+    }
+
+    /**
      * Get the user's initials
      */
     public function initials(): string
@@ -83,6 +114,11 @@ class User extends Authenticatable // implements MustVerifyEmail
             ->withTimestamps();
     }
 
+    public function clientMemberships()
+    {
+        return $this->hasMany(ClientUser::class);
+    }
+
     public function assignedTasks(): HasMany
     {
         return $this->hasMany(Task::class, 'assigned_to');
@@ -106,5 +142,17 @@ class User extends Authenticatable // implements MustVerifyEmail
     public function currentClient(): ?Client
     {
         return $this->clients()->first();
+    }
+
+    public function agencyUser()
+    {
+        return $this->hasOne(AgencyUser::class);
+    }
+
+    public function belongsToClient(int $clientId): bool
+    {
+        return $this->clients()
+            ->where('clients.id', $clientId)
+            ->exists();
     }
 }

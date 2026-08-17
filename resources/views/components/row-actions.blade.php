@@ -3,9 +3,11 @@
 	'editRoute' => null,
 	'deleteRoute' => null,
 	'name',
+	'modalName',
+	'type'
 ])
 
-<div x-data="{ modalOpen: false }">
+<div>
 	<x-dropdown-menu>
 		@if ($viewRoute)
 			<x-dropdown-menu.item :href="$viewRoute">
@@ -22,7 +24,8 @@
 		@if ($deleteRoute)
 			<x-dropdown-menu.item
 				danger
-				@click="modalOpen = true"
+				x-data
+				x-on:click="$dispatch('open-modal', '{{$modalName}}')"
 			>
 				Delete
 			</x-dropdown-menu.item>
@@ -30,10 +33,10 @@
 	</x-dropdown-menu>
 
 	@if ($deleteRoute)
-		<x-modal show="modalOpen" maxWidth="md">
+		<x-modal show="modalOpen" maxWidth="md" :name="$modalName">
 			<div class="p-6">
 				<h2 class="text-base font-semibold text-stone-900 dark:text-stone-100">
-					Delete {{ $name }}?
+					Delete {{ $type }}?
 				</h2>
 
 				<p class="mt-2 text-sm leading-6 text-stone-600 dark:text-stone-400">

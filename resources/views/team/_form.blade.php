@@ -1,36 +1,43 @@
 <div class="space-y-6">
-	<x-input
-		name="name"
-		label="Name"
-		value="{{ old('name', $user->name ?? '') }}"
-		required
-	/>
+	<div class="grid gap-6 grid-cols-1 md:grid-cols-2">
+		<x-input
+			name="name"
+			label="Name"
+			value="{{ old('name', $user->name ?? '') }}"
+			required
+		/>
 
-	<x-input
-		type="email"
-		name="email"
-		label="Email"
-		value="{{ old('email', $user->email ?? '') }}"
-		required
-	/>
+		<x-input
+			type="email"
+			name="email"
+			label="Email"
+			value="{{ old('email', $user->email ?? '') }}"
+			required
+		/>
+	</div>
 
-	<x-input
-		name="position"
-		label="Position"
-		value="{{ old('position', $user->position ?? '') }}"
-	/>
+	<div class="grid gap-6 grid-cols-1 md:grid-cols-2">
+		<x-input
+			name="job_title"
+			label="Job Title"
+			value="{{ old('job_title', $jobTitle ?? '') }}"
+		/>
+		<x-select
+			name="role"
+			label="User Role"
+		>
+			<option value="">Select role...</option>
 
-	<x-input
-		type="password"
-		name="password"
-		label="Password"
-		:required="!isset($user)"
-	/>
-
-	<x-input
-		type="password"
-		name="password_confirmation"
-		label="Confirm Password"
-		:required="!isset($user)"
-	/>
+			@foreach ($roles as $userRole)
+				<option 
+					value="{{ $userRole->value }}"
+					@selected(
+						old("role",$role) == $userRole->value
+					)
+				>
+					{{ $userRole->label() }}
+				</option>
+			@endforeach
+		</x-select>
+	</div>
 </div>

@@ -105,6 +105,7 @@ class FileController extends Controller
 			'path' => $path,
 			'mime_type' => $uploadedFile->getMimeType(),
 			'size' => $uploadedFile->getSize(),
+            'is_client_visible' => true //make all true for now, maybe a feature to add later...
 		]);
 
         ActivityLogger::log(

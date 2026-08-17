@@ -56,6 +56,7 @@ class Project extends Model
 	public function teamMembers(): BelongsToMany
 	{
 		return $this->belongsToMany(User::class)
+			->using(ProjectUser::class)
 			->withPivot([
 				'role',
 				'can_view_financials',

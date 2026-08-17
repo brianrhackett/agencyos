@@ -6,7 +6,7 @@
         <form
             method="POST"
             action="{{ route('clients.users.store', $client) }}"
-            class="max-w-2xl space-y-6"
+            class="w-full space-y-6"
         >
             @csrf
             <x-card>

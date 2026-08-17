@@ -291,7 +291,7 @@ class DashboardController extends Controller
                         'bold' => true,
                     ],
                     [
-                        'text' => ' as an agency user.',
+                        'text' => ' as a user.',
                         'bold' => false,
                     ]
                 ],

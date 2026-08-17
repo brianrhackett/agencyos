@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 use App\Services\StatsService;
 use App\Models\Client;
-
+use App\Models\User;
 
 class ClientController extends Controller
 {
@@ -42,11 +46,15 @@ class ClientController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Client::class);
+
         return view('clients.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Client::class);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'website' => ['nullable', 'url', 'max:255'],
@@ -62,20 +70,47 @@ class ClientController extends Controller
             'is_active' => ['required', 'boolean'],
         ]);
 
-        Client::create($validated);
+        $user_validated = $request->validate([
+            'primary_contact_name' => ['required', 'string', 'max:255'],
+        ]);
+
+        [$client, $user] = DB::transaction(function () use ($validated, $user_validated) {
+            $client = Client::create($validated);
+
+            $user = User::create([
+                'name' => $user_validated['primary_contact_name'],
+                'email' => $validated['email'],
+                'password' => Hash::make(Str::random(32)),
+            ]);
+
+            $client->users()->attach($user->id, [
+                'is_primary_contact' => true,
+                'role' => 'administrator',
+            ]);
+
+            return [$client, $user];
+        });
+
+        $user->sendPasswordResetNotification(
+            Password::createToken($user)
+        );
 
         return redirect()
-            ->route('clients.index')
+            ->route('clients.show', $client)
             ->with('success', 'Client created successfully.');
     }
 
     public function edit(Client $client)
     {
+        $this->authorize('update', Client::class);
+
         return view('clients.edit', compact('client'));
     }
 
     public function update(Request $request, Client $client)
     {
+        $this->authorize('update', Client::class);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'website' => ['nullable', 'url', 'max:255'],
@@ -100,6 +135,8 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
+        $this->authorize('view', Client::class);
+
         $client->load([
             'users',
             'projects',
@@ -109,6 +146,8 @@ class ClientController extends Controller
 
     public function destroy(Client $client)
     {
+        $this->authorize('delete', Client::class);
+
         $client->delete();
 
         return redirect()

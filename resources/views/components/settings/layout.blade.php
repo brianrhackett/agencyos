@@ -6,7 +6,7 @@
                 wire:navigate
                 @class([
                     'bg-transparent border-l-3 block rounded-none px-3 py-0 my-4 text-sm font-medium transition-colors hover:bg-transparent',
-                    'border-indigo-600 bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+                    'border-indigo-600 bg-transparent text-indigo-700 dark:text-indigo-300'
                         => request()->routeIs('settings.profile'),
                     'border-transparent text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-900 dark:hover:text-stone-100'
                         => ! request()->routeIs('settings.profile'),
@@ -20,7 +20,7 @@
                 wire:navigate
                 @class([
                     'bg-transparent border-l-3 block rounded-none  px-3 py-0 my-4 text-sm font-medium transition-colors hover:bg-transparent',
-                    'border-indigo-600 bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+                    'border-indigo-600 bg-transparent text-indigo-700 dark:text-indigo-300'
                         => request()->routeIs('settings.password'),
                     'border-transparent text-stone-600 hover:bg-stone-100 hover:text-indigo-700 dark:text-stone-300 dark:hover:bg-stone-900 dark:hover:text-stone-100'
                         => ! request()->routeIs('settings.password'),
@@ -34,7 +34,7 @@
                 wire:navigate
                 @class([
                     'bg-transparent border-l-3 block rounded-none px-3 py-0 my-4 text-sm font-medium transition-colors hover:bg-transparent',
-                    'border-indigo-600 bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+                    'border-indigo-600 bg-transparent text-indigo-700 dark:text-indigo-300'
                         => request()->routeIs('settings.appearance'),
                     'border-transparent text-stone-600 hover:bg-stone-100 hover:text-indigo-700 dark:text-stone-300 dark:hover:bg-stone-900 dark:hover:text-stone-100'
                         => ! request()->routeIs('settings.appearance'),

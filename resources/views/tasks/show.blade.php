@@ -5,11 +5,11 @@
 	>
 		<div class="mb-6 flex items-center justify-between gap-4">
 			<div class="flex flex-wrap items-center gap-3">
-				<x-badge>
+				<x-badge :variant="$task->status->badgeVariant()">
 					{{ $task->status->label() }}
 				</x-badge>
 
-				<x-badge>
+				<x-badge :variant="$task->priority->badgeVariant()">
 					{{ $task->priority->label() }}
 				</x-badge>
 
@@ -20,14 +20,33 @@
 				@endif
 			</div>
 
-			@can('update', $task)
-				<x-button
-					href="{{ route('tasks.edit', $task) }}"
-					variant="secondary"
-				>
-					Edit Task
-				</x-button>
-			@endcan
+			<div class="flex items-center justify-end gap-3">
+				@can('update', $task)
+					<x-button
+						href="{{ route('tasks.edit', $task) }}"
+						variant="secondary"
+					>
+						Edit Task
+					</x-button>
+				@endcan
+
+				@can('delete', $task)
+					<x-button
+						type="button"
+						variant="danger"
+						x-data
+						x-on:click="$dispatch('open-modal', 'confirm-delete')"
+					>
+						Delete
+					</x-button>
+
+					<x-delete-modal
+						type="task"
+						name="Task"
+						:action="route('tasks.destroy', $task)"
+					/>
+				@endcan
+			</div>
 		</div>
 
 		<div class="grid gap-6 lg:grid-cols-3">

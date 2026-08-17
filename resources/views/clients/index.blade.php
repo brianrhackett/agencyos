@@ -3,15 +3,17 @@
         title="Clients"
         description="Manage client organizations, contacts, and active projects."
     >
-        <x-slot:actions>
-            <x-button
-                href="{{ route('clients.create') }}"
-            >
-                <x-heroicon-o-plus class="h-4 w-4" />
+        @can('create', App\Models\Project::class)
+            <x-slot:actions>
+                <x-button
+                    href="{{ route('clients.create') }}"
+                >
+                    <x-heroicon-o-plus class="h-4 w-4" />
 
-                New Client
-            </x-button>
-        </x-slot:actions>
+                    New Client
+                </x-button>
+            </x-slot:actions>
+        @endcan
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             @foreach ($summaryCards as $card)
@@ -160,9 +162,15 @@
                                 <td class="whitespace-nowrap px-6 py-4 text-right">
                                     <x-row-actions
                                         :viewRoute="route('clients.show', $client)"
-                                        :editRoute="route('clients.edit', $client)"
-                                        :deleteRoute="route('clients.destroy', $client)"
+                                        :editRoute="auth()->user()->can('update', $client)
+															? route('clients.edit', $client)
+															: null"
+                                        :deleteRoute="auth()->user()->can('delete', $client)
+															? route('clients.destroy', $client)
+															: null"
                                         :name="$client->name"
+                                        :modalName="'client_' . $client->id"
+                                        type="Client"
                                     />
                                 </td>
                             </tr>

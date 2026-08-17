@@ -43,6 +43,18 @@
 	</header>
 
 	<div class="sm:px-8 py-8">
+		@if (session('success'))
+			<div class="mb-6 rounded-sm border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-900 dark:bg-green-950 dark:text-green-200">
+				{{ session('success') }}
+			</div>
+		@endif
+
+		@if (session('error'))
+			<div class="mb-6 rounded-sm border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+				{{ session('error') }}
+			</div>
+		@endif
+		
 		{{ $slot }}
 	</div>
 </div>

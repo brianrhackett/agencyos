@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
+use App\Enums\Permission;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ProjectPolicy
 {
@@ -13,7 +13,7 @@ class ProjectPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+		return $user->hasPermission(Permission::ProjectsView);
     }
 
     /**
@@ -21,13 +21,12 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        if ($user->isAgencyUser()) {
-            return true;
+        if(!$user->hasPermission(Permission::ProjectsView)) {
+            return false;
         }
 
-        return $user->clients()
-            ->whereKey($project->client_id)
-            ->exists();
+        return $user->agencyUser 
+            || $user->belongsToClient($project->client_id);
     }
 
     /**
@@ -35,7 +34,7 @@ class ProjectPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAgencyUser();
+        return $user->hasPermission(Permission::ProjectsCreate);
     }
 
     /**
@@ -43,7 +42,12 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        return $user->isAgencyUser();
+        if(!$user->hasPermission(Permission::ProjectsUpdate)) {
+            return false;
+        }
+
+        return $user->agencyUser 
+            || $user->belongsToClient($project->client_id);
     }
 
     /**
@@ -51,7 +55,12 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
-        return $user->isAgencyUser();
+        if(!$user->hasPermission(Permission::ProjectsDelete)) {
+            return false;
+        }
+
+        return $user->agencyUser 
+            || $user->belongsToClient($project->client_id);
     }
 
     /**

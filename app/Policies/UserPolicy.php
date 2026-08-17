@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\Permission;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -12,7 +13,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->hasPermission(Permission::TeamView);
     }
 
     /**
@@ -20,7 +21,7 @@ class UserPolicy
      */
     public function view(User $user, User $teamMember): bool
     {
-        return $user->isAgencyUser();
+        return $user->hasPermission(Permission::TeamView);
     }
 
     /**
@@ -28,7 +29,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAgencyUser();
+        return $user->hasPermission(Permission::TeamManage);
     }
 
     /**
@@ -36,7 +37,7 @@ class UserPolicy
      */
     public function update(User $user, User $teamMember): bool
     {
-        return $user->isAgencyUser();
+        return $user->hasPermission(Permission::TeamManage);
     }
 
     /**
@@ -44,7 +45,11 @@ class UserPolicy
      */
     public function delete(User $user, User $teamMember): bool
     {
-        return $user->isAgencyUser()
+        if ($user->is($teamMember)) {
+            return false;
+        }
+
+        return $user->hasPermission(Permission::TeamManage)
             && $user->id !== $teamMember->id;
     }
 

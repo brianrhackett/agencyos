@@ -221,7 +221,10 @@
                                         </span>
 
                                         <span class="block truncate text-xs text-stone-500 dark:text-stone-400">
-                                            Administrator
+                                            {{ 
+                                                auth()->user()->agencyUser?->job_title ?? 
+                                                auth()->user()->clients->first()?->pivot->job_title 
+                                            }}
                                         </span>
                                     </span>
 

@@ -86,15 +86,15 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
 <div>
 	<div>
-		<p class="text-sm font-bold uppercase tracking-[0.18em] text-indigo-600">
+		<p class="text-sm font-bold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-300">
 			Welcome back
 		</p>
 
-		<h1 class="mt-3 text-3xl font-extrabold tracking-tight text-stone-950">
+		<h1 class="mt-3 text-3xl font-extrabold tracking-tight text-stone-950 dark:text-stone-50">
 			Sign in to your account
 		</h1>
 
-		<p class="mt-3 text-sm leading-6 text-stone-500">
+		<p class="mt-3 text-sm leading-6 text-stone-500 dark:text-stone-400">
 			Enter your account details to continue to AgencyOS.
 		</p>
 	</div>
@@ -131,7 +131,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 				@if (Route::has('password.request'))
 					<a
 						href="{{ route('password.request') }}"
-						class="text-sm font-semibold text-indigo-600 transition hover:text-indigo-700"
+						class="text-sm font-semibold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200"
 						wire:navigate
 					>
 						Forgot password?
@@ -139,15 +139,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
 				@endif
 			</div>
 
-			<input
+			<x-input
 				id="password"
 				name="password"
 				type="password"
 				wire:model="password"
 				autocomplete="current-password"
 				required
-				class="block w-full rounded-sm border border-stone-300 bg-white px-4 py-3 text-stone-900 shadow-sm outline-none transition placeholder:text-stone-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
-			>
+			/>
 
 			<x-form.error name="password" />
 		</div>
@@ -156,10 +155,10 @@ new #[Layout('components.layouts.auth')] class extends Component {
 			<input
 				type="checkbox"
 				wire:model="remember"
-				class="h-4 w-4 rounded border-stone-300 text-indigo-600 focus:ring-indigo-500"
+				class="h-4 w-4 rounded border-stone-300 text-indigo-600 focus:ring-indigo-500 dark:tex-indigo-300 dark:focus:ring-indigo-400"
 			>
 
-			<span class="text-sm text-stone-600">
+			<span class="text-sm text-stone-600 dark:text-stone-300">
 				Remember me
 			</span>
 		</label>
@@ -187,12 +186,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
 	</form>
 
 	@if (Route::has('register'))
-		<p class="mt-8 text-center text-sm text-stone-500">
-			Don’t have an account?
+		<p class="mt-8 text-center text-sm text-stone-500 dark:text-stone-400">
+			Don&rsquo;t have an account?
 
 			<a
 				href="{{ route('register') }}"
-				class="font-semibold text-indigo-600 transition hover:text-indigo-700"
+				class="font-semibold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-400"
 				wire:navigate
 			>
 				Create an account
@@ -200,23 +199,23 @@ new #[Layout('components.layouts.auth')] class extends Component {
 		</p>
 	@endif
 
-	<div class="mt-8 border-t border-stone-200 pt-6">
-		<div class="rounded-sm bg-stone-50 px-4 py-4">
+	<div class="mt-8 border-t border-stone-200 pt-6 dark:border-stone-700">
+		<div class="rounded-sm bg-stone-50 px-4 py-4 dark:bg-stone-900">
 			<div class="flex items-start gap-3">
 				<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-indigo-100">
 					<x-heroicon-o-user class="h-5 w-5 text-indigo-600" />
 				</div>
 
 				<div>
-					<p class="text-xs font-bold uppercase tracking-wide text-stone-500">
+					<p class="text-xs font-bold uppercase tracking-wide text-stone-500 dark:text-stone-400">
 						Demo account
 					</p>
 
-					<p class="mt-2 text-sm font-semibold text-stone-800">
+					<p class="mt-2 text-sm font-semibold text-stone-800 dark:text-stone-100">
 						brian@agencyos.test
 					</p>
 
-					<p class="mt-1 text-sm text-stone-500">
+					<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
 						Password: password
 					</p>
 				</div>

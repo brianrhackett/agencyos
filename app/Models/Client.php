@@ -58,4 +58,9 @@ class Client extends Model
 	{
 		return $this->hasMany(Project::class);
 	}
+
+	public function clientUsers()
+	{
+		return $this->hasMany(ClientUser::class);
+	}
 }

@@ -13,9 +13,8 @@
 @if ($href)
 	<a
 		href="{{ $href }}"
-		{{ $attributes->class([
-			'block w-full px-3 py-2 text-left text-sm',
-			$classes,
+		{{ $attributes->merge([
+			'class' => 'block w-full px-3 py-2 text-left text-sm ' . $classes,
 		]) }}
 	>
 		{{ $slot }}
@@ -23,9 +22,8 @@
 @else
 	<button
 		type="{{ $type }}"
-		{{ $attributes->class([
-			'block w-full px-3 py-2 text-left text-sm',
-			$classes,
+		{{ $attributes->merge([
+			'class' => 'block w-full px-3 py-2 text-left text-sm ' . $classes,
 		]) }}
 	>
 		{{ $slot }}

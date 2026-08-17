@@ -13,6 +13,9 @@ use App\Http\Controllers\MilestoneController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ClientUserController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\PasswordResetController;
 
 Route::get('/', function () {
 	if (!auth()->check()) {
@@ -54,6 +57,9 @@ Route::prefix('clients/{client}/users')
 
 		Route::delete('/{user}', [ClientUserController::class, 'destroy'])
 			->name('destroy');
+
+		Route::get('/project-options', [ClientUserController::class, 'projectOptions'])
+			->name('clients.users.project-options');
 	});
 
 Route::resource('projects', ProjectController::class)
@@ -101,6 +107,9 @@ Route::get('/calendar', [CalendarController::class, 'index'])
 Route::resource('team', TeamController::class)
 	->parameters(['team' => 'user']);
 
+Route::post('/team/{user}/password-reset', [TeamController::class, 'sendPasswordReset'])
+	->name('team.password-reset')
+	->middleware('auth');
     
 Route::get('/files', [FileController::class, 'index'])
 	->middleware(['auth'])
@@ -118,6 +127,20 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+});
+
+Route::middleware('guest')->group(function () {
+	Route::get('/forgot-password', [PasswordResetController::class, 'request'])
+		->name('password.request');
+
+	Route::post('/forgot-password', [PasswordResetController::class, 'email'])
+		->name('password.email');
+
+	Route::get('/reset-password/{token}', [PasswordResetController::class, 'reset'])
+		->name('password.reset');
+
+	Route::post('/reset-password', [PasswordResetController::class, 'update'])
+		->name('password.update');
 });
 
 require __DIR__.'/auth.php';

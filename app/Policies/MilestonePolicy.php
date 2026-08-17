@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\Permission;
 use App\Models\Milestone;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -13,7 +14,7 @@ class MilestonePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasPermission(Permission::MilestonesView);
     }
 
     /**
@@ -21,13 +22,7 @@ class MilestonePolicy
      */
     public function view(User $user, Milestone $milestone): bool
     {
-		if ($user->isAgencyUser()) {
-			return true;
-		}
-
-		return $user->clients()
-			->whereKey($milestone->project->client_id)
-			->exists();
+		return $user->hasPermission(Permission::MilestonesView);
     }
 
     /**
@@ -35,7 +30,7 @@ class MilestonePolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAgencyUser();
+        return $user->hasPermission(Permission::MilestonesCreate);
     }
 
     /**
@@ -43,7 +38,7 @@ class MilestonePolicy
      */
     public function update(User $user, Milestone $milestone): bool
     {
-        return $user->isAgencyUser();
+        return $user->hasPermission(Permission::MilestonesUpdate);
     }
 
     /**
@@ -51,7 +46,7 @@ class MilestonePolicy
      */
     public function delete(User $user, Milestone $milestone): bool
     {
-        return $user->isAgencyUser();
+        return $user->hasPermission(Permission::MilestonesDelete);
     }
 
     /**

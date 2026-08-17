@@ -9,19 +9,38 @@
 					{{ $project->status->label() }}
 				</x-badge>
 
-				<span class="text-sm text-stone-500">
+				<x-badge :variant="$project->priority->badgeVariant()">
 					{{ ucfirst($project->priority->label()) }} priority
-				</span>
+				</x-badge>
 			</div>
 
-			@can('update', $project)
-				<x-button
-					href="{{ route('projects.edit', $project) }}"
-					variant="secondary"
-				>
-					Edit Project
-				</x-button>
-			@endcan
+			<div class="flex items-center justify-end gap-3">
+				@can('update', $project)
+					<x-button
+						href="{{ route('projects.edit', $project) }}"
+						variant="secondary"
+					>
+						Edit Project
+					</x-button>
+				@endcan
+
+				@can('delete', $project)
+					<x-button
+						type="button"
+						variant="danger"
+						x-data
+						x-on:click="$dispatch('open-modal', 'confirm-delete')"
+					>
+						Delete
+					</x-button>
+					
+					<x-delete-modal
+						type="project"
+						name="{{$project->name}}"
+						:action="route('projects.destroy', $project)"
+					/>
+				@endcan
+			</div>
 		</div>
 
 		<div class="grid gap-6 lg:grid-cols-3">
@@ -103,6 +122,8 @@
 																? route('tasks.destroy', $task)
 																: null"
 												:name="$task->title"
+												:modalName="'task_' . $task->id"
+												type="Task"
 											/>
 										</td>
 									</tr>
@@ -163,6 +184,8 @@
 													? route('milestones.destroy', $milestone)
 													: null"
 												:name="$milestone->name"
+												:modalName="'milestone_' . $milestone->id"
+												type="Milestone"
 											/>
 										</td>
 									</tr>
@@ -227,18 +250,40 @@
 							</p>
 						</div>
 
-						<div>
-							<p class="text-xs font-medium uppercase tracking-wide text-stone-500">
-								Budget
-							</p>
+					</div>
+				</x-card>
 
-							<p class="mt-1">
-								@if ($project->budget !== null)
-									${{ number_format($project->budget, 2) }}
-								@else
-									—
-								@endif
+				<x-card>
+					<div class="mb-4 flex items-center justify-between">
+						<div class="w-full">
+							<h2 class="text-lg font-semibold">
+								Team Members
+							</h2>
+							@if ($project->teamMembers->isEmpty())
+							<p class="text-sm text-stone-500">
+								No milestones yet.
 							</p>
+							@else
+								<table class="min-w-full divide-y divide-stone-200 dark:divide-stone-800">
+									<tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
+										@foreach ($project->teamMembers as $member)
+											<tr>
+												<td class="py-4">
+													{{ $member->name }}	
+												
+													<p class="mt-1 text-sm text-stone-500">
+														{{ $member->email }}
+													</p>
+												</td>
+
+												<td class="text-sm text-stone-500 py-4">
+													{{ $member->pivot->role->label() }}
+												</td>
+											</tr>
+										@endforeach
+									</tbody>
+								</table>
+							@endif
 						</div>
 					</div>
 				</x-card>

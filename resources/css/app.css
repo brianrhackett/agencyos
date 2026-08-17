@@ -114,3 +114,6 @@ select:-webkit-autofill:focus {
 	color: var(--color-indigo-300) !important;
 }
 
+:root {
+    --livewire-progress-bar-color: #4f46e5;
+}

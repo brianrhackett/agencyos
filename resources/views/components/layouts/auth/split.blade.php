@@ -8,32 +8,23 @@
 	</head>
 
 	<body class="min-h-screen bg-white font-sans text-stone-900 antialiased">
-		<main class="grid min-h-screen lg:grid-cols-[minmax(0,1fr)_minmax(500px,0.9fr)]">
+		<main class="grid min-h-screen lg:grid-cols-[minmax(0,1fr)_minmax(500px,0.9fr)] dark:bg-stone-950">
 			<section class="flex items-center justify-center px-6 py-12 sm:px-10 lg:px-16">
 				<div class="w-full max-w-md">
-					<a
-						href="{{ url('/') }}"
-						class="inline-flex"
-						wire:navigate
-					>
-						<img
-							src="{{ asset('images/logo/agencyos-logo.svg') }}"
-							alt="AgencyOS"
-							class="h-10 w-auto"
-						>
-					</a>
+					
+					<x-app-logo height="h-10" />
 
 					<div class="mt-12">
 						{{ $slot }}
 					</div>
 
-					<p class="mt-10 text-center text-xs text-stone-400">
+					<p class="mt-10 text-center text-xs text-stone-500 dark:text-stone-400">
 						&copy; {{ now()->year }} AgencyOS. All rights reserved.
 					</p>
 				</div>
 			</section>
 
-			<section class="relative hidden overflow-hidden bg-indigo-700 lg:block">
+			<section class="relative hidden overflow-hidden bg-indigo-700 lg:block dark:bg-stone-950">
 				<div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800"></div>
 
 				<div class="absolute -left-32 top-20 h-96 w-96 rounded-full bg-white/10 blur-3xl"></div>

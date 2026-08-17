@@ -14,12 +14,33 @@
 				</span>
 			</div>
 
-			<x-button
-				href="{{ route('clients.edit', $client) }}"
-				variant="secondary"
-			>
-				Edit Client
-			</x-button>
+			<div class="flex items-center justify-end gap-3">
+				@can('update', $client)
+					<x-button
+						href="{{ route('clients.edit', $client) }}"
+						variant="secondary"
+					>
+						Edit Client
+					</x-button>
+				@endcan
+
+				@can('delete', $client)
+					<x-button
+						type="button"
+						variant="danger"
+						x-data
+						x-on:click="$dispatch('open-modal', 'confirm-delete')"
+					>
+						Delete
+					</x-button>
+
+					<x-delete-modal
+						type="client"
+						name="Client"
+						:action="route('clients.destroy', $client)"
+					/>
+				@endcan
+			</div>			
 		</div>
 
 		<div class="grid gap-6 lg:grid-cols-2">
@@ -103,12 +124,14 @@
 					</p>
 				</div>
 
-				<a
-					href="{{ route('clients.users.create', $client) }}"
-					class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
-				>
-					Add User
-				</a>
+				@can('create', [App\Models\ClientUser::class, $client])
+					<a
+						href="{{ route('clients.users.create', $client) }}"
+						class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+					>
+						Add User
+					</a>
+				@endcan
 			</div>
 
 			@if ($client->users->isEmpty())
@@ -117,15 +140,15 @@
 				</p>
 			@else
 				<div class="mt-6 divide-y divide-stone-200 dark:divide-stone-800">
-					@foreach ($client->users as $member)
+					@foreach ($client->clientUsers as $member)
 						<div class="flex items-center justify-between gap-4 py-4">
 							<div>
 								<div class="flex items-center gap-2">
 									<p class="text-sm font-semibold text-stone-900 dark:text-stone-100">
-										{{ $member->name }}
+										{{ $member->user->name }}
 									</p>
 
-									@if ($member->pivot->is_primary_contact)
+									@if ($member->is_primary_contact)
 										<x-badge variant="primary">
 											Primary
 										</x-badge>
@@ -133,67 +156,42 @@
 								</div>
 
 								<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-									{{ $member->pivot->job_title ?? 'No job title' }}
+									{{ $member->job_title ?? 'No job title' }}
 									&middot;
-									{{ $member->email }}
+									{{ $member->user->email }}
 								</p>
 							</div>
-							<div x-data="{ modalOpen: false }">
+							<div>
+								@canany(['update', 'delete'], $member)
 								<x-dropdown-menu>
-									<x-dropdown-menu.item
-										href="{{ route('clients.users.edit', [$client, $member]) }}"
-									>
-										Edit
-									</x-dropdown-menu.item>
+									@can('update', $member)
+										<x-dropdown-menu.item
+											href="{{ route('clients.users.edit', [$client, $member->user]) }}"
+										>
+											Edit
+										</x-dropdown-menu.item>
+									@endcan
 
-									@if (auth()->user()->isAgencyUser())
+									@can('delete', $member)
 										<x-dropdown-menu.item
 											danger
-											@click="modalOpen = true"
+											xdata
+											x-on:click="$dispatch('open-modal', 'client_user_{{$member->user->id}}')"
 										>
 											Delete
 										</x-dropdown-menu.item>
-									@endif
+									@endcan
 								</x-dropdown-menu>
-								<x-modal show="modalOpen" maxWidth="md">
-									<div class="space-y-4">
-										<div class="px-6 py-4">
-											<h2 class="text-lg font-bold text-stone-900 dark:text-stone-100">
-												Delete Client User
-											</h2>
+								@endcanany
 
-											<p class="text-sm text-stone-600 dark:text-stone-400">
-												Are you sure you want to delete {{ $member->name }}?
-											</p>
-										</div>
-										<div class="flex justify-end gap-2 border-t border-stone-200 bg-stone-50 px-6 py-4 dark:border-stone-800 dark:bg-stone-900/50">
-											<div class="flex justify-end gap-3">
-												<x-button
-													type="button"
-													variant="secondary"
-													@click="modalOpen = false"
-												>
-													Cancel
-												</x-button>
-
-												<form
-													method="POST"
-													action="{{ route('clients.users.destroy', [$client, $member]) }}"
-												>
-													@csrf
-													@method('DELETE')
-
-													<x-button
-														type="submit"
-														variant="danger"
-													>
-														Delete User
-													</x-button>
-												</form>
-											</div>
-										</div>
-									</div>
-								</x-modal>
+								@can('delete', $member)
+									<x-delete-modal
+										type="Client User"
+										:name="$member->user->name"
+										:action="route('clients.users.destroy', [$client,$member->user])"
+										:modalName="'client_user_' . $member->user->id"
+									/>
+								@endcan
 							</div>
 						</div>
 					@endforeach

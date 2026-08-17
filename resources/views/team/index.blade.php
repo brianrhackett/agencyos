@@ -61,13 +61,40 @@
                 </form>
             </div>
 
-            <ul class="divide-y divide-stone-200 dark:divide-stone-800">
-                @foreach ($teamMembers as $member)
-                    <li class="px-6 py-5 transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-                        <div class="flex flex-col gap-5 xl:flex-row xl:items-center">
-                            <div class="flex min-w-0 flex-1 items-center gap-4">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-stone-200 dark:divide-stone-800 relative z-20">
+                    <thead class="bg-stone-50 dark:bg-stone-900">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                                User
+                            </th>
 
-                                <div class="min-w-0">
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                                Position
+                            </th>
+
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                                Role
+                            </th>
+
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                                Workload
+                            </th>
+
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                                Due Today
+                            </th>
+
+                            <th class="px-6 py-3 text-right">
+                                <span class="sr-only">Actions</span>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
+                        @foreach ($teamMembers as $member)
+                            <tr class="px-6 py-5 transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
+                               <td class="px-6 py-4">
                                     <a
                                         href="{{ route('team.show', $member['user']) }}"
                                         class="truncate font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
@@ -78,45 +105,18 @@
                                     <p class="mt-1 truncate text-sm text-stone-500 dark:text-stone-400">
                                         {{ $member['email'] }}
                                     </p>
-                                </div>
-                            </div>
-
-                            <div class="grid flex-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                                <div>
-                                    <p class="text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                                        Position
-                                    </p>
-
-                                    <p class="mt-1 text-sm font-medium text-stone-700 dark:text-stone-300">
-                                        {{ $member['position'] }}
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <p class="text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                                        Role
-                                    </p>
-
-                                    <p class="mt-1 text-sm font-medium text-stone-700 dark:text-stone-300">
-                                        {{ $member['role'] }}
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <p class="text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                                        Workload
-                                    </p>
-
-                                    <p class="mt-1 text-sm font-medium text-stone-700 dark:text-stone-300">
-                                        {{ $member['projects'] }} projects &sdot; {{ $member['open_tasks'] }} tasks
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <p class="text-xs font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                                        Due Today
-                                    </p>
-
+                                </td>
+                                        
+                                <td class="px-6 py-4">                                    
+                                    {{ $member['position'] }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ $member['role'] }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ $member['projects'] }} projects &sdot; {{ $member['open_tasks'] }} tasks
+                                </td>
+                                <td class="px-6 py-4">
                                     <p
                                         @class([
                                             'mt-1 text-sm font-medium',
@@ -126,28 +126,26 @@
                                     >
                                         {{ $member['due_today'] }}
                                     </p>
-                                </div>
-                            </div>
-
-                            <div class="flex shrink-0 items-center justify-between gap-4 xl:justify-end">
-                                <div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
                                     <x-row-actions
                                         :viewRoute="route('team.show', $member['user'])"
                                         :editRoute="auth()->user()->can('update', $member['user'])
-															? route('team.edit', $member['user'])
-															: null"
+                                                            ? route('team.edit', $member['user'])
+                                                            : null"
                                         :deleteRoute="auth()->user()->can('delete', $member['user'])
-															? route('team.destroy', $member['user'])
-															: null"
+                                                            ? route('team.destroy', $member['user'])
+                                                            : null"
                                         :name="$member['name']"
+                                        type="Team Member"
+                                        :modalName="'member_' . $member['user']->id"
                                     />
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
-
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>    
+            </div>
             <div class="flex flex-col gap-4 border-t border-stone-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between dark:border-stone-800">
                 <p class="text-sm text-stone-500 dark:text-stone-400">
                     Showing

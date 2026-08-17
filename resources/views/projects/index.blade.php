@@ -264,6 +264,8 @@
 															? route('projects.destroy', $project)
 															: null"
                                         :name="$project->name"
+                                        :modalName="'project_' . $project->id"
+                                        type="Project"
                                     />
                                 </td>
                             </tr>

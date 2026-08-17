@@ -5,22 +5,40 @@
     >
         <div class="space-y-6">
             <div class="flex items-center justify-end gap-3">
-                <a
-                    href="{{ route('team.edit', $user) }}"
-                    class="inline-flex items-center rounded-sm border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-50 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800"
-                >
-                    Edit Team Member
-                </a>
+                @can('update', $user)
+                    <form
+                        method="POST"
+                        action="{{ route('team.password-reset', $user) }}"
+                    >
+                        @csrf
 
-                @if (auth()->id() !== $user->id)
+                        <x-button type="submit" variant="primary">
+                            Send Password Reset Link
+                        </x-button>
+                    </form>
+       
+                    <x-button
+                        href="{{ route('team.edit', $user) }}"
+                        variant="secondary"
+                    >
+                        Edit Team Member
+                    </x-button>
+                @endcan
+
+                @can('delete', $user)
                     <x-button
                         type="button"
                         variant="danger"
                         x-data
-                        x-on:click="$dispatch('open-modal', 'delete-team-member')"
+                        x-on:click="$dispatch('open-modal', 'confirm-delete')"
                     >
                         Delete
                     </x-button>
+                    <x-delete-modal
+                        type="user"
+                        name="User"
+                        :action="route('team.destroy', $user)"
+                    />
                 @endif
             </div>
 
@@ -54,11 +72,21 @@
 
                             <div>
                                 <dt class="text-xs font-semibold uppercase tracking-wide text-stone-500">
-                                    Position
+                                    Job Title
                                 </dt>
 
                                 <dd class="mt-1 text-sm text-stone-900 dark:text-stone-100">
-                                    {{ $user->position ?? '—' }}
+                                    {{ $jobTitle }}
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt class="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                                    Role
+                                </dt>
+
+                                <dd class="mt-1 text-sm text-stone-900 dark:text-stone-100">
+                                    {{ $role }}
                                 </dd>
                             </div>
 
@@ -139,44 +167,5 @@
                 @endif
             </x-card>
         </div>
-
-        @if (auth()->id() !== $user->id)
-            <x-modal name="delete-team-member">
-                <div class="space-y-4">
-                    <h2 class="text-lg font-bold text-stone-900 dark:text-stone-100">
-                        Delete Team Member
-                    </h2>
-
-                    <p class="text-sm text-stone-600 dark:text-stone-400">
-                        Are you sure you want to delete {{ $user->name }}?
-                    </p>
-
-                    <div class="flex justify-end gap-3">
-                        <x-button
-                            type="button"
-                            variant="secondary"
-                            x-on:click="$dispatch('close-modal', 'delete-team-member')"
-                        >
-                            Cancel
-                        </x-button>
-
-                        <form
-                            method="POST"
-                            action="{{ route('team.destroy', $user) }}"
-                        >
-                            @csrf
-                            @method('DELETE')
-
-                            <x-button
-                                type="submit"
-                                variant="danger"
-                            >
-                                Delete Team Member
-                            </x-button>
-                        </form>
-                    </div>
-                </div>
-            </x-modal>
-        @endif
     </x-layouts.app.content>
 </x-layouts.app>

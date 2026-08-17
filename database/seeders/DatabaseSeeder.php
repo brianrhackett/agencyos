@@ -13,18 +13,15 @@ class DatabaseSeeder extends Seeder
      */
 	public function run(): void
 	{
-		/*
+		
 		$this->call([
-			AgencyOsSeeder::class,
-		]);
-
-		$this->call([
-			ActivitySeeder::class,
-		]);
-		*/
-		$this->call([
+			//AgencyOsSeeder::class,
+			//ActivitySeeder::class,
 			
-			FileSeeder::class,
+			//FileSeeder::class,
+		
+			//AgencyRolePermissionSeeder::class,
+			//ClientRolePermissionSeeder::class,
 		]);
 	}
 }

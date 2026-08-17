@@ -3,8 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rule;
+use App\Services\ActivityLogger;
+
+use App\Enums\AgencyRole;
+use App\Enums\ClientRole;
 
 use App\Models\Client;
 use App\Models\User;
@@ -42,24 +49,52 @@ class TeamController extends Controller
 
     public function create()
     {
-        return view('team.create');
+        $this->authorize('create', User::class);
+
+        //can use auth()->user because they are editing the same thing that they are
+        $roles = auth()->user()->isAgencyUser() ?
+                    AgencyRole::cases() :
+                    ClientRole::cases();
+        return view('team.create',[
+            'roles' => $roles,
+            'role' => ''
+        ]);
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', User::class);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'position' => ['nullable', 'string', 'max:255'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+
+            'role' => ['required'],
+            'job_title' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'position' => $validated['position'] ?? null,
-            'password' => Hash::make($validated['password']),
-        ]);
+        $user = DB::transaction(function () use ($validated) {
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make(Str::random(32)),
+            ]);
+
+            if (auth()->user()->isAgencyUser()) {
+                $user->agencyUser()->create([
+                    'role' => $validated['role'],
+                    'job_title' => $validated['job_title'] ?? null,
+                ]);
+            } else {
+                $user->clients()->attach(auth()->user()->currentClient()->id, [
+                    'role' => $validated['role'],
+                    'job_title' => $validated['job_title'] ?? null,
+                    'is_primary_contact' => false,
+                ]);
+            }
+
+            return $user;
+        });
 
         ActivityLogger::log(
             'team.created',
@@ -69,6 +104,10 @@ class TeamController extends Controller
             ]
         );
 
+        Password::sendResetLink([
+			'email' => $user->email,
+		]);
+
         return redirect()
             ->route('team.show', $user)
             ->with('success', 'Team member added.');
@@ -76,11 +115,34 @@ class TeamController extends Controller
 
     public function edit(User $user)
     {
-        return view('team.edit', compact('user'));
+        $this->authorize('update', $user);
+
+        $roles = $user->isAgencyUser() ?
+                    AgencyRole::cases() :
+                    ClientRole::cases();
+
+        if ($user->agencyUser) {
+            $role = $user->agencyUser->role->value;
+            $jobTitle = $user->agencyUser->job_title;
+        } else {
+            $client = $user->clients()->first();
+
+            $role = $client?->pivot->role;
+            $jobTitle = $client?->pivot->job_title;
+        }
+
+        return view('team.edit', [
+            'user' => $user,
+            'role' => $role,
+            'jobTitle' => $jobTitle,
+            'roles' => $roles
+        ]);
     }
 
     public function update(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => [
@@ -89,21 +151,12 @@ class TeamController extends Controller
                 'max:255',
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
-            'position' => ['nullable', 'string', 'max:255'],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'position' => $validated['position'] ?? null,
         ]);
-
-        if (!empty($validated['password'])) {
-            $user->update([
-                'password' => Hash::make($validated['password']),
-            ]);
-        }
 
         ActivityLogger::log(
             'team.updated',
@@ -120,11 +173,27 @@ class TeamController extends Controller
 
     public function show(User $user)
     {
+        $this->authorize('view', $user);
+
         $user->load([
             'assignedTasks.project',
         ]);
 
-        return view('team.show', compact('user'));
+        if ($user->agencyUser) {
+            $role = $user->agencyUser->role->label();
+            $jobTitle = $user->agencyUser->job_title;
+        } else {
+            $client = $user->clients()->first();
+
+            $role = ClientRole::from($client->pivot->role)->label();
+            $jobTitle = $client?->pivot->job_title;
+        }
+
+        return view('team.show', [
+            'user' => $user,
+            'role' => $role,
+            'jobTitle' => $jobTitle
+        ]);
     }
 
     public function destroy(User $user)
@@ -134,6 +203,7 @@ class TeamController extends Controller
                 ->route('team.index')
                 ->with('error', 'You cannot delete your own account.');
         }
+        $this->authorize('delete', $user);
 
         ActivityLogger::log(
             'team.deleted',
@@ -148,6 +218,25 @@ class TeamController extends Controller
         return redirect()
             ->route('team.index')
             ->with('success', 'Team member deleted.');
+    }
+
+    public function sendPasswordReset(User $user)
+    {
+        $status = Password::sendResetLink([
+            'email' => $user->email,
+        ]);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with(
+                'success',
+                'Password reset link sent to ' . $user->email . '.'
+            );
+        }
+
+        return back()->with(
+            'error',
+            'Unable to send the password reset link.'
+        );
     }
 
     private function _getTeamMembers($request)

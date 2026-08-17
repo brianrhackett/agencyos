@@ -77,12 +77,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <form wire:submit="resetPassword" class="flex flex-col gap-6">
         <!-- Email Address -->
         <div class="grid gap-2">
-            <flux:input wire:model="email" id="email" label="{{ __('Email') }}" type="email" name="email" required autocomplete="email" />
+            <x-input wire:model="email" id="email" label="{{ __('Email') }}" type="email" name="email" required autocomplete="email" />
         </div>
 
         <!-- Password -->
         <div class="grid gap-2">
-            <flux:input
+            <x-input
                 wire:model="password"
                 id="password"
                 label="{{ __('Password') }}"
@@ -96,7 +96,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         <!-- Confirm Password -->
         <div class="grid gap-2">
-            <flux:input
+            <x-input
                 wire:model="password_confirmation"
                 id="password_confirmation"
                 label="{{ __('Confirm password') }}"
@@ -109,9 +109,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </div>
 
         <div class="flex items-center justify-end">
-            <flux:button type="submit" variant="primary" class="w-full">
+            <x-button type="submit" variant="primary" class="w-full">
                 {{ __('Reset password') }}
-            </flux:button>
+            </x-button>
         </div>
     </form>
 </div>

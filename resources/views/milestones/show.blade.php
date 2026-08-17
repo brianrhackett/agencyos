@@ -16,14 +16,30 @@
 				@endif
 			</div>
 
-			@can('update', $milestone)
-				<x-button
-					href="{{ route('milestones.edit', $milestone) }}"
-					variant="secondary"
-				>
-					Edit Milestone
-				</x-button>
-			@endcan
+			<div>
+				@can('update', $milestone)
+					<x-button
+						href="{{ route('milestones.edit', $milestone) }}"
+						variant="secondary"
+					>
+						Edit Milestone
+					</x-button>
+				@endcan
+
+				@can('delete', $milestone)
+				 	<x-button
+                        type="button"
+                        variant="danger"
+                        x-data
+                        x-on:click="$dispatch('open-modal', 'confirm-delete')"
+                    >
+					<x-delete-modal
+						type="milestone"
+						name="Milestone"
+						:action="route('milestones.destroy', $milestone)"
+					/>
+				@endcan
+			</div>
 		</div>
 
 		<div class="grid gap-6 lg:grid-cols-3">

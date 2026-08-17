@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\Permission;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -13,7 +14,7 @@ class TaskPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->hasPermission(Permission::TasksView);
     }
 
     /**
@@ -21,13 +22,12 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        if ($user->isAgencyUser()) {
-			return true;
-		}
+        if(!$user->hasPermission(Permission::TasksView)) {
+            return false;
+        }
 
-		return $user->clients()
-			->whereKey($task->project->client_id)
-			->exists();
+        return $user->agencyUser 
+            || $user->belongsToClient($task->project->client_id);
     }
 
     /**
@@ -35,7 +35,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAgencyUser();
+        return $user->hasPermission(Permission::TasksCreate);
     }
 
     /**
@@ -43,7 +43,16 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        return $user->isAgencyUser();
+        if ($task->assigned_to === $user->id) {
+            return true;
+        }
+
+        if(!$user->hasPermission(Permission::TasksUpdate)) {
+            return false;
+        }
+
+        return $user->agencyUser 
+            || $user->belongsToClient($task->project->client_id);
     }
 
     /**
@@ -51,7 +60,12 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        return $user->isAgencyUser();
+        if(!$user->hasPermission(Permission::TasksDelete)) {
+            return false;
+        }
+
+        return $user->agencyUser 
+            || $user->belongsToClient($task->project->client_id);
     }
 
     /**

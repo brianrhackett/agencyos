@@ -224,6 +224,8 @@
 															? route('tasks.destroy', $task)
 															: null"
 											:name="$task->title"
+                                            :modalName="'task_' . $task->id"
+                                            type="Task"
 										/>
 									</div>
                                 </td>
