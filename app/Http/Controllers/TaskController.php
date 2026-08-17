@@ -50,6 +50,31 @@ class TaskController extends Controller
         ]);
     }
 
+    public function board(Request $request)
+    {
+        $query = Task::with([
+            'project',
+            'assignedTo',
+        ]);
+
+        if (!auth()->user()->agencyUser) {
+            $clientIds = auth()->user()
+                ->clients()
+                ->pluck('clients.id');
+
+            $query->whereHas('project', function ($query) use ($clientIds) {
+                $query->whereIn('client_id', $clientIds);
+            });
+        }
+
+        $tasks = $query
+            ->orderBy('due_date')
+            ->get()
+            ->groupBy(fn ($task) => $task->status->value);
+
+        return view('tasks.board', compact('tasks'));
+    }
+
     public function createForProject(Project $project)
 	{
         $this->authorize('create', Task::class);
@@ -109,8 +134,7 @@ class TaskController extends Controller
             ]
         );
 
-        return redirect()
-            ->route('projects.show', $project)
+        return redirect($validated['return_to'] ?? route('projects.show', $project))
             ->with('success', 'Task created successfully.');
     }
 
@@ -141,8 +165,7 @@ class TaskController extends Controller
             ]
         );
 
-        return redirect()
-            ->route('milestones.show', $milestone)
+        return redirect(validated['return_to'] ?? route('milestones.show', $milestone))
             ->with('success', 'Task created successfully.');
     }
 
@@ -182,8 +205,7 @@ class TaskController extends Controller
             ]
         );
 
-        return redirect()
-            ->route('tasks.show', $task)
+        return redirect($validated['return_to'] ?? route('tasks.show', $task))
             ->with('success', 'Task updated successfully.');
     }
 
@@ -266,8 +288,7 @@ class TaskController extends Controller
             ]
         );
 
-        return redirect()
-            ->route('tasks.index')
+        return redirect( $validated['return_to'] ?? route('tasks.index') )
             ->with('success', 'Task created successfully.');
     }
 
@@ -305,6 +326,7 @@ class TaskController extends Controller
             'actual_hours' => ['nullable', 'numeric', 'min:0'],
             'start_date' => ['nullable', 'date'],
             'due_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'return_to' => ['nullable', 'url'],
         ];
 
         if ($includeContext) {

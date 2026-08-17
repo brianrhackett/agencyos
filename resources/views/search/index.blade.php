@@ -1,6 +1,6 @@
 @php
 $linkClasses = 'text-sm font-bold block p-3 rounded-sm my-3 bg-stone-50 dark:bg-stone-900 flex items-center
-                dark:text-stone-200 text-stone-800 hover:text-indigo-700 dark:hover:text-indigo-300';
+                dark:text-stone-200 text-stone-800 hover:text-indigo-700 dark:hover:text-indigo-300 border-1 border-stone-100 dark:border-stone-800';
 $spanClasses = 'block font-normal text-xs mt-2';
 $pClasses = 'text-sm text-stone-500 dark:text-stone-400';
 @endphp

@@ -161,4 +161,10 @@
 			) }}"
 		/>
 	</div>
+
+	<input
+		type="hidden"
+		name="return_to"
+		value="{{ old('return_to', url()->previous()) }}"
+	>
 </div>

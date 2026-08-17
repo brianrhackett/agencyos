@@ -19,6 +19,7 @@
 					<x-button
 						href="{{ route('clients.edit', $client) }}"
 						variant="secondary"
+						icon="pencil"
 					>
 						Edit Client
 					</x-button>
@@ -30,6 +31,7 @@
 						variant="danger"
 						x-data
 						x-on:click="$dispatch('open-modal', 'confirm-delete')"
+						icon="trash"
 					>
 						Delete
 					</x-button>

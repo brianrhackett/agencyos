@@ -120,8 +120,7 @@ class ProjectController extends Controller
             ]
         );
 
-        return redirect()
-            ->route('projects.index')
+        return redirect($validated['return_to'] ?? route('projects.index'))
             ->with('success', 'Project created successfully.');
 	}
 
@@ -135,12 +134,26 @@ class ProjectController extends Controller
             'milestones.tasks',
             'client',
             'directTasks.assignedTo',
-            'milestones.tasks',
             'teamMembers'
         ]);
-
         return view('projects.show', compact('project'));
 	}
+
+    public function board(Project $project)
+    {
+        $this->authorize('view', $project);
+
+        $tasks = $project->tasks()
+            ->with(['assignedTo', 'milestone'])
+            ->orderBy('due_date')
+            ->get()
+            ->groupBy(fn ($task) => $task->status->value);
+
+        return view('projects.board', compact(
+            'project',
+            'tasks'
+        ));
+    }
 
     public function edit(Project $project)
 	{
@@ -219,8 +232,7 @@ class ProjectController extends Controller
             ]
         );
 
-        return redirect()
-            ->route('projects.show', $project)
+        return redirect($validated['return_to'] ?? route('projects.show', $project))
             ->with('success', 'Project updated successfully.');
 	}
 

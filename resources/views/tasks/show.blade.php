@@ -25,6 +25,7 @@
 					<x-button
 						href="{{ route('tasks.edit', $task) }}"
 						variant="secondary"
+						icon="pencil"
 					>
 						Edit Task
 					</x-button>
@@ -36,6 +37,7 @@
 						variant="danger"
 						x-data
 						x-on:click="$dispatch('open-modal', 'confirm-delete')"
+						icon="trash"
 					>
 						Delete
 					</x-button>

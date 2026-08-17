@@ -30,6 +30,7 @@ class ClientUserController extends Controller
 			'job_title' => ['nullable', 'string', 'max:255'],
 			'role' => ['required'],
 			'is_primary_contact' => ['nullable', 'boolean'],
+			'return_to' => ['nullable', 'url'],
 		]);
 
 		$user = User::create([
@@ -63,8 +64,7 @@ class ClientUserController extends Controller
 			'email' => $user->email,
 		]);
 
-		return redirect()
-			->route('clients.show', $client)
+		return redirect($validated['return_to'] ?? route('clients.show', $client))
 			->with('success', 'Client user added.');
 	}
 
@@ -97,7 +97,7 @@ class ClientUserController extends Controller
 			'job_title' => ['nullable', 'string', 'max:255'],
 			'role' => ['nullable', 'string', 'max:255'],
 			'is_primary_contact' => ['nullable', 'boolean'],
-			'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+			'return_to' => ['nullable', 'url'],
 		]);
 
 		$user->update([
@@ -105,20 +105,13 @@ class ClientUserController extends Controller
 			'email' => $validated['email'],
 		]);
 
-		if (!empty($validated['password'])) {
-			$user->update([
-				'password' => Hash::make($validated['password']),
-			]);
-		}
-
 		$client->users()->updateExistingPivot($user->id, [
 			'job_title' => $validated['job_title'] ?? null,
 			'role' => $validated['role'] ?? null,
 			'is_primary_contact' => $validated['is_primary_contact'] ?? false,
 		]);
 
-		return redirect()
-			->route('clients.show', $client)
+		return redirect($validated['return_to'] ?? route('clients.show', $client))
 			->with('success', 'Client user updated.');
 	}
 

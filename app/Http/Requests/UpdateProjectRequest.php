@@ -25,7 +25,7 @@ class UpdateProjectRequest extends FormRequest
 			'budget' => ['nullable', 'numeric', 'min:0'],
 			'start_date' => ['nullable', 'date'],
 			'due_date' => ['nullable', 'date', 'after_or_equal:start_date'],
-
+			'return_to' => ['nullable', 'url'],
 			'team' => ['nullable', 'array'],
 			'team.*.role' => [
 				'nullable',

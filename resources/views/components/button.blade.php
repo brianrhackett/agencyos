@@ -2,6 +2,7 @@
 	'type' => 'button',
 	'variant' => 'primary',
 	'href' => null,
+	'icon' => null,
 ])
 
 @php
@@ -23,6 +24,14 @@
 			'class' => $baseClasses . ' ' . $variants[$variant],
 		]) }}
 	>
+		@if ($icon)
+			<span>
+				<x-dynamic-component
+					:component="'heroicon-o-' . $icon"
+					class="size-5"
+				/>
+			</span>
+		@endif
 		{{ $slot }}
 	</a>
 @else
@@ -32,6 +41,14 @@
 			'class' => $baseClasses . ' ' . $variants[$variant],
 		]) }}
 	>
+		@if ($icon)
+			<span>
+				<x-dynamic-component
+					:component="'heroicon-o-' . $icon"
+					class="size-5"
+				/>
+			</span>
+		@endif
 		{{ $slot }}
 	</button>
 @endif

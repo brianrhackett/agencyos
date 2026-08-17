@@ -15,10 +15,18 @@
 			</div>
 
 			<div class="flex items-center justify-end gap-3">
+				<x-button
+					href="{{ route('projects.board', $project) }}"
+					variant="primary"
+					icon="view-columns"
+				>
+						Board View
+				</x-button>
 				@can('update', $project)
 					<x-button
 						href="{{ route('projects.edit', $project) }}"
 						variant="secondary"
+						icon="pencil"
 					>
 						Edit Project
 					</x-button>
@@ -28,6 +36,7 @@
 					<x-button
 						type="button"
 						variant="danger"
+						icon="trash"
 						x-data
 						x-on:click="$dispatch('open-modal', 'confirm-delete')"
 					>

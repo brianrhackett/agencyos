@@ -27,6 +27,7 @@ class MilestoneController extends Controller
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'start_date' => ['nullable', 'date'],
             'due_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'return_to' => ['nullable', 'url'],
 		]);
 
         if ($validated['status'] === MilestoneStatus::Completed->value) {
@@ -45,8 +46,7 @@ class MilestoneController extends Controller
             ]
         );
 
-        return redirect()
-            ->route('projects.show', $project)
+        return redirect($validated['return_to'] ?? route('projects.show', $project))
             ->with('success', 'Milestone created successfully.');
 	}
 
@@ -80,6 +80,7 @@ class MilestoneController extends Controller
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'start_date' => ['nullable', 'date'],
             'due_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'return_to' => ['nullable', 'url'],
 		]);
 
         if ($validated['status'] === MilestoneStatus::Completed->value && !$milestone->completed_at) {
@@ -108,8 +109,7 @@ class MilestoneController extends Controller
             ]
         );
 
-        return redirect()
-            ->route('projects.show', $milestone->project)
+        return redirect($validated['return_to'] ?? route('projects.show', $milestone->project))
             ->with('success', 'Milestone updated successfully.');
 	}
 

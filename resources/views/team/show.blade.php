@@ -12,7 +12,7 @@
                     >
                         @csrf
 
-                        <x-button type="submit" variant="primary">
+                        <x-button type="submit" variant="primary" icon="link">
                             Send Password Reset Link
                         </x-button>
                     </form>
@@ -20,6 +20,7 @@
                     <x-button
                         href="{{ route('team.edit', $user) }}"
                         variant="secondary"
+                        icon="pencil"
                     >
                         Edit Team Member
                     </x-button>
@@ -31,6 +32,7 @@
                         variant="danger"
                         x-data
                         x-on:click="$dispatch('open-modal', 'confirm-delete')"
+                        icon="trash"
                     >
                         Delete
                     </x-button>

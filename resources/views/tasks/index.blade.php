@@ -4,6 +4,14 @@
         description="Organize assignments, monitor deadlines, and keep project work moving."
     >
         <x-slot:actions>
+            <x-button
+                    href="{{ route('tasks.board') }}"
+                    variant="success"
+                >
+                <x-heroicon-o-view-columns class="h-4 w-4" />
+
+                Board View
+            </x-button>
             @can('create', App\Models\Task::class)
                 <x-button
                     href="{{ route('tasks.create') }}"

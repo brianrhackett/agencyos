@@ -203,6 +203,11 @@
 			value="{{ old('due_date', isset($project?->due_date) ? $project->due_date->format('Y-m-d') : '') }}"
 		/>
 	</div>
+	<input
+		type="hidden"
+		name="return_to"
+		value="{{ old('return_to', url()->previous()) }}"
+	>
 </div>
 
 <script>

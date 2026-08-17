@@ -65,6 +65,10 @@ Route::prefix('clients/{client}/users')
 Route::resource('projects', ProjectController::class)
 	->middleware('auth');
 
+Route::get('projects/{project}/board', [ProjectController::class, 'board'])
+	->name('projects.board')
+	->middleware('auth');
+
 Route::get('/projects/{project}/milestones/create', [MilestoneController::class, 'create'])
 	->name('projects.milestones.create');
 
@@ -91,8 +95,14 @@ Route::post('/milestones/{milestone}/tasks', [TaskController::class, 'storeForMi
 	->middleware('auth')
 	->name('milestones.tasks.store');
 
+Route::get('tasks/board', [TaskController::class, 'board'])
+	->name('tasks.board')
+	->middleware('auth');
+
 Route::resource('tasks', TaskController::class)
 	->middleware('auth');
+
+
 
 Route::post('/tasks/{task}/comments', [CommentController::class, 'store'])
 	->name('tasks.comments.store');

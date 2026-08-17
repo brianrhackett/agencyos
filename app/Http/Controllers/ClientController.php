@@ -68,6 +68,7 @@ class ClientController extends Controller
             'country' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['required', 'boolean'],
+            'return_to' => ['nullable', 'url'],
         ]);
 
         $user_validated = $request->validate([
@@ -95,8 +96,7 @@ class ClientController extends Controller
             Password::createToken($user)
         );
 
-        return redirect()
-            ->route('clients.show', $client)
+        return redirect($validated['return_to'] ?? route('clients.show', $client))
             ->with('success', 'Client created successfully.');
     }
 
@@ -124,12 +124,12 @@ class ClientController extends Controller
             'country' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['required', 'boolean'],
+            'return_to' => ['nullable', 'url'],
         ]);
 
         $client->update($validated);
 
-        return redirect()
-            ->route('clients.index')
+        return redirect($validated['return_to'] ?? route('clients.index'))
             ->with('success', 'Client updated successfully.');
     }
 

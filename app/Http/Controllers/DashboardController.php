@@ -104,7 +104,7 @@ class DashboardController extends Controller
                     'project_name' => $project->name,
                     'client_name' => $project->client->name,
                     'text_class' => 'text-indigo-700',
-                    'attention_text' => 'Milestone in ' . now()->diffInDays($upcomingMilestone->due_date) . ' day(s)',
+                    'attention_text' => 'Milestone in ' . round(now()->diffInDays($upcomingMilestone->due_date),0) . ' day(s)',
                     'sub_text' => ''
                 ];
             }
