@@ -229,6 +229,19 @@
 					<div class="space-y-5">
 						<div>
 							<p class="text-xs font-medium uppercase tracking-wide text-stone-500">
+								Client
+							</p>
+
+							
+								<a
+									href="{{ route('projects.show', $task->project) }}"
+									class="mt-1 block font-medium text-stone-900 hover:text-indigo-600 dark:text-stone-100"
+								>
+									{{ $task->project->client->name }}
+								</a>
+						</div>
+						<div>
+							<p class="text-xs font-medium uppercase tracking-wide text-stone-500">
 								Project
 							</p>
 
