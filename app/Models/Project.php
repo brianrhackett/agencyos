@@ -109,6 +109,11 @@ class Project extends Model
 
 	public function scopeVisibleTo($query, User $user)
 	{
+		// SuperAdmin / agency users with global project visibility.
+		if ($user->canViewAllProjects()) {
+			return $query;
+		}
+		
 		if (! $user->hasPermission(Permission::ProjectsView)) {
 			return $query->whereRaw('1 = 0');
 		}

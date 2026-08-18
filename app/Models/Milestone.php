@@ -66,6 +66,11 @@ class Milestone extends Model
 
 	public function scopeVisibleTo($query, User $user)
 	{
+		// SuperAdmin / agency users with global project visibility.
+		if ($user->canViewAllProjects()) {
+			return $query;
+		}
+		
 		if (! $user->hasPermission(Permission::MilestonesView)) {
 			return $query->whereRaw('1 = 0');
 		}

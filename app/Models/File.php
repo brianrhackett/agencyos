@@ -77,6 +77,11 @@ class File extends Model
 
     public function scopeVisibleTo($query, User $user)
     {
+        // SuperAdmin / agency users with global project visibility.
+        if ($user->canViewAllProjects()) {
+            return $query;
+        }
+        
         return $query->whereHas('task', function ($query) use ($user) {
                 $query->visibleTo($user);
             });
