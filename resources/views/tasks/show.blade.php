@@ -3,7 +3,7 @@
 		:title="$task->title"
 		:description="$task->project?->name ?? 'Task details'"
 	>
-		<div class="mb-6 flex items-center justify-between gap-4">
+		<div class="mb-6 grid grid-cols-1 gap-3 md:flex items-center justify-between gap-4">
 			<div class="flex flex-wrap items-center gap-3">
 				<x-badge :variant="$task->status->badgeVariant()">
 					{{ $task->status->label() }}
@@ -20,7 +20,7 @@
 				@endif
 			</div>
 
-			<div class="flex items-center justify-end gap-3">
+			<div class="flex flex-wrap items-center justify-end gap-3">
 				@can('update', $task)
 					<x-button
 						href="{{ route('tasks.edit', $task) }}"
@@ -39,7 +39,7 @@
 						x-on:click="$dispatch('open-modal', 'confirm-delete')"
 						icon="trash"
 					>
-						Delete
+						Delete Task
 					</x-button>
 
 					<x-delete-modal

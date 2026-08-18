@@ -4,7 +4,7 @@
         description="{{ $user->position ?? 'Agency Team Member' }}"
     >
         <div class="space-y-6">
-            <div class="flex items-center justify-end gap-3">
+            <div class="flex flex-wrap items-center justify-end gap-3">
                 @can('update', $user)
                     <form
                         method="POST"
@@ -34,7 +34,7 @@
                         x-on:click="$dispatch('open-modal', 'confirm-delete')"
                         icon="trash"
                     >
-                        Delete
+                        Delete Team Member
                     </x-button>
                     <x-delete-modal
                         type="user"

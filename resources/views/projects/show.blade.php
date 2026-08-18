@@ -3,7 +3,7 @@
 		:title="$project->name"
 		:description="$project->client?->name ?? 'Project overview'"
 	>
-		<div class="mb-6 flex items-center justify-between">
+		<div class="mb-6 grid grid-cols-1 gap-3 md:flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<x-badge :variant="$project->status->badgeVariant()">
 					{{ $project->status->label() }}
@@ -14,7 +14,7 @@
 				</x-badge>
 			</div>
 
-			<div class="flex items-center justify-end gap-3">
+			<div class="flex flex-wrap items-center justify-end gap-3">
 				<x-button
 					href="{{ route('projects.board', $project) }}"
 					variant="primary"
@@ -40,7 +40,7 @@
 						x-data
 						x-on:click="$dispatch('open-modal', 'confirm-delete')"
 					>
-						Delete
+						Delete Project
 					</x-button>
 					
 					<x-delete-modal
@@ -98,7 +98,7 @@
 							<tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
 								@foreach ($project->directTasks as $task)
 									<tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-										<td class="px-6 py-4">
+										<td class="pr-6 py-4">
 											<p class="font-medium text-stone-900 dark:text-stone-100">
 												{{ $task->title }}
 											</p>
@@ -121,7 +121,7 @@
 												</p>
 											@endif
 										</td>
-										<td class="px-6 py-4 text-right">
+										<td class="pl-6 py-4 text-right">
 											<x-row-actions
 												:viewRoute="route('tasks.show', $task)"
 												:editRoute="auth()->user()->can('update', $task)
@@ -164,7 +164,7 @@
 							<tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
 								@foreach ($project->milestones as $milestone)
 									<tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-										<td class="px-6 py-4">
+										<td class="pr-6 py-4">
 											<a 
 												href="{{ route('milestones.show', $milestone) }}"
 												class="font-medium text-stone-900 dark:text-stone-100 hover:text-indigo-600"
@@ -183,7 +183,7 @@
 											{{ $milestone->tasks->count() }} tasks
 										</td>
 										
-										<td class="px-6 py-4 text-right">
+										<td class="pl-6 py-4 text-right">
 											<x-row-actions
 												:viewRoute="route('milestones.show', $milestone)"
 												:editRoute="auth()->user()->can('update', $milestone)

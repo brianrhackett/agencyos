@@ -3,7 +3,7 @@
 		:title="$project->name"
 		:description="$project->client?->name ?? 'Project overview'"
 	>
-		<div class="mb-6 flex items-center justify-between">
+		<div class="mb-6 grid grid-cols-1 gap-3 md:flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<x-badge :variant="$project->status->badgeVariant()">
 					{{ $project->status->label() }}
@@ -14,7 +14,7 @@
 				</x-badge>
 			</div>
 
-			<div class="flex items-center justify-end gap-3">
+			<div class="flex flex-wrap items-center justify-end gap-3">
 				<x-button
 					href="{{ route('projects.show', $project) }}"
 					variant="primary"
@@ -40,7 +40,7 @@
 						x-on:click="$dispatch('open-modal', 'confirm-delete')"
                         icon="trash"
 					>
-						Delete
+						Delete Project
 					</x-button>
 					
 					<x-delete-modal
@@ -52,7 +52,11 @@
 			</div>
 		</div>
   
-        <div class="flex gap-5 overflow-x-auto pb-4">
+        <div class="
+            grid grid-cols-1 
+            sm:grid-cols-2
+            md:grid-cols-3
+            xl:flex gap-5 overflow-x-auto pb-4">
             @foreach (\App\Enums\TaskStatus::cases() as $status)
                 <x-card>
                     <div class="">
@@ -76,7 +80,7 @@
                                     dark:border-stone-800
                                 ">
                                     @can('update', $task)
-                                        <a href="{{route('tasks.edit', $task)}}">{{ $task->title }}</a>
+                                        <a class="hover:text-indigo-700 dark:hover:text-indigo-300" href="{{route('tasks.edit', $task)}}">{{ $task->title }}</a>
                                     @else
                                         <div>{{ $task->title }}</div>
                                     @endcan
