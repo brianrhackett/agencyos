@@ -3,6 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Activity;
+use App\Models\Comment;
+use App\Models\File;
+use App\Models\Project;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -10,64 +14,75 @@ class ActivitySeeder extends Seeder
 {
 	public function run(): void
 	{
-		$users = User::take(4)->get();
+		$agencyUsers = User::whereHas('agencyUser')->get();
 
-		Activity::create([
-			'user_id' => $users->get(0)?->id,
-			'type' => 'task_completed',
-			'subject_type' => 'task',
-			'subject_id' => 1,
-			'metadata' => [
-				'task_name' => 'Homepage Design',
-				'client_name' => 'Acme Corporation',
-			],
-			'created_at' => now()->subMinutes(12),
-		]);
+		Project::latest()
+			->limit(6)
+			->get()
+			->each(function (Project $project, int $index) use ($agencyUsers) {
+				Activity::create([
+					'user_id' => $agencyUsers[$index % $agencyUsers->count()]->id,
+					'type' => 'project.created',
+					'subject_type' => Project::class,
+					'subject_id' => $project->id,
+					'metadata' => [
+						'name' => $project->name,
+					],
+					'created_at' => now()->subDays(12 - $index),
+					'updated_at' => now()->subDays(12 - $index),
+				]);
+			});
 
-		Activity::create([
-			'user_id' => $users->get(1)?->id,
-			'type' => 'files_uploaded',
-			'subject_type' => 'project',
-			'subject_id' => 2,
-			'metadata' => [
-				'file_count' => 3,
-				'project_name' => 'Marketing Site Refresh',
-			],
-			'created_at' => now()->subMinutes(43),
-		]);
+		Task::whereNotNull('completed_at')
+			->limit(10)
+			->get()
+			->each(function (Task $task, int $index) {
+				Activity::create([
+					'user_id' => $task->assigned_to,
+					'type' => 'task.completed',
+					'subject_type' => Task::class,
+					'subject_id' => $task->id,
+					'metadata' => [
+						'title' => $task->title,
+					],
+					'created_at' => now()->subDays($index),
+					'updated_at' => now()->subDays($index),
+				]);
+			});
 
-		Activity::create([
-			'user_id' => $users->get(2)?->id,
-			'type' => 'comment_added',
-			'subject_type' => 'task',
-			'subject_id' => 3,
-			'metadata' => [
-				'task_name' => 'Website Launch',
-			],
-			'created_at' => now()->subHours(2),
-		]);
+		Comment::latest()
+			->limit(8)
+			->get()
+			->each(function (Comment $comment, int $index) {
+				Activity::create([
+					'user_id' => $comment->user_id,
+					'type' => 'comment.created',
+					'subject_type' => Comment::class,
+					'subject_id' => $comment->id,
+					'metadata' => [
+						'task_id' => $comment->task_id,
+					],
+					'created_at' => now()->subHours($index + 2),
+					'updated_at' => now()->subHours($index + 2),
+				]);
+			});
 
-		Activity::create([
-			'user_id' => null,
-			'type' => 'milestone_completed',
-			'subject_type' => 'milestone',
-			'subject_id' => 1,
-			'metadata' => [
-				'milestone_name' => 'Content Delivery',
-			],
-			'created_at' => now()->subDay(),
-		]);
-
-		Activity::create([
-			'user_id' => $users->get(3)?->id,
-			'type' => 'client_user_added',
-			'subject_type' => 'client',
-			'subject_id' => 1,
-			'metadata' => [
-				'user_name' => 'Olivia Wilson',
-				'client_name' => 'Wave Industries',
-			],
-			'created_at' => now()->subDay()->subHours(2),
-		]);
+		File::latest()
+			->limit(8)
+			->get()
+			->each(function (File $file, int $index) {
+				Activity::create([
+					'user_id' => $file->uploaded_by,
+					'type' => 'file.uploaded',
+					'subject_type' => File::class,
+					'subject_id' => $file->id,
+					'metadata' => [
+						'filename' => $file->original_name,
+						'task_id' => $file->task_id,
+					],
+					'created_at' => now()->subHours($index + 1),
+					'updated_at' => now()->subHours($index + 1),
+				]);
+			});
 	}
 }

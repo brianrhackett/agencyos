@@ -24,7 +24,7 @@ return new class extends Migration
 				->constrained()
 				->cascadeOnDelete();
 
-			$table->string('role')->default(ProjectRole::ClientViewer->value);
+			$table->string('role')->default(ProjectRole::Viewer->value);
 			$table->boolean('can_view_financials')->default(false);
 
 			$table->timestamps();
