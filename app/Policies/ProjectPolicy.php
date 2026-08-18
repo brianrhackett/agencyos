@@ -24,9 +24,23 @@ class ProjectPolicy
         if(!$user->hasPermission(Permission::ProjectsView)) {
             return false;
         }
+        
+        // Client users can only see projects belonging to their client.
+        if (!$user->agencyUser) {
+            return $user->clients()
+                ->where('clients.id', $project->client_id)
+                ->exists();
+        }
 
-        return $user->agencyUser 
-            || $user->belongsToClient($project->client_id);
+        // Higher-level agency users can see every project.
+        if ($user->canViewAllProjects()) {
+            return true;
+        }
+
+        // Everyone else must actually be assigned to the project.
+        return $project->teamMembers()
+            ->where('users.id', $user->id)
+            ->exists();
     }
 
     /**

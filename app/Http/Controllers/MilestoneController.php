@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Services\ActivityLogger;
 use App\Models\Milestone;
 use App\Models\Project;
 use Illuminate\Http\Request;

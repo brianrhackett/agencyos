@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Permission;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -104,5 +105,29 @@ class Project extends Model
 		$total_tasks = count($this->tasks());
 
 		return round(100 * $active_tasks / $total_tasks, 2);
+	}
+
+	public function scopeVisibleTo($query, User $user)
+	{
+		if (! $user->hasPermission(Permission::ProjectsView)) {
+			return $query->whereRaw('1 = 0');
+		}
+
+		// Client users can see projects belonging to their client.
+		if (! $user->agencyUser) {
+			return $query->whereHas('client.users', function ($query) use ($user) {
+				$query->where('users.id', $user->id);
+			});
+		}
+
+		// Higher-level agency users can see every project.
+		if ($user->canViewAllProjects()) {
+			return $query;
+		}
+
+		// Everyone else must be assigned to the project.
+		return $query->whereHas('teamMembers', function ($query) use ($user) {
+			$query->where('users.id', $user->id);
+		});
 	}
 }

@@ -73,8 +73,9 @@
                                     border-1 border-stone-100 text-stone-800
                                     text-sm font-bold block p-3 rounded-sm my-3 bg-stone-50 
                                     dark:bg-stone-900 flex items-center dark:text-stone-200 
+                                    dark:border-stone-800
                                 ">
-                                    @can('edit', $task)
+                                    @can('update', $task)
                                         <a href="{{route('tasks.edit', $task)}}">{{ $task->title }}</a>
                                     @else
                                         <div>{{ $task->title }}</div>

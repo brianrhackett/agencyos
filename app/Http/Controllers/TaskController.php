@@ -57,13 +57,19 @@ class TaskController extends Controller
             'assignedTo',
         ]);
 
-        if (!auth()->user()->agencyUser) {
+        $user = auth()->user();
+
+        if (!$user->agencyUser) {
             $clientIds = auth()->user()
                 ->clients()
                 ->pluck('clients.id');
 
             $query->whereHas('project', function ($query) use ($clientIds) {
                 $query->whereIn('client_id', $clientIds);
+            });
+        } elseif (!$user->canViewAllProjects()) {
+            $query->whereHas('project.teamMembers', function ($query) use ($user) {
+                $query->where('users.id', $user->id);
             });
         }
 
@@ -130,7 +136,7 @@ class TaskController extends Controller
             [
                 'task_name' => $task->title,
                 'project_name' => $project->name,
-                'client_name' => $task->client->name,
+                'client_name' => $project->client->name,
             ]
         );
 
@@ -374,6 +380,10 @@ class TaskController extends Controller
 
             $query->whereHas('project', function ($query) use ($clientIds) {
                 $query->whereIn('client_id', $clientIds);
+            });
+        } elseif (!$user->canViewAllProjects()) {
+            $query->whereHas('project.teamMembers', function ($query) use ($user) {
+                $query->where('users.id', $user->id);
             });
         }
 

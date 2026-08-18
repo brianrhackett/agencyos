@@ -57,6 +57,7 @@
                                         Dashboard
                                     </flux:navlist.item>
 
+                                    @can('viewAny', App\Models\Client::class)
                                     <flux:navlist.item
                                         icon="building-office-2"
                                         :href="route('clients.index')"
@@ -75,6 +76,7 @@
                                     >
                                         Clients
                                     </flux:navlist.item>
+                                    @endcan
                                 @endif
                                 
                                 <flux:navlist.item

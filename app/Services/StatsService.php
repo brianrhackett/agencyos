@@ -193,8 +193,8 @@ class StatsService
     public function totalFiles()
     {
         $query = File::where('id','>',0);
-        
-        $query = $this->_filterClientsFilesQuery($query);
+        $query->visibleTo(auth()->user());
+        //$query = $this->_filterClientsFilesQuery($query);
 
         return $query->count();
     }
@@ -202,8 +202,8 @@ class StatsService
     public function storageUsed()
     {
         $query = File::where('id','>',0);
-        
-        $query = $this->_filterClientsFilesQuery($query);
+        $query->visibleTo(auth()->user());
+        //$query = $this->_filterClientsFilesQuery($query);
 
         return $query->sum('size');
     }
@@ -211,15 +211,15 @@ class StatsService
     public function uploadedThisWeek()
     {
         $query = File::where('created_at', '>=', now()->startOfWeek());
-
-        $query = $this->_filterClientsFilesQuery($query);
+        $query->visibleTo(auth()->user());
+        //$query = $this->_filterClientsFilesQuery($query);
 
         return $query->count();
     }
 
     public function sharedWithClients()
     {
-        return File::where('is_client_visible', true)
+        return File::where('is_client_visible', true)->visibleTo(auth()->user())
 	            ->count();
     }
 

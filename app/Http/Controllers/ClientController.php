@@ -16,6 +16,7 @@ class ClientController extends Controller
 {
 	public function index(StatsService $stats, Request $request)
 	{
+        $this->authorize('viewAny', Client::class);
         $summaryCards = [
             'totalClients' => [
                 'title' => 'Total Clients',
@@ -102,7 +103,7 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
-        $this->authorize('update', Client::class);
+        $this->authorize('update', $client);
 
         return view('clients.edit', compact('client'));
     }
@@ -135,7 +136,7 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
-        $this->authorize('view', Client::class);
+        $this->authorize('view', $client);
 
         $client->load([
             'users',

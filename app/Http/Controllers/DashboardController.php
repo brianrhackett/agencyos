@@ -69,7 +69,7 @@ class DashboardController extends Controller
                 return [
                     'project_name' => $project->name,
                     'client_name' => $project->client->name,
-                    'text_class' => 'text-red-600',
+                    'text_class' => 'text-red-600 dark:text-red-400',
                     'attention_text' => $overdueTasks->count() . ' overdue tasks',
                     'sub_text' => ''
                 ];
@@ -83,7 +83,7 @@ class DashboardController extends Controller
                 return [
                     'project_name' => $project->name,
                     'client_name' => $project->client->name,
-                    'text-class' => 'text-orange-600',
+                    'text_class' => 'text-orange-600 dark:text-orange-400',
                     'attention_text' => 'Client Approval Needed',
                     'sub_text' => ''
                 ];
@@ -103,7 +103,7 @@ class DashboardController extends Controller
                 return [
                     'project_name' => $project->name,
                     'client_name' => $project->client->name,
-                    'text_class' => 'text-indigo-700',
+                    'text_class' => 'text-indigo-700  dark:text-indigo-200',
                     'attention_text' => 'Milestone in ' . round(now()->diffInDays($upcomingMilestone->due_date),0) . ' day(s)',
                     'sub_text' => ''
                 ];

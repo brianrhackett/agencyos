@@ -8,13 +8,15 @@
         </x-slot:actions>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            @foreach ($summaryCards as $card)
-                <x-card title="{{ $card['title'] }}">
-                    <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
-                        {{ $card['value'] }}
-                    </p>
-                </x-card>
-            @endforeach
+            @if ($showFileStats)
+                @foreach ($summaryCards as $card)
+                    <x-card title="{{ $card['title'] }}">
+                        <p class="mt-3 text-3xl font-bold text-stone-900 dark:text-stone-100">
+                            {{ $card['value'] }}
+                        </p>
+                    </x-card>
+                @endforeach
+            @endif
         </div>
 
         <div class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
@@ -146,13 +148,20 @@
                                             </div>
 
                                             <div class="min-w-0">
+                                                @can('view', $file->task)
                                                 <a
                                                     href="{{ route('files.download', $file) }}"
                                                     class="block max-w-64 truncate font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
                                                 >
                                                     {{ $file['original_name'] }}
                                                 </a>
-
+                                                @else
+                                                    <div
+                                                        class="block max-w-64 truncate font-semibold text-stone-900 transition-colors dark:text-stone-100"
+                                                    >
+                                                        {{ $file['original_name'] }}
+                                                    </div>
+                                                @endcan
                                                 <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
                                                     {{ $file['extension'] }}
                                                 </p>
@@ -238,77 +247,78 @@
             </x-card>
 
             <div class="space-y-6">
-                <x-card title="Storage">
-                    <div class="flex items-end justify-between gap-4 mt-4">
-                        <div>
-                            <p class="text-2xl font-bold text-stone-900 dark:text-stone-100">
-                                {{ $storageUsed }}
-                            </p>
+                @if ($showFileStats)
+                    <x-card title="Storage">
+                        <div class="flex items-end justify-between gap-4 mt-4">
+                            <div>
+                                <p class="text-2xl font-bold text-stone-900 dark:text-stone-100">
+                                    {{ $storageUsed }}
+                                </p>
 
-                            <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                                of {{ $totalStorageAvailable }} used
+                                <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                                    of {{ $totalStorageAvailable }} used
+                                </p>
+                            </div>
+
+                            <p class="text-sm font-semibold text-stone-600 dark:text-stone-300">
+                                {{ $totalStoragePctUsed }}%
                             </p>
                         </div>
 
-                        <p class="text-sm font-semibold text-stone-600 dark:text-stone-300">
-                            {{ $totalStoragePctUsed }}%
-                        </p>
-                    </div>
+                        <div class="mt-4 h-2 overflow-hidden rounded-sm bg-stone-200 dark:bg-stone-800">
+                            <div 
+                                class="h-full bg-indigo-600"
+                                style="width:{{ $totalStoragePctUsed }}%;"
+                            ></div>
+                        </div>
 
-                    <div class="mt-4 h-2 overflow-hidden rounded-sm bg-stone-200 dark:bg-stone-800">
-                        <div 
-                            class="h-full bg-indigo-600"
-                            style="width:{{ $totalStoragePctUsed }}%;"
-                        ></div>
-                    </div>
-
-                    <div class="mt-6 space-y-3 border-t border-stone-200 pt-5 dark:border-stone-800">
-                        @foreach ($storageByType as $type => $size)
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="text-stone-500 dark:text-stone-400">
-                                    {{ ucfirst($type) }}
-                                </span>
-                                <span class="font-medium text-stone-700 dark:text-stone-300">
-                                    {{ $size }}
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
-                </x-card>
-
-                @if (isset($clientFolders))
-                <x-card title="Client Folders">
-                    <ul class="divide-y divide-stone-200 dark:divide-stone-800 mt-4">
-                        @foreach ($clientFolders as $client)
-                            <li class="flex items-center gap-3 py-4 first:pt-0 last:pb-0">
-                                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300">
-                                    <x-heroicon-o-folder class="h-5 w-5" />
+                        <div class="mt-6 space-y-3 border-t border-stone-200 pt-5 dark:border-stone-800">
+                            @foreach ($storageByType as $type => $size)
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-stone-500 dark:text-stone-400">
+                                        {{ ucfirst($type) }}
+                                    </span>
+                                    <span class="font-medium text-stone-700 dark:text-stone-300">
+                                        {{ $size }}
+                                    </span>
                                 </div>
+                            @endforeach
+                        </div>
+                    </x-card>
 
-                                <div class="min-w-0 flex-1">
-                                    <a
-                                        href="#"
-                                        class="block truncate text-sm font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
-                                    >
-                                        {{ $client['name'] }}
-                                    </a>
+                
+                    <x-card title="Client Folders">
+                        <ul class="divide-y divide-stone-200 dark:divide-stone-800 mt-4">
+                            @foreach ($clientFolders as $client)
+                                <li class="flex items-center gap-3 py-4 first:pt-0 last:pb-0">
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300">
+                                        <x-heroicon-o-folder class="h-5 w-5" />
+                                    </div>
 
-                                    <p class="text-sm text-stone-500">
-                                        {{ $client['file_count'] }}
-                                        {{ Str::plural('file', $client['file_count']) }}
-                                        across
-                                        {{ $client['project_count'] }}
-                                        {{ Str::plural('project', $client['project_count']) }}
-                                    </p>
-                                </div>
+                                    <div class="min-w-0 flex-1">
+                                        <a
+                                            href="#"
+                                            class="block truncate text-sm font-semibold text-stone-900 transition-colors hover:text-indigo-600 dark:text-stone-100 dark:hover:text-indigo-400"
+                                        >
+                                            {{ $client['name'] }}
+                                        </a>
 
-                                <x-heroicon-o-chevron-right class="h-4 w-4 shrink-0 text-stone-400" />
-                            </li>
-                        @endforeach
-                    </ul>
-                </x-card>
+                                        <p class="text-sm text-stone-500">
+                                            {{ $client['file_count'] }}
+                                            {{ Str::plural('file', $client['file_count']) }}
+                                            across
+                                            {{ $client['project_count'] }}
+                                            {{ Str::plural('project', $client['project_count']) }}
+                                        </p>
+                                    </div>
+
+                                    <x-heroicon-o-chevron-right class="h-4 w-4 shrink-0 text-stone-400" />
+                                </li>
+                            @endforeach
+                        </ul>
+                    </x-card>
                 @endif
-
+                
                 <x-card title="File Types">
                     <div class="space-y-3 mt-4">
                         @foreach ($fileTypeCounts as $type => $count)

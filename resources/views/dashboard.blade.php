@@ -5,10 +5,12 @@
     >
 
 		<x-slot:actions>
-			<x-button>
-				<x-heroicon-o-plus class="h-4 w-4" />
-				New Project
-			</x-button>
+			@can('create', App\Models\Project::class)
+				<x-button>
+					<x-heroicon-o-plus class="h-4 w-4" />
+					New Project
+				</x-button>
+			@endcan
 		</x-slot>
 
 		<div class="">

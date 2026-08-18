@@ -192,7 +192,8 @@ class TeamController extends Controller
         return view('team.show', [
             'user' => $user,
             'role' => $role,
-            'jobTitle' => $jobTitle
+            'jobTitle' => $jobTitle,
+            'canSeeAssignedTasks' => !empty($client) || auth()->user()->canViewAllProjects()
         ]);
     }
 
@@ -273,8 +274,12 @@ class TeamController extends Controller
             return [
                 'name' => $member->name,
                 'email' => $member->email,
-                'position' => $member->pivot?->job_title ?? $member->position ?? 'Agency Team',
-                'role' => $member->pivot?->role ?? 'Team Member',
+                'position' => $member->agencyUser
+	                        ? $member->agencyUser->job_title
+	                        : $member->clients->first()?->pivot->job_title ?? 'Agency Team',
+                'role' => $member->agencyUser
+	                        ? $member->agencyUser->role->name
+	                        : $member->clients->first()?->pivot->role ?? 'Team Member',
                 'projects' => Project::whereHas('tasks', function ($query) use ($member) {
                     $query->where('assigned_to', $member->id)
                         ->where('status', '!=', 'completed');

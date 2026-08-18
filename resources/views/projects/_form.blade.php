@@ -43,9 +43,9 @@
 				<div>
 					<h3 class="font-bold text-lg">Agency Team</h3>
 					<p class="my-4 text-sm text-stone-500 dark:text-stone-400">Select agency team members and their role on this project.</p>
-					<div class="overflow-hidden rounded-sm border border-stone-200 min-w-full border-1 border-stone-200 rounded-sm dark:divide-stone-800">
+					<div class="overflow-hidden rounded-sm border border-stone-200 min-w-full border-1 border-stone-200 rounded-sm dark:divide-stone-800 dark:border-stone-800">
 						<table class="border-collapse w-full divide-y">
-							<thead class="bg-stone-50 dark:bg-stone-900">
+							<thead class="bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-800">
 								<th
 									scope="col"
 									class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400"
@@ -93,9 +93,9 @@
 				<div>
 					<h3 class="font-bold text-lg">Client Users</h3>
 					<p class="my-4 text-sm text-stone-500 dark:text-stone-400">Select client users who should have access to this project and their role.</p>
-					<div class="overflow-hidden rounded-sm border border-stone-200 min-w-full border-1 border-stone-200 rounded-sm dark:divide-stone-800">
+					<div class="overflow-hidden rounded-sm border border-stone-200 min-w-full border-1 border-stone-200 rounded-sm dark:divide-stone-800 dark:border-stone-800">
 						<table class="border-collapse w-full divide-y">
-							<thead class="bg-stone-50 dark:bg-stone-900">
+							<thead class="bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-800">
 								<th
 									scope="col"
 									class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400"

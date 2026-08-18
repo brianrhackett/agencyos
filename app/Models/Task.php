@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Permission;
 use App\Enums\TaskPriority;
 use App\Enums\TaskStatus;
 use Illuminate\Database\Eloquent\Model;
@@ -81,5 +82,16 @@ class Task extends Model
 	{
 		return $this->due_date?->isPast()
 			&& $this->status !== TaskStatus::Completed;
+	}
+
+	public function scopeVisibleTo($query, User $user)
+	{
+		if (! $user->hasPermission(Permission::TasksView)) {
+			return $query->whereRaw('1 = 0');
+		}
+
+		return $query->whereHas('project', function ($query) use ($user) {
+			$query->visibleTo($user);
+		});
 	}
 }

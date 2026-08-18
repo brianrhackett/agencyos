@@ -11,7 +11,7 @@
 		label="Description"
 	>{{ old('description', $task->description ?? '') }}</x-textarea>
 
-    @if (!isset($task->project))
+	@if (isset($task) && !isset($task->project))
         <div class="grid gap-6 md:grid-cols-2">
             <x-select
                 name="project_id"

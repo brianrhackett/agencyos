@@ -134,40 +134,42 @@
                 </x-card>
             </div>
 
-            <x-card>
-                <h2 class="text-lg font-bold text-stone-900 dark:text-stone-100">
-                    Assigned Tasks
-                </h2>
+            @if ($canSeeAssignedTasks)
+                <x-card>
+                    <h2 class="text-lg font-bold text-stone-900 dark:text-stone-100">
+                        Assigned Tasks
+                    </h2>
 
-                @if ($user->assignedTasks->isEmpty())
-                    <p class="mt-4 text-sm text-stone-500">
-                        No tasks assigned.
-                    </p>
-                @else
-                    <div class="mt-4 divide-y divide-stone-200 dark:divide-stone-800">
-                        @foreach ($user->assignedTasks as $task)
-                            <a
-                                href="{{ route('tasks.show', $task) }}"
-                                class="flex items-center justify-between gap-4 py-4 hover:text-indigo-600 dark:hover:text-indigo-400"
-                            >
-                                <div>
-                                    <p class="text-sm font-semibold">
-                                        {{ $task->title }}
-                                    </p>
+                    @if ($user->assignedTasks->isEmpty())
+                        <p class="mt-4 text-sm text-stone-500">
+                            No tasks assigned.
+                        </p>
+                    @else
+                        <div class="mt-4 divide-y divide-stone-200 dark:divide-stone-800">
+                            @foreach ($user->assignedTasks as $task)
+                                <a
+                                    href="{{ route('tasks.show', $task) }}"
+                                    class="flex items-center justify-between gap-4 py-4 hover:text-indigo-600 dark:hover:text-indigo-400"
+                                >
+                                    <div>
+                                        <p class="text-sm font-semibold">
+                                            {{ $task->title }}
+                                        </p>
 
-                                    <p class="mt-1 text-xs text-stone-500">
-                                        {{ $task->project?->name ?? 'No project' }}
-                                    </p>
-                                </div>
+                                        <p class="mt-1 text-xs text-stone-500">
+                                            {{ $task->project?->name ?? 'No project' }}
+                                        </p>
+                                    </div>
 
-                                <span class="text-xs text-stone-500">
-                                    {{ $task->due_date?->format('M j, Y') ?? 'No due date' }}
-                                </span>
-                            </a>
-                        @endforeach
-                    </div>
-                @endif
-            </x-card>
+                                    <span class="text-xs text-stone-500">
+                                        {{ $task->due_date?->format('M j, Y') ?? 'No due date' }}
+                                    </span>
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
+                </x-card>
+            @endif
         </div>
     </x-layouts.app.content>
 </x-layouts.app>

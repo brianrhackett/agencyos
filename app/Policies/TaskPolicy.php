@@ -26,8 +26,7 @@ class TaskPolicy
             return false;
         }
 
-        return $user->agencyUser 
-            || $user->belongsToClient($task->project->client_id);
+        return $user->can('view', $task->project);
     }
 
     /**
@@ -51,8 +50,9 @@ class TaskPolicy
             return false;
         }
 
-        return $user->agencyUser 
-            || $user->belongsToClient($task->project->client_id);
+        return $user->can('view', $task->project) && 
+            ($user->agencyUser 
+            || $user->belongsToClient($task->project->client_id));
     }
 
     /**
@@ -64,8 +64,9 @@ class TaskPolicy
             return false;
         }
 
-        return $user->agencyUser 
-            || $user->belongsToClient($task->project->client_id);
+        return $user->can('view', $task->project) && 
+            ($user->agencyUser 
+            || $user->belongsToClient($task->project->client_id));
     }
 
     /**

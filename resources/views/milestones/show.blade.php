@@ -32,7 +32,7 @@
                         variant="danger"
                         x-data
                         x-on:click="$dispatch('open-modal', 'confirm-delete')"
-                    >
+                    />
 					<x-delete-modal
 						type="milestone"
 						name="Milestone"

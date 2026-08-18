@@ -74,7 +74,7 @@
 								href="{{ $client->website }}"
 								target="_blank"
 								rel="noopener noreferrer"
-								class="font-medium text-violet-600 hover:underline"
+								class="font-medium text-indigo-600 hover:underline dark:text-indigo-300"
 							>
 								{{ $client->website }}
 							</a>
@@ -129,7 +129,7 @@
 				@can('create', [App\Models\ClientUser::class, $client])
 					<a
 						href="{{ route('clients.users.create', $client) }}"
-						class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+						class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-300"
 					>
 						Add User
 					</a>

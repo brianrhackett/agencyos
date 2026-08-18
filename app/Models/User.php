@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Permission;
+use App\Enums\AgencyRole;
 use Illuminate\Support\Facades\DB;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -154,5 +155,14 @@ class User extends Authenticatable // implements MustVerifyEmail
         return $this->clients()
             ->where('clients.id', $clientId)
             ->exists();
+    }
+
+    public function canViewAllProjects(): bool
+    {
+        return in_array($this->agencyUser?->role, [
+            AgencyRole::SuperAdmin,
+            AgencyRole::Administrator,
+            AgencyRole::Manager,
+        ], true);
     }
 }

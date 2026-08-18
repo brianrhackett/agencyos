@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Enums\MilestoneStatus;
+use App\Enums\Permission;
 
 class Milestone extends Model
 {
@@ -61,5 +62,16 @@ class Milestone extends Model
 		$total_tasks = count($this->tasks());
 
 		return round(100 * $active_tasks / $total_tasks, 2);
+	}
+
+	public function scopeVisibleTo($query, User $user)
+	{
+		if (! $user->hasPermission(Permission::MilestonesView)) {
+			return $query->whereRaw('1 = 0');
+		}
+
+		return $query->whereHas('project', function ($query) use ($user) {
+			$query->visibleTo($user);
+		});
 	}
 }

@@ -72,9 +72,14 @@ class FileController extends Controller
 
         if( $user->isClientUser() )
         {
-            unset($returnData['summaryCards']['sharedWithClientsCount']);
-            unset($returnData['clientFolders']);
+            $returnData['showFileStats'] = false;
         }
+        else
+        {
+            $returnData['showFileStats'] = $user->canViewAllProjects();
+        }
+
+        
 
         return view('files.index', $returnData);
     }
@@ -198,15 +203,7 @@ class FileController extends Controller
 
         $user = auth()->user();
         
-        if ($user->isClientUser()) {
-            $clientIds = $user->clients()->pluck('clients.id');
-
-            $query->whereHas('task.project', function ($query) use ($clientIds) {
-                $query->whereIn('client_id', $clientIds);
-            });
-            $query->where('is_client_visible', true);
-        }
-
+        $query->visibleTo($user);
         
         return $query
             ->latest()
@@ -220,15 +217,7 @@ class FileController extends Controller
 
         $user = auth()->user();
         
-        if ($user->isClientUser()) {
-            $clientIds = $user->clients()->pluck('clients.id');
-
-            $query->whereHas('task.project', function ($query) use ($clientIds) {
-                $query->whereIn('client_id', $clientIds);
-            });
-
-            $query->where('is_client_visible', true);
-        }
+        $query->visibleTo($user);
          
         $files = $query->get();
 
@@ -317,15 +306,7 @@ class FileController extends Controller
         
         $user = auth()->user();
         
-        if ($user->isClientUser()) {
-            $clientIds = $user->clients()->pluck('clients.id');
-
-            $query->whereHas('task.project', function ($query) use ($clientIds) {
-                $query->whereIn('client_id', $clientIds);
-            });
-
-            $query->where('is_client_visible', true);
-        }
+        $query->visibleTo($user);
 
         $files = $query->get();
 
@@ -397,14 +378,7 @@ class FileController extends Controller
         $query = Project::with([
             'client',
             'projectManager',
-        ]);
-
-        if($user->isClientUser()) {
-            $query->whereIn(
-                'client_id',
-                $user->clients()->pluck('clients.id')
-            );
-        }
+        ])->visibleTo($user);
 
         return $query->get();
     }

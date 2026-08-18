@@ -59,18 +59,10 @@ class CalendarController extends Controller
 
     private function _getTaskEventsData($start, $end)
     {
-        $query = Task::with('project.client')
-            ->whereBetween('due_date', [$start, $end]);
-
         $user = auth()->user();
-
-        if ($user->isClientUser()) {
-            $clientIds = $user->clients()->pluck('clients.id');
-
-            $query->whereHas('project', function ($query) use ($clientIds) {
-                $query->whereIn('client_id', $clientIds);
-            });
-        }
+        $query = Task::with('project.client')
+            ->visibleTo($user)
+            ->whereBetween('due_date', [$start, $end]);
 
         return $query->get()
             ->map(function ($task) {
@@ -89,18 +81,11 @@ class CalendarController extends Controller
 
     private function _getMilestoneEventsData($start, $end)
     {
-        $query = Milestone::with('project.client')
-            ->whereBetween('due_date', [$start, $end]);
-
         $user = auth()->user();
-        
-        if ($user->isClientUser()) {
-            $clientIds = $user->clients()->pluck('clients.id');
 
-            $query->whereHas('project', function ($query) use ($clientIds) {
-                $query->whereIn('client_id', $clientIds);
-            });
-        }
+        $query = Milestone::with('project.client')
+            ->visibleTo($user)
+            ->whereBetween('due_date', [$start, $end]);
 
         return $query->get()
             ->map(function ($milestone) {
@@ -119,18 +104,12 @@ class CalendarController extends Controller
 
     private function _getProjectEventsData($start, $end)
     {
+        $user = auth()->user();
+
         $query = Project::with('client')
+            ->visibleTo($user)
             ->whereBetween('due_date', [$start, $end])
             ->where('status', '!=', 'completed');
-
-        $user = auth()->user();
-        
-        if($user->isClientUser()) {
-            $query->whereIn(
-                'client_id',
-                $user->clients()->pluck('clients.id')
-            );
-        }
 
         return $query->get()
             ->map(function ($project) {

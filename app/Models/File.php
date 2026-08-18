@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+use App\Models\User;
+
 class File extends Model
 {
 	use SoftDeletes;
@@ -71,5 +73,12 @@ class File extends Model
             'Archive' => 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
             default => 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
         };
+    }
+
+    public function scopeVisibleTo($query, User $user)
+    {
+        return $query->whereHas('task', function ($query) use ($user) {
+                $query->visibleTo($user);
+            });
     }
 }

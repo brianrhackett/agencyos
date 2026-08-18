@@ -283,6 +283,10 @@ class ProjectController extends Controller
                 'client_id',
                 $user->clients()->pluck('clients.id')
             );
+        } elseif (!$user->canViewAllProjects()) {
+            $query->whereHas('teamMembers', function ($query) use ($user) {
+                $query->where('users.id', $user->id);
+            });
         }
 
         $query
