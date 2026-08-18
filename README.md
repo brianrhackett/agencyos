@@ -240,7 +240,7 @@ php artisan serve
 The application will normally be available at:
 
 ```text
-https://agencyos.brianrhackett.com
+http://127.0.0.1:8000
 ```
 
 ## Local Email Testing
