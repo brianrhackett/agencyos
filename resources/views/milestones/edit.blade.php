@@ -19,7 +19,7 @@
 					</x-button>
 
 					<x-button
-						href="{{ route('projects.show', $milestone->project) }}"
+						href="{{ url()->previous() }}"
 						variant="ghost"
 					>
 						Cancel

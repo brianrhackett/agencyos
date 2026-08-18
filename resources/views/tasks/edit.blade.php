@@ -22,7 +22,7 @@
 					</x-button>
 
 					<x-button
-						href="{{ route('tasks.show', $task) }}"
+						href="{{ url()->previous() }}"
 						variant="ghost"
 					>
 						Cancel

@@ -298,7 +298,7 @@ class TaskController extends Controller
             ->with('success', 'Task created successfully.');
     }
 
-    public function destroy(Task $task)
+    public function destroy(Request $request, Task $task)
     {
         $this->authorize('delete', $task);
 
@@ -315,9 +315,9 @@ class TaskController extends Controller
             ]
         );
 
-		return redirect()
-			->route('tasks.index')
-			->with('success', 'Task deleted successfully.');
+        $return_to = $request->input('return_to');
+        return redirect( $return_to ?? route('tasks.index') )
+            ->with('success', 'Task deleted successfully.');
     }
 
     private function _validateTask(Request $request, $includeContext = false): array

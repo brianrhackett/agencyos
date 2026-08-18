@@ -97,7 +97,7 @@
                         <table class="min-w-full divide-y divide-stone-200 dark:divide-stone-800">
 							<tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
 								@foreach ($project->directTasks as $task)
-									<tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
+									<tr class="">
 										<td class="pr-6 py-4">
 											<p class="font-medium text-stone-900 dark:text-stone-100">
 												{{ $task->title }}
@@ -133,6 +133,7 @@
 												:name="$task->title"
 												:modalName="'task_' . $task->id"
 												type="Task"
+												:returnTo="route('projects.show',$project)"
 											/>
 										</td>
 									</tr>
@@ -163,7 +164,7 @@
 						<table class="min-w-full divide-y divide-stone-200 dark:divide-stone-800">
 							<tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
 								@foreach ($project->milestones as $milestone)
-									<tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
+									<tr>
 										<td class="pr-6 py-4">
 											<a 
 												href="{{ route('milestones.show', $milestone) }}"

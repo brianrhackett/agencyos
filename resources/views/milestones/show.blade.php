@@ -16,11 +16,12 @@
 				@endif
 			</div>
 
-			<div>
+			<div class="flex flex-wrap items-center justify-end gap-3">
 				@can('update', $milestone)
 					<x-button
 						href="{{ route('milestones.edit', $milestone) }}"
 						variant="secondary"
+						icon="pencil"
 					>
 						Edit Milestone
 					</x-button>
@@ -32,7 +33,10 @@
                         variant="danger"
                         x-data
                         x-on:click="$dispatch('open-modal', 'confirm-delete')"
-                    />
+						icon="trash"
+                    >
+						Delete Milestone
+					</x-button>
 					<x-delete-modal
 						type="milestone"
 						name="Milestone"
@@ -96,7 +100,7 @@
 							<tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
 								@foreach ($milestone->tasks as $task)
 									<tr class="transition-colors hover:bg-stone-50 dark:hover:bg-stone-900">
-										<td class="px-6 py-4">
+										<td class="pr-6 py-4">
 											<p class="font-medium text-stone-900 dark:text-stone-100">
 												{{ $task->title }}
 											</p>
@@ -119,7 +123,7 @@
 												</p>
 											@endif
 										</td>
-										<td class="px-6 py-4 text-right">
+										<td class="pl-6 py-4 text-right">
 											<x-row-actions
 												:viewRoute="route('tasks.show', $task)"
 												:editRoute="auth()->user()->can('update', $task)
@@ -129,6 +133,9 @@
 																? route('tasks.destroy', $task)
 																: null"
 												:name="$task->title"
+												:modalName="'task_' . $task->id"
+												type="Task"
+												:returnTo="route('milestones.show', $milestone)" 
 											/>
 										</td>
 									</tr>

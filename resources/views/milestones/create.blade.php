@@ -18,7 +18,7 @@
 					</x-button>
 
 					<x-button
-						href="{{ route('projects.show', $project) }}"
+						href="{{ url()->previous() }}"
 						variant="ghost"
 					>
 						Cancel

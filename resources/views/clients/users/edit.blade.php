@@ -19,7 +19,7 @@
                         Save Client User
                     </x-button>
                     <x-button 
-                        href="{{ route('clients.show', $client) }}"
+                        href="{{ url()->previous() }}"
                         variant="ghost">
                         Cancel
                     </x-button>

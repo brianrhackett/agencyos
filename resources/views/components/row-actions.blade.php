@@ -2,6 +2,7 @@
 	'viewRoute' => null,
 	'editRoute' => null,
 	'deleteRoute' => null,
+	'returnTo' => null,
 	'name',
 	'modalName',
 	'type'
@@ -67,6 +68,11 @@
 					>
 						Delete
 					</x-button>
+					<input 
+						type="hidden" 
+						name="return_to"
+						value="{{ old('return_to', $returnTo) }}"
+					/>
 				</form>
 			</div>
 		</x-modal>

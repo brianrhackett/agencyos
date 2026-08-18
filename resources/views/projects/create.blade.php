@@ -16,7 +16,7 @@
                         Add Project
                     </x-button>
                     <x-button 
-                        href="{{ route('projects.index') }}"
+                        href="{{ url()->previous() }}"
                         variant="ghost">
                         Cancel
                     </x-button>

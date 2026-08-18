@@ -26,11 +26,7 @@
 					</x-button>
 
 					<x-button
-						href="{{ $milestone
-							? route('milestones.show', $milestone)
-							: ($project
-                                ? route('projects.show', $project) 
-                                : route('tasks.index')) }}"
+						href="{{ url()->previous() }}"
 						variant="ghost"
 					>
 						Cancel

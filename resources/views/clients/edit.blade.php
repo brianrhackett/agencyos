@@ -14,7 +14,7 @@
                         Save Changes
                     </x-button>
                     <x-button 
-                        href="{{ route('clients.index') }}"
+                        href="{{ url()->previous() }}"
                         variant="ghost">
                         Cancel
                     </x-button>
