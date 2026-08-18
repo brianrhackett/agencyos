@@ -212,7 +212,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 					</p>
 
 					<p class="mt-2 text-sm font-semibold text-stone-800 dark:text-stone-100">
-						brian@agencyos.test
+						admin@agencyos.test
 					</p>
 
 					<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
