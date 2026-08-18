@@ -139,6 +139,7 @@
 						@endforeach
 					</ul>
 
+					<!--
 					<div class="mt-6 border-t border-stone-200 pt-4 dark:border-stone-800">
 						<a
 							href="#"
@@ -149,6 +150,7 @@
 							View all activity →
 						</a>
 					</div>
+					-->
 				</x-card>
 			</div>
 
