@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 use Illuminate\Validation\Rule;
 use App\Enums\TaskPriority;
@@ -173,6 +174,27 @@ class TaskController extends Controller
 
         return redirect(validated['return_to'] ?? route('milestones.show', $milestone))
             ->with('success', 'Task created successfully.');
+    }
+
+    public function updateStatus(Request $request, Task $task): JsonResponse
+    {
+        $this->authorize('update', $task);
+
+        $validated = $request->validate([
+            'status' => [
+                'required',
+                Rule::enum(TaskStatus::class),
+            ],
+        ]);
+
+        $task->update([
+            'status' => $validated['status'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'status' => $task->status,
+        ]);
     }
 
     public function update(Request $request, Task $task)

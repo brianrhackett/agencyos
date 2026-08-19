@@ -98,6 +98,10 @@ Route::post('/milestones/{milestone}/tasks', [TaskController::class, 'storeForMi
 Route::get('tasks/board', [TaskController::class, 'board'])
 	->name('tasks.board')
 	->middleware('auth');
+	
+Route::patch('/tasks/{task}/status', [TaskController::class, 'updateStatus'])
+	->name('tasks.update-status')
+	->middleware('auth');
 
 Route::resource('tasks', TaskController::class)
 	->middleware('auth');

@@ -59,26 +59,29 @@
             xl:flex gap-5 overflow-x-auto pb-4">
             @foreach (\App\Enums\TaskStatus::cases() as $status)
                 <x-card>
-                    <div class="">
+                    <div data-board-column class="flex h-full flex-col">
                         <div class="mb-3 flex items-center justify-between w-full">
                             <h2 class="font-bold">
                                 {{ $status->label() }}
                             </h2>
 
-                            <span class="text-sm text-stone-500">
+                            <span class="task-count text-sm text-stone-500">
                                 {{ $tasks->get($status->value, collect())->count() }}
                             </span>
                         </div>
 
-                        <div class="space-y-3">
+                        <div class="space-y-3 flex-1 task-column" data-status="{{$status->value}}">
                             @foreach ($tasks->get($status->value, collect()) as $task)
-                                <div class="
-                                    grid grid-cols-1 gap-3
-                                    border-1 border-stone-100 text-stone-800
-                                    text-sm font-bold block p-3 rounded-sm my-3 bg-stone-50 
-                                    dark:bg-stone-900 flex items-center dark:text-stone-200 
-                                    dark:border-stone-800
-                                ">
+                                <div
+                                    data-task-id="{{ $task->id }}"
+                                    class="
+                                        task-card cursor-grab active:cursor-grabbing
+                                        grid grid-cols-1 gap-3
+                                        border-1 border-stone-100 text-stone-800
+                                        text-sm font-bold block p-3 rounded-sm my-3 bg-stone-50 
+                                        dark:bg-stone-900 flex items-center dark:text-stone-200 
+                                        dark:border-stone-800"
+                                >
                                     @can('update', $task)
                                         <a class="hover:text-indigo-700 dark:hover:text-indigo-300" href="{{route('tasks.edit', $task)}}">{{ $task->title }}</a>
                                     @else
